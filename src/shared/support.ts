@@ -1,5 +1,5 @@
 /**
- * Where the "Buy me chips" button goes: the developer's Buy Me a Coffee page.
+ * Where the "Support me" button goes: the developer's Buy Me a Coffee page.
  *
  * It is fixed here and only the extension host opens it, so a webview can ask to "open the support
  * page" but can never choose an address. Tips are optional and give no chips.

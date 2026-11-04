@@ -89,7 +89,7 @@ The casino is meant to be left open in the sidebar while you work.
   synced, uploaded or shared.
 - The extension makes **no network requests** and collects **no telemetry**. The casino's pages are not
   allowed to load anything from the internet.
-- The one thing that can leave your machine is the optional **Buy me chips** button, which asks VS Code to
+- The one thing that can leave your machine is the optional **Support me** button, which asks VS Code to
   open a support page in your browser (VS Code may ask you to confirm first). It does not give you any
   in-game chips: the casino is virtual chips only.
 - The game logic and the wallet run in the extension itself, not in the page you see, so the page cannot
@@ -109,7 +109,7 @@ VS Code 1.90 or newer. No other software is needed. The extension uses only VS C
 
 ## Support
 
-If you enjoy the casino you can leave an optional tip with the **Buy me chips** button on the Home,
+If you enjoy the casino you can leave an optional tip with the **Support me** button on the Home,
 Statistics and Settings screens. Thank you!
 
 ## Licence

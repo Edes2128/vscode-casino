@@ -48,7 +48,7 @@ export type WebviewToHostMessage =
    * this webview has the Web Audio API the sound effects are made with.
    */
   | { readonly type: 'rendered'; readonly fontsLoaded: boolean; readonly audioAvailable: boolean }
-  /** The player pressed "Buy me chips". The host opens the (fixed) support page in the browser. */
+  /** The player pressed "Support me". The host opens the (fixed) support page in the browser. */
   | { readonly type: 'openSupport' }
   /** The player changed one or more settings. The host validates, saves and tells every view. */
   | { readonly type: 'settings'; readonly patch: SettingsPatch }

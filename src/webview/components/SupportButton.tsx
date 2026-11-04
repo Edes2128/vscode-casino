@@ -7,7 +7,7 @@ interface SupportButtonProps {
 }
 
 /**
- * "Buy me chips": an optional tip for the developer on Buy Me a Coffee. It only asks the host to
+ * "Support me": an optional tip for the developer on Buy Me a Coffee. It only asks the host to
  * open the page in the browser, so nothing is loaded inside the webview. The note keeps it clear
  * that this is not a way to get in-game chips: the casino is virtual chips only.
  */
@@ -18,10 +18,10 @@ export function SupportButton({ onClick }: SupportButtonProps) {
         variant="support"
         size="sm"
         onClick={onClick}
-        aria-label="Buy me chips: support the developer on Buy Me a Coffee. Opens in your browser. Optional, and it gives no chips."
+        aria-label="Support me: leave the developer an optional tip on Buy Me a Coffee. Opens in your browser. It gives no chips."
       >
         <PixelSprite rows={COFFEE.rows} palette={COFFEE.palette} className="support__cup" />
-        BUY ME CHIPS
+        SUPPORT ME
       </PixelButton>
       <p className="support__note">OPTIONAL TIP FOR THE DEVELOPER. IT GIVES NO CHIPS.</p>
     </div>

@@ -57,7 +57,7 @@ export const SPARKLE: Sprite = {
 
 // ---------------------------------------------------------------- coffee cup
 
-/** The yellow cup on the "Buy me chips" button. */
+/** The yellow cup on the "Support me" button. */
 export const COFFEE: Sprite = {
   rows: [
     '..s..s....',

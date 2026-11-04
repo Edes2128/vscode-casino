@@ -31,7 +31,8 @@ export function renderWebviewHtml(
 ): string {
   const nonce = crypto.randomBytes(16).toString('base64');
 
-  if (source.kind === 'dev') {
+  // Compiled out of the packaged extension, with the relaxed security policy the dev server needs.
+  if (__DEV_TOOLS__ && source.kind === 'dev') {
     return renderDevHtml(webview, source.serverUrl, nonce);
   }
 

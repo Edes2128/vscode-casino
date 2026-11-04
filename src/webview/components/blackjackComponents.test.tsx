@@ -315,7 +315,7 @@ describe('the Blackjack page', () => {
 describe('SupportButton', () => {
   it('is a labelled button with the cup, and says it is optional and gives no chips', () => {
     const html = renderToStaticMarkup(<SupportButton onClick={noop} />);
-    expect(html).toContain('BUY ME CHIPS');
+    expect(html).toContain('SUPPORT ME');
     expect(html).toContain('px-button--support');
     expect(html).toContain('support__cup');
     expect(html).toContain('OPTIONAL TIP FOR THE DEVELOPER. IT GIVES NO CHIPS.');
@@ -325,6 +325,6 @@ describe('SupportButton', () => {
 
   it('keeps its visible words inside its accessible name', () => {
     const html = renderToStaticMarkup(<SupportButton onClick={noop} />);
-    expect(html.toLowerCase()).toContain('aria-label="buy me chips');
+    expect(html.toLowerCase()).toContain('aria-label="support me');
   });
 });

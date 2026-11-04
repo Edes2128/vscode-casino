@@ -153,7 +153,7 @@ describe('the settings screen', () => {
     const html = renderToStaticMarkup(<Settings {...baseProps} version="1.2.3" />);
     expect(html).toContain('VERSION 1.2.3');
     expect(html).toContain('VIRTUAL CHIPS ONLY. NO REAL MONEY. EVER.');
-    expect(html).toContain('BUY ME CHIPS');
+    expect(html).toContain('SUPPORT ME');
     expect(renderToStaticMarkup(<Settings {...baseProps} version={undefined} />)).toContain('VERSION ?');
   });
 });

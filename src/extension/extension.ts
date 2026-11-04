@@ -112,7 +112,7 @@ export function activate(context: vscode.ExtensionContext): CasinoTestApi | unde
 
   logger.info(`Casino ${version} activated in ${Math.round(performance.now() - started)} ms`);
 
-  return exposesTestApi(context)
+  return __DEV_TOOLS__ && exposesTestApi(context)
     ? {
         getDiagnostics: (kind) => hub.getDiagnostics(kind),
         store,
@@ -129,9 +129,10 @@ export function activate(context: vscode.ExtensionContext): CasinoTestApi | unde
 }
 
 /**
- * The test API hands out the real store, so it must never exist for an installed extension. It is
- * only available in test mode, or when running from source with CASINO_EXPOSE_TEST_API=1 (used by
- * the restart test, which cannot run in test mode: see test/restart/runRestart.ts).
+ * The test API hands out the real store, so it must never exist for an installed extension. In the
+ * packaged extension this code is not even compiled in (`__DEV_TOOLS__` is false there). In other
+ * builds it is only available in test mode, or when running from source with CASINO_EXPOSE_TEST_API=1
+ * (used by the restart test, which cannot run in test mode: see test/restart/runRestart.ts).
  */
 function exposesTestApi(context: vscode.ExtensionContext): boolean {
   switch (context.extensionMode) {

@@ -30,9 +30,6 @@
     "Other"
   ],
   "keywords": [
-    "casino",
-    "blackjack",
-    "roulette",
     "game",
     "pixel art"
   ],
@@ -101,13 +98,14 @@
     "typecheck": "tsc -p tsconfig.extension.json --noEmit && tsc -p tsconfig.webview.json --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:integration": "node scripts/build-extension.mjs --tests && node out/test/runTest.js",
-    "test:restart": "node scripts/build-extension.mjs --tests && node out/test/runRestart.js",
-    "perf:idle": "node scripts/build-extension.mjs --tests && node out/test/measureIdle.js",
+    "test:integration": "npm run build && node scripts/build-extension.mjs --tests && node out/test/runTest.js",
+    "test:restart": "npm run build && node scripts/build-extension.mjs --tests && node out/test/runRestart.js",
+    "perf:idle": "npm run build && node scripts/build-extension.mjs --tests && node out/test/measureIdle.js",
     "vscode:prepublish": "node scripts/build-extension.mjs --production && vite build",
     "notices": "node scripts/gen-notices.mjs",
     "package": "vsce package --no-dependencies",
-    "test:vsix": "npm run package && node scripts/build-extension.mjs --tests && node out/test/runVsix.js"
+    "test:vsix": "npm run package && node scripts/build-extension.mjs --tests && node out/test/runVsix.js",
+    "test:integration:minified": "node scripts/build-extension.mjs --production --dev-tools && npm run build:webview && node scripts/build-extension.mjs --tests && node out/test/runTest.js"
   },
   "devDependencies": {
     "@fontsource/press-start-2p": "^5.3.0",

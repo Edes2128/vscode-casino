@@ -1,6 +1,8 @@
 // Bundles the extension host with esbuild.
 //   --watch        rebuild on change
 //   --production   minify, no sourcemaps
+//   --dev-tools    keep the developer tools (dev-server probing, the test API) in a --production build.
+//                  They are on in every other build and always compiled OUT of the packaged extension.
 //   --tests        build the VS Code integration-test launcher and suite instead
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { build, context } from 'esbuild';
@@ -8,6 +10,7 @@ import { build, context } from 'esbuild';
 const flags = new Set(process.argv.slice(2));
 const watch = flags.has('--watch');
 const production = flags.has('--production');
+const devTools = !production || flags.has('--dev-tools');
 const withTests = flags.has('--tests');
 
 /** Markers matched by the background problem matcher in .vscode/tasks.json. */
@@ -33,6 +36,8 @@ const shared = {
   target: 'node20',
   sourcemap: !production,
   minify: production,
+  // A compile-time constant: where it is false, esbuild deletes the code behind it (see devTools.d.ts).
+  define: { __DEV_TOOLS__: String(devTools) },
   logLevel: 'info',
   plugins: watch ? [watchMarkers] : [],
 };

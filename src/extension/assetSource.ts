@@ -1,4 +1,3 @@
-import * as http from 'node:http';
 import * as vscode from 'vscode';
 import type { AssetMode } from '../shared/messages';
 import type { Logger } from './logger';
@@ -24,6 +23,16 @@ export const assetMode = (source: AssetSource): AssetMode => source.kind;
  * server actually answers. Otherwise we fall back to the production bundle.
  */
 export async function resolveAssetSource(
+  context: vscode.ExtensionContext,
+  logger: Logger,
+): Promise<AssetSource> {
+  // In the packaged extension `__DEV_TOOLS__` is the literal false, so the next line is deleted together
+  // with everything it uses (the dev-server probing and its HTTP client): this function is just the last line.
+  if (__DEV_TOOLS__) return resolveDevAssetSource(context, logger);
+  return { kind: 'prod' };
+}
+
+async function resolveDevAssetSource(
   context: vscode.ExtensionContext,
   logger: Logger,
 ): Promise<AssetSource> {
@@ -54,7 +63,8 @@ export async function resolveAssetSource(
   return { kind: 'dev', serverUrl };
 }
 
-function isReachable(url: URL): Promise<boolean> {
+async function isReachable(url: URL): Promise<boolean> {
+  const http = await import('node:http');
   return new Promise((resolve) => {
     const request = http.get(url.origin, { timeout: PROBE_TIMEOUT_MS }, (response) => {
       response.resume();
