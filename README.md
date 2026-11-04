@@ -112,6 +112,12 @@ VS Code 1.90 or newer. No other software is needed. The extension uses only VS C
 If you enjoy the casino you can leave an optional tip with the **Buy me chips** button on the Home,
 Statistics and Settings screens. Thank you!
 
+## Licence
+
+Copyright (c) 2026 Edes Sulce. All rights reserved. You are welcome to install and use the extension, free of
+charge. You may not copy, modify or redistribute it. The full text is in the `LICENSE` file included in the
+extension.
+
 ## Credits
 
 Pixel art, sound effects and code are original. The interface uses the open-source fonts **Press Start 2P**

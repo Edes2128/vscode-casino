@@ -9,6 +9,14 @@
   },
   "publisher": "thesulce",
   "license": "SEE LICENSE IN LICENSE",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Edes2128/vscode-casino.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Edes2128/vscode-casino/issues"
+  },
+  "homepage": "https://github.com/Edes2128/vscode-casino#readme",
   "icon": "media/icon.png",
   "galleryBanner": {
     "color": "#101216",
@@ -98,7 +106,7 @@
     "perf:idle": "node scripts/build-extension.mjs --tests && node out/test/measureIdle.js",
     "vscode:prepublish": "node scripts/build-extension.mjs --production && vite build",
     "notices": "node scripts/gen-notices.mjs",
-    "package": "vsce package --no-dependencies --allow-missing-repository",
+    "package": "vsce package --no-dependencies",
     "test:vsix": "npm run package && node scripts/build-extension.mjs --tests && node out/test/runVsix.js"
   },
   "devDependencies": {

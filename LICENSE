@@ -1,11 +1,37 @@
 VS Code Casino
-Copyright (c) 2026. All rights reserved.
+Copyright (c) 2026 Edes Sulce. All rights reserved.
 
-No licence has been chosen for this software yet. Until one is, nobody is granted any right to
-copy, modify or distribute it.
+PERMISSION TO USE
 
-Replace this file with the chosen licence (and set "license" in package.json to match) before
-publishing the extension.
+You may install and use this extension, free of charge, on any number of your own computers, for any
+purpose, including at work.
 
-Third-party components bundled with the extension keep their own licences. See
-THIRD_PARTY_NOTICES.md.
+WHAT IS NOT PERMITTED
+
+Without the written permission of the copyright holder, you may not:
+
+  - copy the extension or any part of it, other than the copies that installing and running it
+    necessarily make;
+  - modify it, or create anything derived from it;
+  - redistribute, resell, sublicense, publish or otherwise make it available to others;
+  - remove or change this notice.
+
+Nothing in this licence limits any right you have by law that cannot be restricted by agreement.
+
+VIRTUAL CHIPS ONLY
+
+The extension simulates casino games with virtual chips that have no value. It is not gambling and
+cannot be used to win or lose real money.
+
+NO WARRANTY
+
+THE EXTENSION IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING THE
+WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT. IN NO EVENT SHALL
+THE COPYRIGHT HOLDER BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY ARISING FROM, OUT OF OR IN
+CONNECTION WITH THE EXTENSION OR ITS USE.
+
+THIRD-PARTY COMPONENTS
+
+The extension includes open-source components (React and two fonts) that remain under their own
+licences. They are listed in full in THIRD_PARTY_NOTICES.md, which ships with the extension. This
+licence does not apply to them.
