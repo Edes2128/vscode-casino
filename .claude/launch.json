@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "casino-webview",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev:webview"],
+      "port": 5173
+    }
+  ]
+}

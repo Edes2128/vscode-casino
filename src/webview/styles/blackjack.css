@@ -1,0 +1,499 @@
+/* Blackjack table illustration. Positions and sizes are in bitmap cells (see PixelScene). */
+
+.bj-art__card {
+  animation: deal-in 6s steps(1, end) infinite;
+}
+
+.bj-art__card--2 {
+  --ambient-delay: 0.3s;
+}
+
+.bj-art__card--3 {
+  --ambient-delay: 0.6s;
+}
+
+.bj-art__card--4 {
+  --ambient-delay: 0.9s;
+}
+
+.bj-art__sparkle {
+  animation: sparkle 2.4s steps(1, end) infinite;
+}
+
+/* ================================================================== the game screen */
+
+:root {
+  /* Card size, in whole pixels so the pixel art never blurs. */
+  --card-w: 40px;
+  --card-h: 56px;
+  --card-font: 8px;
+  --card-cell: 2px;
+}
+
+@media (min-width: 400px) {
+  :root {
+    --card-w: 52px;
+    --card-h: 72px;
+    --card-cell: 3px;
+  }
+}
+
+@media (min-width: 640px) {
+  :root {
+    --card-w: 64px;
+    --card-h: 88px;
+    --card-font: 10px;
+    --card-cell: 4px;
+  }
+}
+
+/* ------------------------------------------------------------------ playing cards */
+
+.playing-card {
+  --sprite-cell: var(--card-cell);
+  position: relative;
+  display: grid;
+  flex: none;
+  width: var(--card-w);
+  height: var(--card-h);
+  place-items: center;
+  background: var(--c-white);
+  box-shadow:
+    0 0 0 2px #14171d,
+    calc(var(--px) * 1) calc(var(--px) * 1) 0 2px rgba(0, 0, 0, 0.35);
+  color: #20242c;
+  animation: card-deal 0.4s steps(5, end) var(--deal-delay, 0ms) backwards;
+}
+
+.playing-card--red {
+  color: var(--c-red);
+}
+
+.playing-card--flip {
+  animation: card-flip 0.32s steps(4, end);
+}
+
+.playing-card__rank {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  font-family: var(--font-title);
+  font-size: var(--card-font);
+  line-height: 1;
+}
+
+.playing-card__rank--end {
+  top: auto;
+  right: 4px;
+  bottom: 4px;
+  left: auto;
+  transform: rotate(180deg);
+}
+
+/* The back: a red and dark red checkerboard inside a white border. */
+.playing-card--back {
+  background:
+    conic-gradient(#e94b4b 25%, #a82f2f 0 50%, #e94b4b 0 75%, #a82f2f 0) 0 0 / 8px 8px;
+  box-shadow:
+    inset 0 0 0 4px var(--c-white),
+    0 0 0 2px #14171d,
+    calc(var(--px) * 1) calc(var(--px) * 1) 0 2px rgba(0, 0, 0, 0.35);
+}
+
+/* Cards overlap by exactly as much as it takes to fit the table's width: never less than the usual
+   overlap, and never so much that less than a sliver of a card would show. `--n` is the number of
+   cards and `100cqw` the width of the table (see `.bj-table`), so a crowded hand squeezes up instead
+   of overflowing, even in the narrowest sidebar. */
+.card-fan {
+  --room: calc(100cqw - 36px); /* the table's padding plus the hand's own */
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  max-width: 100%;
+}
+
+.card-fan > .playing-card:not(:last-child) {
+  margin-right: calc(
+    -1 * clamp(
+        var(--card-w) * 0.45,
+        (var(--n) * var(--card-w) - var(--room)) / (var(--n) - 1),
+        var(--card-w) - 10px
+      )
+  );
+}
+
+/* ------------------------------------------------------------------ the table */
+
+.bj-table {
+  --frame-color: #2f8f5b;
+  /* Lets the card fans measure the table with `cqw` units. */
+  container-type: inline-size;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--px) * 4);
+  padding: calc(var(--px) * 3);
+  background:
+    radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px) 0 0 / 8px 8px,
+    var(--c-felt);
+}
+
+.bj-table--shake {
+  animation: table-shake 0.45s steps(6);
+}
+
+/* The strip between the dealer and the player: where a real table prints its rules. The result
+   takes its place when the round ends, so it never covers a card and nothing moves. */
+.bj-table__centre {
+  display: grid;
+  min-height: 64px;
+  place-items: center;
+}
+
+.bj-table__rules {
+  margin: 0;
+  color: var(--c-gold);
+  font-size: 16px;
+  line-height: 1.05;
+  text-align: center;
+  opacity: 0.85;
+}
+
+.bj-table__dealer,
+.bj-table__player {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: calc(var(--px) * 2);
+  min-height: calc(var(--card-h) + 36px);
+}
+
+.bj-table__label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: calc(var(--px) * 2);
+  color: var(--c-white);
+  font-size: 8px;
+  letter-spacing: 0.1em;
+}
+
+.bj-table__total {
+  padding: 3px 6px;
+  background: rgba(0, 0, 0, 0.4);
+  color: var(--c-gold);
+}
+
+.bj-table__hands {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: calc(var(--px) * 4) calc(var(--px) * 3);
+}
+
+.bj-table__empty {
+  align-self: center;
+  margin: auto 0;
+  color: var(--c-gold);
+  font-family: var(--font-title);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  animation: cursor-blink 0.8s steps(1, end) infinite;
+}
+
+/* ------------------------------------------------------------------ a hand */
+
+.hand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: calc(var(--px) * 1.5);
+  padding: var(--px) calc(var(--px) * 1.5);
+}
+
+.hand__arrow {
+  --sprite-cell: 2px;
+  color: var(--c-gold);
+  visibility: hidden;
+}
+
+.hand--active {
+  box-shadow: inset 0 0 0 2px rgba(245, 196, 81, 0.6);
+}
+
+.hand--active .hand__arrow {
+  visibility: visible;
+  animation: arrow-bob 0.8s steps(1, end) infinite;
+}
+
+.hand__caption {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--px) calc(var(--px) * 2);
+  margin: 0;
+  font-size: 16px;
+}
+
+.hand__total {
+  padding: 3px 6px;
+  background: rgba(0, 0, 0, 0.4);
+  color: var(--c-white);
+  font-family: var(--font-title);
+  font-size: 8px;
+}
+
+.hand--over .hand__total {
+  color: var(--c-red);
+}
+
+.hand__bet {
+  color: #bfe3cc;
+}
+
+.hand__tag {
+  font-family: var(--font-title);
+  font-size: 8px;
+}
+
+.hand--win .hand__tag {
+  color: var(--c-neon);
+}
+
+.hand--blackjack .hand__tag {
+  color: var(--c-gold);
+}
+
+.hand--push .hand__tag {
+  color: var(--c-white);
+}
+
+.hand--loss .hand__tag,
+.hand--bust .hand__tag {
+  color: var(--c-red);
+}
+
+/* ------------------------------------------------------------------ controls */
+
+.bj-info {
+  display: flex;
+  justify-content: space-between;
+  gap: calc(var(--px) * 3);
+  margin: 0;
+  color: var(--c-muted);
+  font-size: 18px;
+}
+
+.bj-info b {
+  color: var(--c-gold);
+  font-family: var(--font-title);
+  font-size: 10px;
+  font-weight: 400;
+}
+
+.bj-notice,
+.bj-broke {
+  margin: 0;
+  color: var(--c-red);
+  font-family: var(--font-title);
+  font-size: 9px;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.bet-controls {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--px) * 3);
+}
+
+.bet-controls__chips {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: calc(var(--px) * 2);
+}
+
+.bet-controls__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: calc(var(--px) * 2);
+}
+
+.bet-controls__field {
+  display: flex;
+  min-width: 0;
+  flex: 1 1 110px;
+  align-items: center;
+  gap: calc(var(--px) * 2);
+  padding: var(--px) calc(var(--px) * 2);
+  background: var(--c-bg);
+  box-shadow: inset 0 0 0 var(--px) var(--c-muted);
+}
+
+.bet-controls__field:focus-within {
+  box-shadow: inset 0 0 0 var(--px) var(--c-gold);
+}
+
+.bet-controls__label {
+  color: var(--c-gold);
+  font-family: var(--font-title);
+  font-size: 8px;
+}
+
+/* A percentage width, because an input's own width (about 240px) would otherwise stop the
+   field from ever shrinking below it in a narrow sidebar. */
+.bet-controls__input {
+  width: 100%;
+  min-width: 0;
+  flex: 1;
+  padding: calc(var(--px) * 1.5) 0;
+  border: 0;
+  background: transparent;
+  color: var(--c-white);
+  font-family: var(--font-title);
+  font-size: 12px;
+  outline: none;
+}
+
+.bet-controls__input[aria-invalid='true'] {
+  color: var(--c-red);
+}
+
+.bet-controls__hint {
+  margin: 0;
+  color: var(--c-muted);
+  font-size: 16px;
+  text-align: center;
+}
+
+.bet-controls__hint--bad {
+  color: var(--c-red);
+}
+
+.action-bar {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: calc(var(--px) * 2);
+}
+
+.action-bar .px-button {
+  width: 100%;
+}
+
+@media (min-width: 400px) {
+  .action-bar {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+/* ------------------------------------------------------------------ result effects */
+
+.result-fx {
+  --fx-color: var(--c-muted);
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.result-fx--win {
+  --fx-color: var(--c-neon);
+}
+
+.result-fx--special {
+  --fx-color: var(--c-gold);
+}
+
+.result-fx--loss {
+  --fx-color: var(--c-red);
+  animation: loss-vignette 0.8s steps(4, end) forwards;
+}
+
+.result-banner {
+  --fx-color: var(--c-muted);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--px);
+  max-width: 100%;
+  padding: calc(var(--px) * 2) calc(var(--px) * 3);
+  background: rgba(16, 18, 22, 0.9);
+  box-shadow: 0 0 0 var(--px) var(--fx-color);
+  text-align: center;
+  animation: banner-pop 0.5s steps(5, end);
+}
+
+.result-banner--win {
+  --fx-color: var(--c-neon);
+}
+
+.result-banner--special {
+  --fx-color: var(--c-gold);
+}
+
+.result-banner--loss {
+  --fx-color: var(--c-red);
+}
+
+.result-banner__headline {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: center;
+  gap: var(--px) calc(var(--px) * 3);
+  margin: 0;
+}
+
+.result-banner__title {
+  color: var(--fx-color);
+  font-family: var(--font-title);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-shadow: 0 0 8px var(--fx-color);
+}
+
+.result-banner--special .result-banner__title {
+  font-size: 12px;
+  animation: blackjack-colours 0.6s steps(1, end) infinite;
+}
+
+.result-banner__amount {
+  color: var(--c-white);
+  font-family: var(--font-title);
+  font-size: 9px;
+}
+
+.result-banner__detail {
+  margin: 0;
+  color: var(--c-muted);
+  font-size: 16px;
+  line-height: 1;
+}
+
+.result-fx__flash {
+  position: absolute;
+  inset: 0;
+  background: var(--c-white);
+  opacity: 0;
+  animation: flash 0.6s steps(6, end) forwards;
+}
+
+.fx-burst {
+  position: absolute;
+  inset: 0;
+}
+
+.fx-burst__dot {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: var(--size);
+  height: var(--size);
+  background: var(--colour);
+  transform: translate(-50%, -50%);
+  animation: burst-fly 1.2s steps(12, end) var(--delay) forwards;
+}

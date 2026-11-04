@@ -1,0 +1,238 @@
+/* Roulette wheel illustration. The background is a strip of pre-rendered frames; see RouletteArt. */
+
+.rl-art__wheel {
+  position: absolute;
+  inset: 0;
+  background-repeat: no-repeat;
+  background-position: 0 0;
+  background-size: calc(var(--cols) * var(--frames) * var(--art-cell)) calc(var(--rows) * var(--art-cell));
+  image-rendering: pixelated;
+  animation: wheel-spin 2.4s steps(var(--frames), end) infinite;
+}
+
+/* ================================================================== the game screen */
+
+:root {
+  /* One pixel of the wheel, in whole CSS pixels. The wheel is 64 of them across, and the steps are
+     chosen so it always fits the stage: 64px at the narrowest, 384px in a wide panel. */
+  --wheel-cell: 1px;
+}
+
+@media (min-width: 190px) {
+  :root {
+    --wheel-cell: 2px;
+  }
+}
+
+@media (min-width: 260px) {
+  :root {
+    --wheel-cell: 3px;
+  }
+}
+
+@media (min-width: 330px) {
+  :root {
+    --wheel-cell: 4px;
+  }
+}
+
+@media (min-width: 640px) {
+  :root {
+    --wheel-cell: 6px;
+  }
+}
+
+.rl-stage {
+  --frame-color: var(--c-red);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: calc(var(--px) * 3);
+  padding: calc(var(--px) * 3);
+  background:
+    radial-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px) 0 0 / 8px 8px,
+    var(--c-bg-2);
+}
+
+.rl-stage--shake {
+  animation: table-shake 0.45s steps(6);
+}
+
+.rl-stage__last {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: calc(var(--px) * 2);
+  margin: 0;
+  color: var(--c-white);
+  font-family: var(--font-title);
+  font-size: 8px;
+  letter-spacing: 0.1em;
+}
+
+/* ------------------------------------------------------------------ the wheel */
+
+.rl-wheel {
+  position: relative;
+  padding-top: calc(var(--px) * 4);
+}
+
+.rl-wheel__pointer {
+  --sprite-cell: 2px;
+  position: absolute;
+  top: 0;
+  left: 50%;
+  z-index: 2;
+  color: var(--c-gold);
+  transform: translateX(-50%);
+}
+
+.rl-wheel__canvas {
+  display: block;
+  width: calc(64 * var(--wheel-cell));
+  height: calc(64 * var(--wheel-cell));
+  image-rendering: pixelated;
+}
+
+@media (min-width: 260px) {
+  .rl-wheel__pointer {
+    --sprite-cell: 3px;
+  }
+}
+
+/* The strip below the wheel: the rules until a result replaces them. */
+.rl-stage__centre {
+  display: grid;
+  width: 100%;
+  min-height: 64px;
+  place-items: center;
+}
+
+.rl-stage__rules {
+  margin: 0;
+  color: var(--c-gold);
+  font-size: 16px;
+  line-height: 1.05;
+  text-align: center;
+  opacity: 0.85;
+}
+
+.rl-recent {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--px);
+  min-height: calc(var(--px) * 7);
+}
+
+.rl-recent__empty {
+  color: var(--c-muted);
+  font-size: 16px;
+}
+
+/* ------------------------------------------------------------------ pocket badges */
+
+.pocket-badge {
+  display: inline-grid;
+  min-width: calc(var(--px) * 6);
+  height: calc(var(--px) * 6);
+  place-items: center;
+  padding: 0 3px;
+  background: var(--badge, var(--c-muted));
+  box-shadow: 0 0 0 2px #14171d;
+  color: var(--c-white);
+  font-family: var(--font-title);
+  font-size: 8px;
+  line-height: 1;
+}
+
+.pocket-badge--lg {
+  min-width: calc(var(--px) * 8);
+  height: calc(var(--px) * 8);
+  font-size: 10px;
+}
+
+.pocket-badge--red {
+  --badge: #e94b4b;
+}
+
+.pocket-badge--black {
+  --badge: #2c3240;
+  box-shadow:
+    0 0 0 2px #14171d,
+    inset 0 0 0 2px #4a5367;
+}
+
+.pocket-badge--green {
+  --badge: #2fbf5a;
+  color: #0d1a10;
+}
+
+/* ------------------------------------------------------------------ the three bets */
+
+.color-picker {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: calc(var(--px) * 2);
+}
+
+@media (min-width: 260px) {
+  .color-picker {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.color-pick {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--px);
+  padding: calc(var(--px) * 3) var(--px);
+  border: 0;
+  background: var(--pick, var(--c-muted));
+  box-shadow: inset 0 calc(var(--px) * -1) 0 0 rgba(0, 0, 0, 0.35);
+  color: var(--c-white);
+  font-family: var(--font-title);
+  font-size: 9px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.color-pick--red {
+  --pick: #e94b4b;
+}
+
+.color-pick--black {
+  --pick: #2c3240;
+}
+
+.color-pick--green {
+  --pick: #2fbf5a;
+  color: #0d1a10;
+}
+
+.color-pick__odds {
+  font-family: var(--font-body);
+  font-size: 16px;
+  opacity: 0.85;
+}
+
+.color-pick:hover:not(:disabled) {
+  filter: brightness(1.15);
+}
+
+/* The chosen bet is raised and ringed in gold. */
+.color-pick--selected {
+  box-shadow:
+    inset 0 calc(var(--px) * -1) 0 0 rgba(0, 0, 0, 0.35),
+    inset 0 0 0 var(--px) var(--c-gold);
+  transform: translateY(calc(var(--px) * -0.5));
+}
+
+.color-pick:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

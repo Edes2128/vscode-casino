@@ -1,0 +1,11 @@
+VS Code Casino
+Copyright (c) 2026. All rights reserved.
+
+No licence has been chosen for this software yet. Until one is, nobody is granted any right to
+copy, modify or distribute it.
+
+Replace this file with the chosen licence (and set "license" in package.json to match) before
+publishing the extension.
+
+Third-party components bundled with the extension keep their own licences. See
+THIRD_PARTY_NOTICES.md.

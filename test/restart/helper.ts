@@ -1,0 +1,228 @@
+/**
+ * Helper extension for the restart test (see runRestart.ts). It is loaded next to the casino in a
+ * normally launched VS Code, plays or checks some rounds through the casino's real store, writes
+ * its verdict to a file and then quits VS Code the way a user would, which makes VS Code flush
+ * its global state to disk. Without the environment variables set by the runner it does nothing.
+ */
+import * as assert from 'node:assert/strict';
+import * as fs from 'node:fs';
+import * as path from 'node:path';
+import * as vscode from 'vscode';
+import type { CasinoStore } from '../../src/casino/store';
+import type { GameType } from '../../src/casino/types';
+import type { CasinoTestApi } from '../../src/extension/extension';
+
+const CASINO_ID = 'thesulce.vscode-casino';
+
+function playRound(store: CasinoStore, game: GameType, bet: number, payout: number, detail: string): number {
+  const begun = store.beginRound(game, bet);
+  assert.ok(begun.ok, `beginRound(${game}, ${bet}) was refused`);
+  assert.ok(store.settleRound(begun.value.id, payout, detail).ok, 'settleRound was refused');
+  return payout - bet;
+}
+
+async function writePhase({ store, settings }: CasinoTestApi): Promise<void> {
+  assert.deepEqual(store.startup, { source: 'fresh', forfeitedRounds: 0 }, 'expected a brand-new profile');
+  assert.equal(store.snapshot.balance, 1_000);
+
+  assert.equal(playRound(store, 'roulette', 100, 0, 'Black 8'), -100); // 900
+  assert.equal(playRound(store, 'blackjack', 50, 125, 'Blackjack'), 75); // 975, paid 3:2
+  assert.ok(store.beginRound('roulette', 40).ok); // 935, never settled: VS Code is about to close
+
+  assert.equal(store.snapshot.balance, 935);
+
+  // Settings are saved on their own, and must survive too.
+  settings.update({ sound: false, volume: 35, animations: false, reducedMotion: true });
+  await Promise.all([store.flush(), settings.flush()]);
+}
+
+async function readPhase(api: CasinoTestApi): Promise<void> {
+  const { store, settings } = api;
+
+  assert.deepEqual(
+    settings.settings,
+    { sound: false, volume: 35, animations: false, reducedMotion: true },
+    'the settings must survive the restart',
+  );
+  assert.deepEqual(store.startup, { source: 'saved', forfeitedRounds: 1 }, 'the saved casino was not loaded');
+  assert.equal(store.snapshot.balance, 935, 'the balance must survive the restart');
+  assert.deepEqual(store.openRounds, []);
+
+  const { overall, blackjack, roulette } = store.snapshot.stats;
+  assert.deepEqual(
+    [overall.gamesPlayed, overall.wins, overall.losses, overall.pushes, overall.biggestWin, overall.biggestLoss, overall.totalWagered],
+    [3, 1, 2, 0, 75, 100, 190],
+  );
+  assert.equal(blackjack.gamesPlayed, 1);
+  assert.equal(roulette.gamesPlayed, 2);
+
+  assert.deepEqual(
+    store.snapshot.history.map((entry) => [entry.game, entry.bet, entry.outcome, entry.payout, entry.detail]),
+    [
+      ['roulette', 40, 'loss', -40, 'Round abandoned'],
+      ['blackjack', 50, 'win', 75, 'Blackjack'],
+      ['roulette', 100, 'loss', -100, 'Black 8'],
+    ],
+  );
+
+  // And the views are fed the restored state.
+  await vscode.commands.executeCommand('workbench.view.extension.casino');
+  const deadline = Date.now() + 30_000;
+  for (;;) {
+    const shown = api.getDiagnostics('sidebar')?.lastShown;
+    if (shown?.balance === 935 && shown.gamesPlayed === 3) return;
+    assert.ok(Date.now() < deadline, 'the sidebar never showed the restored balance');
+    await new Promise((resolve) => setTimeout(resolve, 100));
+  }
+}
+
+/**
+ * Opens the casino the way a player leaves it, then stays open so `perf:idle` can sample how much CPU
+ * VS Code uses. Never quits (the runner stops VS Code). While it stays open it also obeys commands the
+ * runner writes to a control file, so one running window can be measured under several settings.
+ */
+async function idlePhase(api: CasinoTestApi): Promise<void> {
+  const page = (process.env['CASINO_IDLE_PAGE'] ?? 'home') as Parameters<CasinoTestApi['navigate']>[1];
+  const settings = JSON.parse(process.env['CASINO_IDLE_SETTINGS'] ?? '{}') as Parameters<CasinoTestApi['settings']['update']>[0];
+
+  api.settings.update(settings);
+  await vscode.commands.executeCommand('workbench.view.extension.casino');
+  const deadline = Date.now() + 60_000;
+  while (api.getDiagnostics('sidebar')?.rendered !== true) {
+    assert.ok(Date.now() < deadline, 'the sidebar never rendered');
+    await new Promise((resolve) => setTimeout(resolve, 100));
+  }
+  api.navigate('sidebar', page);
+  await new Promise((resolve) => setTimeout(resolve, 1_000));
+
+  const controlPath = process.env['CASINO_IDLE_CONTROL'];
+  if (controlPath === undefined) return;
+
+  // What the casino's own page says about its decorations, for the runner to read. This is how the
+  // measurement knows they are alive without attaching a debugger to the webview, which changes the CPU.
+  setInterval(() => {
+    fs.writeFileSync(`${controlPath}.status`, JSON.stringify(api.getDiagnostics('sidebar')?.lastAmbient ?? null));
+  }, 500);
+
+  interface Command {
+    readonly id: string;
+    readonly settings?: Parameters<CasinoTestApi['settings']['update']>[0];
+    readonly page?: Parameters<CasinoTestApi['navigate']>[1];
+    /** `explorer` puts another view in front of the casino (which stays alive); `casino` brings it back. */
+    readonly show?: 'casino' | 'explorer';
+  }
+  let handled = '';
+  setInterval(() => {
+    let command: Command;
+    try {
+      command = JSON.parse(fs.readFileSync(controlPath, 'utf8')) as Command;
+    } catch {
+      return; // not written yet
+    }
+    if (command.id === handled) return;
+    handled = command.id;
+    void (async () => {
+      if (command.settings !== undefined) api.settings.update(command.settings);
+      if (command.page !== undefined) api.navigate('sidebar', command.page);
+      if (command.show === 'explorer') await vscode.commands.executeCommand('workbench.view.explorer');
+      if (command.show === 'casino') await vscode.commands.executeCommand('workbench.view.extension.casino');
+      fs.writeFileSync(`${controlPath}.ack`, command.id);
+    })();
+  }, 250);
+}
+
+/** The casino's own log files under `root`, read whole. Small trees only: this is a throwaway profile's logs. */
+function readLogs(root: string): string {
+  let text = '';
+  const visit = (directory: string): void => {
+    for (const entry of fs.readdirSync(directory, { withFileTypes: true })) {
+      const full = path.join(directory, entry.name);
+      if (entry.isDirectory()) visit(full);
+      // Judged by the path INSIDE the logs folder: the project folder itself is called vscode-casino.
+      else if (entry.name.endsWith('.log') && /casino/i.test(path.relative(root, full))) text += `${fs.readFileSync(full, 'utf8')}\n`;
+    }
+  };
+  try {
+    visit(root);
+  } catch {
+    // not created yet
+  }
+  return text;
+}
+
+/**
+ * Checks the casino as it was INSTALLED from a VSIX (the runner installs it into the profile this
+ * VS Code uses), not as it runs from source: where it lives, that it does not hand out its test API,
+ * that its commands exist, and, from the casino's own log, that both webviews really rendered.
+ */
+async function vsixPhase(casino: vscode.Extension<unknown>, logsRoot: string): Promise<string> {
+  const installedIn = process.env['CASINO_VSIX_EXTENSIONS_DIR'];
+  assert.ok(installedIn !== undefined && casino.extensionPath.startsWith(installedIn), `the casino runs from ${casino.extensionPath}, not from the installed copy`);
+
+  const api = await casino.activate();
+  assert.equal(api, undefined, 'an installed casino must not hand out its test API');
+
+  const commands = await vscode.commands.getCommands(true);
+  for (const command of ['casino.showSidebar', 'casino.openPanel', 'casino.sidebar.focus']) assert.ok(commands.includes(command), `${command} is not registered`);
+
+  await vscode.commands.executeCommand('workbench.view.extension.casino');
+  await vscode.commands.executeCommand('casino.openPanel');
+
+  const wanted = [/\[sidebar\] webview rendered \(fonts loaded: true, audio: true, assets: prod\)/, /\[panel\] webview rendered \(fonts loaded: true, audio: true, assets: prod\)/];
+  const deadline = Date.now() + 60_000;
+  let logs = '';
+  for (;;) {
+    logs = readLogs(logsRoot);
+    if (wanted.every((pattern) => pattern.test(logs))) break;
+    assert.ok(Date.now() < deadline, `the installed casino's webviews never reported rendering. Log so far:\n${logs.slice(-1500)}`);
+    await new Promise((resolve) => setTimeout(resolve, 500));
+  }
+  await new Promise((resolve) => setTimeout(resolve, 1_500)); // let a late CSP or error report arrive
+
+  logs = readLogs(logsRoot);
+  assert.ok(!/CSP violation/.test(logs), `CSP violations in the installed casino:\n${logs.split('\n').filter((line) => /CSP violation/.test(line)).join('\n')}`);
+  assert.ok(!/webview error/.test(logs), `webview errors in the installed casino:\n${logs.split('\n').filter((line) => /webview error/.test(line)).join('\n')}`);
+  assert.ok(!/\[error\]/i.test(logs), `the casino logged an error:\n${logs.split('\n').filter((line) => /\[error\]/i.test(line)).join('\n')}`);
+  const activated = /Casino (\S+) activated in (\d+) ms/.exec(logs);
+  assert.ok(activated, 'the casino never logged that it activated');
+  return `installed version ${activated[1] ?? '?'}, activated in ${activated[2] ?? '?'} ms, both webviews rendered, no test API, no CSP violations`;
+}
+
+async function run(phase: string, resultPath: string, context: vscode.ExtensionContext): Promise<void> {
+  let outcome: { readonly ok: boolean; readonly detail: string };
+  try {
+    const casino = vscode.extensions.getExtension(CASINO_ID);
+    assert.ok(casino, `extension ${CASINO_ID} is not loaded`);
+    if (phase === 'vsix') {
+      // The extension host's log folder holds a folder per extension; this helper's is one of them.
+      const detail = await vsixPhase(casino, path.resolve(context.logUri.fsPath, '..', '..'));
+      fs.writeFileSync(resultPath, JSON.stringify({ ok: true, detail }));
+      await vscode.commands.executeCommand('workbench.action.quit');
+      return;
+    }
+    const api = (await casino.activate()) as CasinoTestApi | undefined;
+    assert.ok(api, 'the casino did not expose its test API (is CASINO_EXPOSE_TEST_API=1 set?)');
+
+    if (phase === 'idle') {
+      await idlePhase(api);
+      fs.writeFileSync(resultPath, JSON.stringify({ ok: true, detail: 'ready' }));
+      return; // stay open: the runner measures, then stops VS Code
+    }
+    if (phase === 'write') await writePhase(api);
+    else if (phase === 'read') await readPhase(api);
+    else throw new Error(`unknown phase "${phase}"`);
+    outcome = { ok: true, detail: `${phase} phase passed` };
+  } catch (error) {
+    outcome = { ok: false, detail: error instanceof Error ? error.message : String(error) };
+  }
+
+  fs.writeFileSync(resultPath, JSON.stringify(outcome));
+  await vscode.commands.executeCommand('workbench.action.quit');
+}
+
+export function activate(context: vscode.ExtensionContext): void {
+  const phase = process.env['CASINO_RESTART_PHASE'];
+  const resultPath = process.env['CASINO_RESTART_RESULT'];
+  if (phase === undefined || resultPath === undefined) return; // inert unless the runner drives it
+  void run(phase, resultPath, context);
+}

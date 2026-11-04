@@ -1,0 +1,53 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "casino: build",
+      "type": "npm",
+      "script": "build",
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "casino: watch extension",
+      "type": "npm",
+      "script": "dev:extension",
+      "isBackground": true,
+      "presentation": { "reveal": "never", "group": "casino-dev" },
+      "problemMatcher": {
+        "owner": "esbuild",
+        "pattern": {
+          "regexp": "^✘ \\[ERROR\\] (.*)$",
+          "message": 1
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "^\\[watch\\] build started",
+          "endsPattern": "^\\[watch\\] build finished"
+        }
+      }
+    },
+    {
+      "label": "casino: vite dev server",
+      "type": "npm",
+      "script": "dev:webview",
+      "isBackground": true,
+      "presentation": { "reveal": "never", "group": "casino-dev" },
+      "problemMatcher": {
+        "owner": "vite",
+        "pattern": { "regexp": "^$" },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "VITE v",
+          "endsPattern": "Local:"
+        }
+      }
+    },
+    {
+      "label": "casino: dev",
+      "dependsOn": ["casino: watch extension", "casino: vite dev server"],
+      "dependsOrder": "parallel",
+      "problemMatcher": []
+    }
+  ]
+}

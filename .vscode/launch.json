@@ -1,0 +1,22 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Run Extension",
+      "type": "extensionHost",
+      "request": "launch",
+      "args": ["--extensionDevelopmentPath=${workspaceFolder}"],
+      "outFiles": ["${workspaceFolder}/dist/**/*.js"],
+      "preLaunchTask": "casino: build"
+    },
+    {
+      "name": "Run Extension (Vite HMR)",
+      "type": "extensionHost",
+      "request": "launch",
+      "args": ["--extensionDevelopmentPath=${workspaceFolder}"],
+      "env": { "CASINO_DEV_SERVER_URL": "http://localhost:5173" },
+      "outFiles": ["${workspaceFolder}/dist/**/*.js"],
+      "preLaunchTask": "casino: dev"
+    }
+  ]
+}

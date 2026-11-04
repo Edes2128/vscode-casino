@@ -1,0 +1,121 @@
+{
+  "name": "vscode-casino",
+  "displayName": "VS Code Casino",
+  "description": "A retro pixel-art casino hidden in your editor. Play Blackjack and Roulette with virtual chips. No real money, ever.",
+  "version": "0.1.0",
+  "private": true,
+  "sponsor": {
+    "url": "https://buymeacoffee.com/5x2bfo6t5c"
+  },
+  "publisher": "thesulce",
+  "license": "SEE LICENSE IN LICENSE",
+  "icon": "media/icon.png",
+  "galleryBanner": {
+    "color": "#101216",
+    "theme": "dark"
+  },
+  "engines": {
+    "vscode": "^1.90.0",
+    "node": ">=20"
+  },
+  "categories": [
+    "Other"
+  ],
+  "keywords": [
+    "casino",
+    "blackjack",
+    "roulette",
+    "game",
+    "pixel art"
+  ],
+  "capabilities": {
+    "untrustedWorkspaces": {
+      "supported": true
+    },
+    "virtualWorkspaces": true
+  },
+  "extensionKind": [
+    "ui",
+    "workspace"
+  ],
+  "main": "./dist/extension.js",
+  "activationEvents": [],
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "casino",
+          "title": "Casino",
+          "icon": "media/casino.svg"
+        }
+      ]
+    },
+    "views": {
+      "casino": [
+        {
+          "type": "webview",
+          "id": "casino.sidebar",
+          "name": "Casino",
+          "icon": "media/casino.svg"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "casino.showSidebar",
+        "title": "Open Sidebar",
+        "category": "Casino"
+      },
+      {
+        "command": "casino.openPanel",
+        "title": "Open in Editor",
+        "category": "Casino",
+        "icon": "$(link-external)"
+      }
+    ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "casino.openPanel",
+          "when": "view == casino.sidebar",
+          "group": "navigation"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "build": "npm run build:extension && npm run build:webview",
+    "build:extension": "node scripts/build-extension.mjs",
+    "build:webview": "vite build",
+    "dev": "node scripts/dev.mjs",
+    "dev:extension": "node scripts/build-extension.mjs --watch",
+    "dev:webview": "vite",
+    "typecheck": "tsc -p tsconfig.extension.json --noEmit && tsc -p tsconfig.webview.json --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:integration": "node scripts/build-extension.mjs --tests && node out/test/runTest.js",
+    "test:restart": "node scripts/build-extension.mjs --tests && node out/test/runRestart.js",
+    "perf:idle": "node scripts/build-extension.mjs --tests && node out/test/measureIdle.js",
+    "vscode:prepublish": "node scripts/build-extension.mjs --production && vite build",
+    "notices": "node scripts/gen-notices.mjs",
+    "package": "vsce package --no-dependencies --allow-missing-repository",
+    "test:vsix": "npm run package && node scripts/build-extension.mjs --tests && node out/test/runVsix.js"
+  },
+  "devDependencies": {
+    "@fontsource/press-start-2p": "^5.3.0",
+    "@fontsource/vt323": "^5.3.0",
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@types/vscode": "~1.90.0",
+    "@vitejs/plugin-react": "^6.2.1",
+    "@vscode/test-electron": "^2.5.2",
+    "@vscode/vsce": "^4.1.0",
+    "esbuild": "^0.28.2",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "typescript": "~5.9.3",
+    "vite": "^8.3.5",
+    "vitest": "^5.1.0"
+  }
+}

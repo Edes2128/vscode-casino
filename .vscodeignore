@@ -1,0 +1,23 @@
+# Only what the extension needs at runtime goes into the VSIX: dist/ (the bundled extension and the
+# built webview), media/, package.json, README, CHANGELOG, LICENSE and THIRD_PARTY_NOTICES.
+# Everything else (sources, tests, tooling, local state) stays out.
+.claude/**
+.git/**
+.vscode/**
+.vscode-test/**
+node_modules/**
+src/**
+test/**
+scripts/**
+out/**
+public/**
+**/*.map
+**/*.ts
+**/*.tsx
+**/*.vsix
+tsconfig*.json
+vite.config.mts
+vitest.config.mts
+package-lock.json
+.gitignore
+.vscodeignore

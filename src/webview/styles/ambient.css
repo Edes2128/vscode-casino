@@ -1,0 +1,28 @@
+/* The ambient loops: everything that moves on its own, forever.
+
+   A CSS animation that is running makes the browser produce a frame on EVERY screen refresh, even when
+   the animation only changes a few times a second, as these stepped pixel animations do. Measured in a
+   real VS Code window refreshing 240 times a second, one such loop cost about a quarter of a CPU core
+   and all of them about half. So the loops are paused here and never run by CSS: the ambient clock
+   (hooks/useAmbientClock.ts) sets --t, the seconds elapsed, ten times a second, and each loop is
+   moved to that time through its delay. The loops look the same, and the page only has to draw ten
+   frames a second.
+
+   --ambient-delay is a loop's own head start or lag, which used to be its animation-delay.
+
+   This file must come last, because the `animation` shorthand of each rule resets play-state and delay.
+   Every loop (an `infinite` animation) must be listed here: ambient.test.ts fails otherwise. */
+.particles__dot,
+.connecting::after,
+.logo__die,
+.logo__letter:nth-child(3),
+.marquee,
+.bj-art__card,
+.bj-art__sparkle,
+.bj-table__empty,
+.hand--active .hand__arrow,
+.result-banner--special .result-banner__title,
+.rl-art__wheel {
+  animation-play-state: paused;
+  animation-delay: calc(var(--ambient-delay, 0s) - var(--t, 0) * 1s);
+}

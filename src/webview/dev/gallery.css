@@ -1,0 +1,37 @@
+/* Dev-only styles for the design gallery. */
+
+.gallery {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--px) * 6);
+  max-width: 760px;
+  margin: 0 auto;
+  padding: calc(var(--px) * 4);
+}
+
+.gallery__note {
+  color: var(--c-muted);
+}
+
+.gallery__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: calc(var(--px) * 3);
+}
+
+.gallery__label {
+  width: 100%;
+  color: var(--c-muted);
+  font-size: 16px;
+}
+
+.gallery__swatch {
+  display: grid;
+  width: calc(var(--px) * 14);
+  height: calc(var(--px) * 10);
+  place-items: end start;
+  padding: var(--px);
+  color: var(--c-bg);
+  font-size: 14px;
+}

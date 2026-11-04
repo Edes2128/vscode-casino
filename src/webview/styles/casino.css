@@ -1,0 +1,402 @@
+/* App shell and lobby. */
+
+/* ------------------------------------------------------------------ shell */
+
+.casino-app {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Brand bar and navigation stay put while a screen scrolls. */
+.casino-top {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--px) * 2);
+  padding: calc(var(--px) * 3) calc(var(--px) * 3) 0;
+  background: var(--c-bg);
+  box-shadow: 0 var(--px) 0 0 var(--c-bg-2);
+}
+
+.casino-main {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  padding: calc(var(--px) * 5) calc(var(--px) * 4) calc(var(--px) * 3);
+}
+
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--px) * 6);
+  animation: page-in 0.24s steps(4, end);
+}
+
+.casino-footer {
+  padding: calc(var(--px) * 3) calc(var(--px) * 4) calc(var(--px) * 4);
+  color: var(--c-muted);
+  font-size: 16px;
+  letter-spacing: 0.04em;
+  text-align: center;
+}
+
+/* ------------------------------------------------------------------ support */
+
+.support {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: calc(var(--px) * 2);
+  margin-bottom: calc(var(--px) * 4);
+}
+
+.support__cup {
+  --sprite-cell: 2px;
+}
+
+.support__note {
+  max-width: 30ch;
+  color: var(--c-muted);
+  font-size: 16px;
+  line-height: 1.1;
+  text-align: center;
+}
+
+.connecting {
+  color: var(--c-gold);
+  font-family: var(--font-title);
+  font-size: 10px;
+  text-align: center;
+}
+
+.connecting::after {
+  content: '_';
+  animation: cursor-blink 0.8s steps(1, end) infinite;
+}
+
+/* ------------------------------------------------------------------ header */
+
+.casino-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: calc(var(--px) * 2) calc(var(--px) * 3);
+}
+
+.casino-header__brand {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--px) * 2);
+}
+
+.casino-header__die {
+  --sprite-cell: 2px;
+}
+
+.casino-header__name {
+  color: var(--c-neon);
+  font-family: var(--font-title);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-shadow: 0 0 8px rgba(101, 229, 114, 0.5);
+}
+
+/* ------------------------------------------------------------------ navigation */
+
+.nav-bar {
+  display: grid;
+  grid-auto-columns: minmax(0, 1fr);
+  grid-auto-flow: column;
+  gap: var(--px);
+}
+
+.nav-bar__item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--px);
+  min-width: 0;
+  padding: calc(var(--px) * 2) var(--px) calc(var(--px) * 2);
+  border: 0;
+  background: transparent;
+  box-shadow: inset 0 calc(var(--px) * -1) 0 0 transparent;
+  color: var(--c-muted);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.nav-bar__item:hover {
+  background: var(--c-bg-2);
+  color: var(--c-white);
+}
+
+.nav-bar__item[aria-current='page'] {
+  background: var(--c-bg-2);
+  box-shadow: inset 0 calc(var(--px) * -1) 0 0 var(--c-neon);
+  color: var(--c-neon);
+}
+
+.nav-bar__icon {
+  --sprite-cell: 2px;
+}
+
+/* Five tabs share the width, so the tabs show icons only until there is room for the longest label
+   (BLACKJACK). The label stays for screen readers and as a tooltip, and every screen is titled. */
+@media (max-width: 399px) {
+  .nav-bar__label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+}
+
+/* ------------------------------------------------------------------ logo */
+
+.logo {
+  --frame-color: var(--c-neon);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: calc(var(--px) * 3);
+  padding: calc(var(--px) * 3) calc(var(--px) * 2);
+}
+
+.logo > .marquee {
+  align-self: stretch;
+}
+
+.logo__dice {
+  display: flex;
+  align-items: flex-end;
+  gap: calc(var(--px) * 3);
+}
+
+.logo__die {
+  --sprite-cell: 3px;
+  animation: die-bounce 1.2s steps(1, end) infinite;
+}
+
+.logo__die--second {
+  --ambient-delay: -0.6s;
+}
+
+.logo__heading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: calc(var(--px) * 2);
+}
+
+.logo__kicker {
+  color: var(--c-gold);
+  font-size: 8px;
+  letter-spacing: 0.4em;
+  text-indent: 0.4em;
+}
+
+.logo__title {
+  display: flex;
+  justify-content: center;
+  color: var(--c-neon);
+  font-size: clamp(14px, 9vw, 28px);
+  letter-spacing: 0.08em;
+  text-shadow:
+    0 0 2px var(--c-neon),
+    0 0 10px rgba(101, 229, 114, 0.7),
+    0 0 24px rgba(101, 229, 114, 0.4);
+}
+
+/* One tube is flaky, as on every proper neon sign. */
+.logo__letter:nth-child(3) {
+  animation: neon-flicker 4s steps(1, end) infinite;
+}
+
+/* Marquee bulbs: square lights that chase along the sign. */
+.marquee {
+  height: calc(var(--px) * 2);
+  background-image: repeating-linear-gradient(
+    90deg,
+    var(--c-gold) 0,
+    var(--c-gold) calc(var(--px) * 2),
+    transparent calc(var(--px) * 2),
+    transparent calc(var(--px) * 4)
+  );
+  animation: marquee-chase 0.8s steps(2, end) infinite;
+}
+
+.marquee--reverse {
+  animation-direction: reverse;
+}
+
+/* ------------------------------------------------------------------ lobby */
+
+.lobby-games {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: calc(var(--px) * 6);
+}
+
+.game-card {
+  --frame-color: var(--c-muted);
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--px) * 3);
+  padding: calc(var(--px) * 3);
+  cursor: pointer;
+}
+
+.game-card--felt {
+  --frame-color: #2f8f5b;
+}
+
+.game-card--red {
+  --frame-color: var(--c-red);
+}
+
+.game-card:hover {
+  --frame-color: var(--c-gold);
+}
+
+.game-card__art {
+  display: grid;
+  place-items: center;
+  padding: calc(var(--px) * 2) 0;
+  overflow: hidden;
+  background: var(--c-bg);
+}
+
+.game-card__title {
+  color: var(--c-white);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+}
+
+.game-card__tagline {
+  flex: 1;
+  color: var(--c-muted);
+  font-size: 19px;
+  line-height: 1.15;
+}
+
+/* ------------------------------------------------------------------ game screens */
+
+.game-shell__bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: calc(var(--px) * 3);
+}
+
+.game-shell__title {
+  color: var(--c-gold);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+}
+
+/* ------------------------------------------------------------------ statistics */
+
+.page-title {
+  color: var(--c-gold);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+}
+
+.stats-balance {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--px) * 2);
+}
+
+.stats-balance__label {
+  color: var(--c-muted);
+  font-size: 16px;
+}
+
+.stats-list {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+}
+
+/* The value drops under its label when the sidebar is too narrow for both on one line. */
+.stats-list__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0 calc(var(--px) * 3);
+  padding: calc(var(--px) * 2) 0;
+  box-shadow: inset 0 calc(var(--px) * -0.5) 0 0 #2a2f3a;
+}
+
+.stats-list__row:last-child {
+  box-shadow: none;
+}
+
+.stats-list__row dt {
+  color: var(--c-muted);
+  font-size: 18px;
+}
+
+.stats-list__row dd {
+  --value-color: var(--c-white);
+  margin: 0 0 0 auto;
+  color: var(--value-color);
+  font-family: var(--font-title);
+  font-size: 10px;
+  white-space: nowrap;
+}
+
+.stats-list__row--win dd {
+  --value-color: var(--c-neon);
+}
+
+.stats-list__row--loss dd {
+  --value-color: var(--c-red);
+}
+
+.stats-list__row--push dd {
+  --value-color: var(--c-gold);
+}
+
+/* ------------------------------------------------------------------ wider surfaces */
+
+@media (min-width: 560px) {
+  .lobby-games {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 300px) {
+  .stat-tile__value {
+    font-size: 12px;
+  }
+}
+
+/* The editor panel is wide: keep the content in a comfortable column. */
+@media (min-width: 640px) {
+  .casino-top,
+  .casino-main,
+  .casino-footer {
+    width: 100%;
+    max-width: 760px;
+    margin-right: auto;
+    margin-left: auto;
+  }
+
+  .casino-top {
+    padding-top: calc(var(--px) * 4);
+  }
+}

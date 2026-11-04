@@ -1,0 +1,265 @@
+/* Every animation is stepped (steps()) to keep the 16-bit look and stay cheap to paint. */
+
+@keyframes neon-flicker {
+  0%,
+  18%,
+  22%,
+  62%,
+  64%,
+  100% {
+    opacity: 1;
+    text-shadow:
+      0 0 2px var(--c-neon),
+      0 0 10px rgba(101, 229, 114, 0.7),
+      0 0 24px rgba(101, 229, 114, 0.4);
+  }
+  20%,
+  63% {
+    opacity: 0.45;
+    text-shadow: none;
+  }
+}
+
+@keyframes marquee-chase {
+  to {
+    background-position-x: calc(var(--px) * 4);
+  }
+}
+
+@keyframes cursor-blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+@keyframes die-bounce {
+  0%,
+  49.9% {
+    transform: translateY(0);
+  }
+  50%,
+  100% {
+    transform: translateY(calc(var(--px) * -1));
+  }
+}
+
+@keyframes page-in {
+  from {
+    opacity: 0;
+    transform: translateY(var(--px));
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* A card flies in from the dealer, holds, and is dealt again. */
+@keyframes deal-in {
+  0% {
+    opacity: 0;
+    transform: translate(calc(var(--art-cell) * 20), calc(var(--art-cell) * -10));
+    animation-timing-function: steps(6, end);
+  }
+  12%,
+  100% {
+    opacity: 1;
+    transform: translate(0, 0);
+  }
+}
+
+@keyframes sparkle {
+  0%,
+  70% {
+    opacity: 0;
+  }
+  71%,
+  85% {
+    opacity: 1;
+  }
+  86%,
+  100% {
+    opacity: 0;
+  }
+}
+
+/* Slides the strip of pre-rendered frames one frame at a time. */
+@keyframes wheel-spin {
+  to {
+    background-position-x: calc(var(--cols) * var(--art-cell) * var(--frames) * -1);
+  }
+}
+
+/* ------------------------------------------------------------------ cards and results */
+
+@keyframes card-deal {
+  from {
+    opacity: 0;
+    transform: translate(calc(var(--card-w) * 2), calc(var(--card-h) * -1));
+  }
+  to {
+    opacity: 1;
+    transform: translate(0, 0);
+  }
+}
+
+/* A flip in pixel steps: the card narrows to a sliver and widens again. */
+@keyframes card-flip {
+  0%,
+  100% {
+    transform: scaleX(1);
+  }
+  50% {
+    transform: scaleX(0.06);
+  }
+}
+
+@keyframes banner-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes burst-fly {
+  from {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
+  75% {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+    transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy)));
+  }
+}
+
+@keyframes flash {
+  from {
+    opacity: 0.85;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+/* A quiet shake for a lost round. */
+@keyframes table-shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  20%,
+  60% {
+    transform: translateX(calc(var(--px) * -1));
+  }
+  40%,
+  80% {
+    transform: translateX(var(--px));
+  }
+}
+
+@keyframes loss-vignette {
+  from {
+    box-shadow: inset 0 0 0 calc(var(--px) * 6) rgba(233, 75, 75, 0.45);
+  }
+  to {
+    box-shadow: inset 0 0 0 calc(var(--px) * 6) rgba(233, 75, 75, 0);
+  }
+}
+
+@keyframes blackjack-colours {
+  0% {
+    color: var(--c-gold);
+  }
+  25% {
+    color: var(--c-white);
+  }
+  50% {
+    color: var(--c-neon);
+  }
+  75% {
+    color: var(--c-red);
+  }
+}
+
+@keyframes arrow-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(var(--px));
+  }
+}
+
+@keyframes particle-rise {
+  from {
+    opacity: 0;
+    transform: translateY(0);
+  }
+  10%,
+  90% {
+    opacity: 0.7;
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-110vh);
+  }
+}
+
+/* ------------------------------------------------------------------ particles */
+
+.particles {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.particles__dot {
+  position: absolute;
+  bottom: calc(var(--px) * -2);
+  left: var(--left);
+  width: var(--px);
+  height: var(--px);
+  background: var(--c-gold);
+  opacity: 0;
+  --ambient-delay: var(--delay);
+  animation: particle-rise var(--duration) steps(40, end) var(--delay) infinite;
+}
+
+.particles__dot--neon {
+  background: var(--c-neon);
+}
+
+.particles__dot--red {
+  background: var(--c-red);
+}
+
+/* Calm and off: nothing moves, floats, flickers or flashes. The level comes from the player's settings
+   (and the system's own preference), decided in motion.ts and set on the app's root element. */
+.casino-app[data-motion='calm'] *,
+.casino-app[data-motion='calm'] *::before,
+.casino-app[data-motion='calm'] *::after,
+.casino-app[data-motion='off'] *,
+.casino-app[data-motion='off'] *::before,
+.casino-app[data-motion='off'] *::after {
+  animation: none !important;
+  transition: none !important;
+}
+
+.casino-app[data-motion='calm'] .particles,
+.casino-app[data-motion='calm'] .fx-burst,
+.casino-app[data-motion='calm'] .result-fx__flash,
+.casino-app[data-motion='off'] .particles,
+.casino-app[data-motion='off'] .fx-burst,
+.casino-app[data-motion='off'] .result-fx__flash {
+  display: none;
+}

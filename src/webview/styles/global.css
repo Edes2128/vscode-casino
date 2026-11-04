@@ -1,0 +1,143 @@
+/* Self-hosted pixel fonts (OFL), woff2 only. `block` avoids a flash of fallback text. */
+@font-face {
+  font-family: 'Press Start 2P';
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+  src: url('@fontsource/press-start-2p/files/press-start-2p-latin-400-normal.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'VT323';
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+  src: url('@fontsource/vt323/files/vt323-latin-400-normal.woff2') format('woff2');
+}
+
+:root {
+  /* Palette */
+  --c-bg: #101216;
+  --c-bg-2: #191d25;
+  --c-felt: #174d36;
+  --c-neon: #65e572;
+  --c-gold: #f5c451;
+  --c-red: #e94b4b;
+  --c-white: #f2f0e8;
+  --c-muted: #9299a6;
+
+  /* One "pixel" of the UI. Every border, gap and shadow is a multiple of it. */
+  --px: 4px;
+
+  --font-title: 'Press Start 2P', ui-monospace, monospace;
+  --font-body: 'VT323', ui-monospace, monospace;
+
+  /* Size of one bitmap cell of pixel art. Always a whole number, so art never blurs.
+     VS Code sidebars can be as narrow as ~170px, hence the small first step. */
+  --art-cell: 2px;
+
+  color-scheme: dark;
+}
+
+@media (min-width: 190px) {
+  :root {
+    --art-cell: 3px;
+  }
+}
+
+@media (min-width: 240px) {
+  :root {
+    --art-cell: 4px;
+  }
+}
+
+@media (min-width: 640px) {
+  :root {
+    --art-cell: 6px;
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  background-color: var(--c-bg);
+  /* Faint dither grid, so the dark background never reads as a flat web page. */
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+  background-size: calc(var(--px) * 4) calc(var(--px) * 4);
+  color: var(--c-white);
+  font-family: var(--font-body);
+  font-size: 20px;
+  line-height: 1.15;
+  image-rendering: pixelated;
+  -webkit-font-smoothing: none;
+  text-rendering: optimizeSpeed;
+}
+
+/* CRT scanlines over everything; cheap (one static layer) and never intercepts the mouse. */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0,
+    transparent 2px,
+    rgba(0, 0, 0, 0.16) 2px,
+    rgba(0, 0, 0, 0.16) 4px
+  );
+}
+
+h1,
+h2,
+h3 {
+  margin: 0;
+  font-family: var(--font-title);
+  font-weight: 400;
+}
+
+p {
+  margin: 0;
+}
+
+::selection {
+  background: var(--c-neon);
+  color: var(--c-bg);
+}
+
+:focus-visible {
+  outline: var(--px) solid var(--c-gold);
+  outline-offset: 0;
+}
+
+/* Square, chunky scrollbars to match the rest. */
+::-webkit-scrollbar {
+  width: calc(var(--px) * 3);
+  height: calc(var(--px) * 3);
+}
+
+::-webkit-scrollbar-track {
+  background: var(--c-bg-2);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--c-muted);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--c-gold);
+}

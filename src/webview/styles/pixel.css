@@ -1,0 +1,513 @@
+/* Design-system primitives. Everything is built from --px, the size of one UI "pixel". */
+
+/* ------------------------------------------------------------------ sprites and scenes */
+
+.pixel-sprite {
+  display: block;
+  flex: none;
+  width: calc(var(--cols) * var(--sprite-cell, var(--art-cell)));
+  height: calc(var(--rows) * var(--sprite-cell, var(--art-cell)));
+  image-rendering: pixelated;
+}
+
+/* A stage that sprites are placed on, measured in bitmap cells. */
+.pixel-scene {
+  position: relative;
+  flex: none;
+  width: calc(var(--cols) * var(--art-cell));
+  height: calc(var(--rows) * var(--art-cell));
+}
+
+.scene-sprite {
+  position: absolute;
+  top: calc(var(--y) * var(--art-cell));
+  left: calc(var(--x) * var(--art-cell));
+  display: block;
+}
+
+/* ------------------------------------------------------------------ frame
+   A border built from four hard shadows. The corners are left out, which gives the
+   classic notched 8-bit panel. Set --frame-color to recolor it. */
+
+.px-frame {
+  --frame-color: var(--c-muted);
+  background: var(--c-bg-2);
+  box-shadow:
+    calc(var(--px) * -1) 0 0 0 var(--frame-color),
+    var(--px) 0 0 0 var(--frame-color),
+    0 calc(var(--px) * -1) 0 0 var(--frame-color),
+    0 var(--px) 0 0 var(--frame-color);
+}
+
+/* ------------------------------------------------------------------ card */
+
+.px-card {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--px) * 3);
+  padding: calc(var(--px) * 3);
+}
+
+.px-card--neon {
+  --frame-color: var(--c-neon);
+}
+
+.px-card--gold {
+  --frame-color: var(--c-gold);
+}
+
+.px-card--red {
+  --frame-color: var(--c-red);
+}
+
+.px-card--felt {
+  --frame-color: #2f8f5b;
+  background: var(--c-felt);
+}
+
+.px-card__title {
+  color: var(--c-gold);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  line-height: 1.4;
+}
+
+/* ------------------------------------------------------------------ button */
+
+.px-button {
+  --btn-bg: var(--c-neon);
+  --btn-fg: #0d1a10;
+  --btn-shade: #2f8f3b;
+  --btn-light: rgba(255, 255, 255, 0.45);
+  --notch: var(--px);
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--px);
+  margin: 0;
+  border: 0;
+  background: var(--btn-bg);
+  color: var(--btn-fg);
+  font-family: var(--font-title);
+  line-height: 1;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  user-select: none;
+  box-shadow:
+    inset calc(var(--px) * -1) calc(var(--px) * -1) 0 0 var(--btn-shade),
+    inset var(--px) var(--px) 0 0 var(--btn-light);
+  /* Notch all four corners by one pixel. */
+  clip-path: polygon(
+    0 var(--notch),
+    var(--notch) var(--notch),
+    var(--notch) 0,
+    calc(100% - var(--notch)) 0,
+    calc(100% - var(--notch)) var(--notch),
+    100% var(--notch),
+    100% calc(100% - var(--notch)),
+    calc(100% - var(--notch)) calc(100% - var(--notch)),
+    calc(100% - var(--notch)) 100%,
+    var(--notch) 100%,
+    var(--notch) calc(100% - var(--notch)),
+    0 calc(100% - var(--notch))
+  );
+}
+
+.px-button--gold {
+  --btn-bg: var(--c-gold);
+  --btn-fg: #2a1c04;
+  --btn-shade: #b8862b;
+}
+
+.px-button--danger {
+  --btn-bg: var(--c-red);
+  --btn-fg: #1a0707;
+  --btn-shade: #a82f2f;
+}
+
+/* The "Buy me chips" button, in the colours of the Buy Me a Coffee button: red with white text. */
+.px-button--support {
+  --btn-bg: #ff5f5f;
+  --btn-fg: #ffffff;
+  --btn-shade: #c23a3a;
+}
+
+.px-button--ghost {
+  --btn-bg: transparent;
+  --btn-fg: var(--c-white);
+  --btn-shade: transparent;
+  --btn-light: transparent;
+  box-shadow: inset 0 0 0 var(--px) var(--c-muted);
+}
+
+.px-button--sm {
+  padding: calc(var(--px) * 2) calc(var(--px) * 3);
+  font-size: 8px;
+}
+
+.px-button--md {
+  padding: calc(var(--px) * 3) calc(var(--px) * 4);
+  font-size: 10px;
+}
+
+.px-button--lg {
+  padding: calc(var(--px) * 4) calc(var(--px) * 6);
+  font-size: 12px;
+}
+
+.px-button--block {
+  display: flex;
+  width: 100%;
+}
+
+.px-button:hover:not(:disabled) {
+  filter: brightness(1.12);
+}
+
+.px-button--ghost:hover:not(:disabled) {
+  box-shadow: inset 0 0 0 var(--px) var(--c-white);
+}
+
+.px-button:active:not(:disabled) {
+  transform: translateY(var(--px));
+  box-shadow:
+    inset var(--px) var(--px) 0 0 var(--btn-shade),
+    inset calc(var(--px) * -1) calc(var(--px) * -1) 0 0 var(--btn-light);
+}
+
+/* clip-path would cut a normal outline off, so focus is drawn inside the button. */
+.px-button:focus-visible {
+  outline: none;
+  box-shadow:
+    inset 0 0 0 var(--px) var(--c-white),
+    inset 0 0 0 calc(var(--px) * 2) var(--c-bg);
+}
+
+.px-button:disabled {
+  opacity: 0.45;
+  filter: saturate(0.3);
+  cursor: not-allowed;
+}
+
+/* ------------------------------------------------------------------ chip */
+
+.px-chip {
+  --sprite-cell: 3px;
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+}
+
+.px-chip--sm {
+  --sprite-cell: 3px;
+}
+
+.px-chip--lg {
+  --sprite-cell: 4px;
+}
+
+.px-chip > * {
+  grid-area: 1 / 1;
+}
+
+.px-chip__label {
+  color: #14171d;
+  font-family: var(--font-title);
+  font-size: calc(var(--sprite-cell) * 2);
+  line-height: 1;
+  letter-spacing: -0.04em;
+  pointer-events: none;
+}
+
+.px-chip--v100 .px-chip__label {
+  color: var(--c-white);
+}
+
+button.px-chip {
+  cursor: pointer;
+  transition: transform 80ms steps(2, end);
+}
+
+button.px-chip:hover:not(:disabled) {
+  transform: translateY(calc(var(--px) * -0.5));
+}
+
+button.px-chip:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* The picked chip lifts and gets a gold underline, like a card pushed forward. */
+.px-chip--selected {
+  transform: translateY(calc(var(--px) * -1));
+}
+
+.px-chip--selected::after {
+  content: '';
+  position: absolute;
+  right: 25%;
+  bottom: calc(var(--px) * -2);
+  left: 25%;
+  height: var(--px);
+  background: var(--c-gold);
+}
+
+/* ------------------------------------------------------------------ balance */
+
+.balance {
+  display: inline-flex;
+  align-items: center;
+  gap: calc(var(--px) * 2);
+  color: var(--c-gold);
+  font-family: var(--font-title);
+  line-height: 1;
+  text-shadow: 0 0 8px rgba(245, 196, 81, 0.35);
+}
+
+.balance--sm {
+  font-size: 10px;
+}
+
+.balance--sm .balance__coin {
+  --sprite-cell: 2px;
+}
+
+/* The large balance scales with the width of the webview and steps down for longer numbers.
+   A number is never allowed to wrap. */
+.balance--lg.balance--short {
+  font-size: clamp(16px, 9vw, 24px);
+}
+
+.balance--lg.balance--medium {
+  font-size: clamp(12px, 6vw, 16px);
+}
+
+.balance--lg.balance--long {
+  font-size: clamp(8px, 4.5vw, 12px);
+}
+
+.balance--lg .balance__coin {
+  --sprite-cell: 4px;
+}
+
+.balance__amount {
+  min-width: 0;
+  white-space: nowrap;
+}
+
+/* ------------------------------------------------------------------ stat tiles */
+
+/* A list in very narrow sidebars, three tiles side by side from 300px. */
+.stat-strip {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: calc(var(--px) * 2);
+  margin: 0;
+}
+
+.stat-tile {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--px);
+  padding: calc(var(--px) * 2);
+  background: var(--c-bg);
+  box-shadow: inset 0 calc(var(--px) * -1) 0 0 var(--tile-accent, var(--c-muted));
+}
+
+@media (min-width: 300px) {
+  .stat-strip {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .stat-tile {
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+  }
+}
+
+.stat-tile--win {
+  --tile-accent: var(--c-neon);
+}
+
+.stat-tile--loss {
+  --tile-accent: var(--c-red);
+}
+
+.stat-tile__label {
+  color: var(--c-muted);
+  font-size: 16px;
+}
+
+.stat-tile__value {
+  margin: 0;
+  white-space: nowrap;
+  color: var(--c-white);
+  font-family: var(--font-title);
+  font-size: 10px;
+  line-height: 1.3;
+}
+
+.stat-tile--win .stat-tile__value {
+  color: var(--c-neon);
+}
+
+.stat-tile--loss .stat-tile__value {
+  color: var(--c-red);
+}
+
+/* ------------------------------------------------------------------ segmented control */
+
+.segmented {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--px);
+}
+
+.segmented__option {
+  flex: 1 1 auto;
+  padding: calc(var(--px) * 2) calc(var(--px) * 2) calc(var(--px) * 2.5);
+  border: 0;
+  background: var(--c-bg-2);
+  box-shadow: inset 0 calc(var(--px) * -1) 0 0 transparent;
+  color: var(--c-muted);
+  font-family: var(--font-body);
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.segmented__option:hover {
+  color: var(--c-white);
+}
+
+.segmented__option[aria-pressed='true'] {
+  background: var(--c-bg);
+  box-shadow: inset 0 calc(var(--px) * -1) 0 0 var(--c-neon);
+  color: var(--c-neon);
+}
+
+/* ------------------------------------------------------------------ result bar */
+
+.result-bar {
+  display: grid;
+  grid-template-columns: repeat(20, minmax(0, 1fr));
+  gap: 2px;
+  height: calc(var(--px) * 3);
+}
+
+.result-bar__block {
+  background: var(--c-muted);
+}
+
+.result-bar__block--win {
+  background: var(--c-neon);
+}
+
+.result-bar__block--loss {
+  background: var(--c-red);
+}
+
+.result-bar__block--push {
+  background: var(--c-gold);
+}
+
+.result-bar__block--empty {
+  background: var(--c-bg);
+  box-shadow: inset 0 0 0 1px #2a2f3a;
+}
+
+/* ------------------------------------------------------------------ history */
+
+.history {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--px) * 2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.history__row {
+  --row-accent: var(--c-muted);
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--px) / 2);
+  padding: calc(var(--px) * 2) calc(var(--px) * 2) calc(var(--px) * 2) calc(var(--px) * 3);
+  background: var(--c-bg);
+  box-shadow: inset var(--px) 0 0 0 var(--row-accent);
+}
+
+.history__row--win {
+  --row-accent: var(--c-neon);
+}
+
+.history__row--loss {
+  --row-accent: var(--c-red);
+}
+
+.history__row--push {
+  --row-accent: var(--c-gold);
+}
+
+.history__main {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--px) * 2);
+}
+
+.history__icon {
+  --sprite-cell: 2px;
+  color: var(--c-muted);
+}
+
+.history__game {
+  min-width: 0;
+  flex: 1;
+  overflow: hidden;
+  color: var(--c-white);
+  font-size: 18px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.history__outcome,
+.history__payout {
+  color: var(--row-accent);
+  font-family: var(--font-title);
+  font-size: 8px;
+}
+
+.history__payout {
+  min-width: 5ch;
+  text-align: right;
+}
+
+.history__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 calc(var(--px) * 3);
+  color: var(--c-muted);
+  font-size: 16px;
+}
+
+.history__detail {
+  color: var(--c-white);
+  opacity: 0.8;
+}
+
+.history__empty {
+  color: var(--c-muted);
+  line-height: 1.3;
+  text-align: center;
+}
