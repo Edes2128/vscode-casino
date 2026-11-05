@@ -1,9 +1,23 @@
 import { describe, expect, it } from 'vitest';
 import { cryptoRng, seededRng } from '../rng';
-import { PAYOUT_ODDS, payoutFor } from './betting';
+import { NUMBER_ODDS, PAYOUT_ODDS, describeSelection, oddsOf, payoutFor, selectionWins } from './betting';
 import { resolveSpin, spinWheel } from './engine';
-import { ROULETTE_COLORS, isRouletteColor, type RouletteColor } from './types';
+import {
+  HIGHEST_NUMBER,
+  ROULETTE_COLORS,
+  isRouletteColor,
+  isRouletteNumber,
+  isRouletteSelection,
+  parseSelection,
+  sameSelection,
+  type RouletteColor,
+  type RouletteSelection,
+} from './types';
 import { POCKETS, POCKET_COUNT, WHEEL_ORDER, colorOfNumber, describePocket, parsePocket, pocketIndexOfNumber } from './wheel';
+
+/** A bet on a colour, and a bet on a number. */
+const on = (color: RouletteColor): RouletteSelection => ({ kind: 'color', color });
+const number = (n: number): RouletteSelection => ({ kind: 'number', number: n });
 
 /** A generator that lands on a chosen wheel position. */
 const landingOn = (index: number) => () => (index + 0.5) / POCKET_COUNT;
@@ -66,16 +80,122 @@ describe('the European wheel', () => {
   });
 });
 
-describe('only colours can be bet on', () => {
-  it('offers exactly red, black and green', () => {
+describe('what can be bet on: a colour, or one number', () => {
+  it('offers the three colours', () => {
     expect([...ROULETTE_COLORS]).toEqual(['red', 'black', 'green']);
     for (const color of ROULETTE_COLORS) expect(isRouletteColor(color)).toBe(true);
   });
 
-  it('refuses everything else: numbers, columns, dozens, odd/even', () => {
+  it('refuses every other kind of bet: columns, dozens, odd/even, high/low, and anything not a colour', () => {
     for (const value of ['odd', 'even', 'dozen1', 'column2', '17', 17, 0, 'high', 'low', '', null, undefined, 'RED']) {
       expect(isRouletteColor(value), String(value)).toBe(false);
     }
+  });
+
+  it('accepts exactly the whole numbers 0 to 36 as a number bet', () => {
+    for (let n = 0; n <= HIGHEST_NUMBER; n += 1) expect(isRouletteNumber(n), String(n)).toBe(true);
+    for (const value of [-1, 37, 100, 1.5, 0.1, Number.NaN, Number.POSITIVE_INFINITY, '17', null, undefined, [17], { n: 17 }, true]) {
+      expect(isRouletteNumber(value), String(value)).toBe(false);
+    }
+  });
+
+  it('reads a selection only when it is exactly a colour bet or a number bet, and drops everything extra', () => {
+    expect(parseSelection({ kind: 'color', color: 'red' })).toEqual({ kind: 'color', color: 'red' });
+    expect(parseSelection({ kind: 'number', number: 0 })).toEqual({ kind: 'number', number: 0 });
+    expect(parseSelection({ kind: 'number', number: 36, extra: true, payout: 1e9 })).toEqual({ kind: 'number', number: 36 });
+    for (const bad of [
+      undefined,
+      null,
+      'red',
+      17,
+      [],
+      {},
+      { kind: 'color' },
+      { kind: 'color', color: 'purple' },
+      { kind: 'color', color: 17 },
+      { kind: 'number' },
+      { kind: 'number', number: 37 },
+      { kind: 'number', number: -1 },
+      { kind: 'number', number: '5' },
+      { kind: 'number', number: 2.5 },
+      { kind: 'number', color: 'red' },
+      { kind: 'color', number: 5 },
+      { kind: 'dozen', dozen: 1 },
+      { kind: 'odd' },
+      { kind: 'numbers', numbers: [1, 2] },
+    ]) {
+      expect(parseSelection(bad), JSON.stringify(bad)).toBeUndefined();
+      expect(isRouletteSelection(bad), JSON.stringify(bad)).toBe(false);
+    }
+  });
+
+  it('knows when two selections are the same bet', () => {
+    expect(sameSelection(on('red'), on('red'))).toBe(true);
+    expect(sameSelection(on('red'), on('black'))).toBe(false);
+    expect(sameSelection(number(17), number(17))).toBe(true);
+    expect(sameSelection(number(17), number(18))).toBe(false);
+    expect(sameSelection(number(0), on('green'))).toBe(false);
+    expect(sameSelection(undefined, on('red'))).toBe(false);
+    expect(sameSelection(undefined, undefined)).toBe(false);
+  });
+});
+
+describe('number bets', () => {
+  const pocket = (n: number) => POCKETS.find((candidate) => candidate.number === n) ?? { number: -1, color: 'red' as const };
+
+  it('pay 35 to 1: the stake back plus 35 times the bet', () => {
+    expect(NUMBER_ODDS).toBe(35);
+    expect(oddsOf(number(17))).toBe(35);
+    expect(payoutFor(number(17), 10, pocket(17))).toBe(360);
+    expect(payoutFor(number(0), 100, pocket(0))).toBe(3_600);
+    expect(payoutFor(number(36), 500, pocket(36))).toBe(18_000);
+  });
+
+  it('lose on every other number, and never win on a near miss', () => {
+    for (const landed of POCKETS) {
+      for (const n of [0, 1, 17, 18, 35, 36]) {
+        expect(payoutFor(number(n), 10, landed) > 0, `bet ${n}, landed ${landed.number}`).toBe(landed.number === n);
+        expect(selectionWins(number(n), landed)).toBe(landed.number === n);
+      }
+    }
+  });
+
+  it('win on exactly one of the 37 pockets, whichever number is chosen, with a fair house edge of 1 in 37', () => {
+    let returned = 0;
+    for (let n = 0; n <= HIGHEST_NUMBER; n += 1) {
+      const winners = POCKETS.filter((landed) => selectionWins(number(n), landed));
+      expect(winners.map((landed) => landed.number), `bet ${n}`).toEqual([n]);
+      for (const landed of POCKETS) returned += payoutFor(number(n), 1, landed);
+    }
+    // Over every number and every pocket, 37 x 37 spins of one chip: 37 wins of 36 chips come back, so 36/37 on average.
+    expect(returned).toBe(37 * 36);
+    expect(returned / (37 * 37)).toBeCloseTo(36 / 37, 12);
+  });
+
+  it('beat a colour bet on the same pocket only in the winnings, not the chance', () => {
+    // A straight-up on a red number and a bet on red both win on that number, and pay different amounts.
+    expect(payoutFor(number(32), 10, pocket(32))).toBe(360);
+    expect(payoutFor(on('red'), 10, pocket(32))).toBe(20);
+    expect(payoutFor(on('red'), 10, pocket(15))).toBe(0);
+    expect(payoutFor(number(32), 10, pocket(15))).toBe(0);
+  });
+
+  it('are named in words for the result banner', () => {
+    expect(describeSelection(number(17))).toBe('number 17');
+    expect(describeSelection(number(0))).toBe('number 0');
+    expect(describeSelection(on('green'))).toBe('green');
+  });
+
+  it('resolve into the right result, with the net chips', () => {
+    expect(resolveSpin({ number: 17, color: 'black' }, number(17), 10)).toEqual({
+      pocket: { number: 17, color: 'black' },
+      selection: { kind: 'number', number: 17 },
+      bet: 10,
+      won: true,
+      payout: 360,
+      net: 350,
+    });
+    expect(resolveSpin({ number: 18, color: 'red' }, number(17), 10)).toMatchObject({ won: false, payout: 0, net: -10 });
   });
 });
 
@@ -85,38 +205,38 @@ describe('payouts', () => {
 
   it('pays red 1:1', () => {
     expect(PAYOUT_ODDS.red).toBe(1);
-    expect(payoutFor('red', 100, pocket(32))).toBe(200); // stake back plus 100
-    expect(payoutFor('red', 10, pocket(1))).toBe(20);
+    expect(payoutFor(on('red'), 100, pocket(32))).toBe(200); // stake back plus 100
+    expect(payoutFor(on('red'), 10, pocket(1))).toBe(20);
   });
 
   it('pays black 1:1', () => {
     expect(PAYOUT_ODDS.black).toBe(1);
-    expect(payoutFor('black', 100, pocket(15))).toBe(200);
-    expect(payoutFor('black', 500, pocket(26))).toBe(1_000);
+    expect(payoutFor(on('black'), 100, pocket(15))).toBe(200);
+    expect(payoutFor(on('black'), 500, pocket(26))).toBe(1_000);
   });
 
   it('pays green 35:1', () => {
     expect(PAYOUT_ODDS.green).toBe(35);
-    expect(payoutFor('green', 10, pocket(0))).toBe(360); // stake back plus 350
-    expect(payoutFor('green', 100, pocket(0))).toBe(3_600);
-    expect(payoutFor('green', 500, pocket(0))).toBe(18_000);
+    expect(payoutFor(on('green'), 10, pocket(0))).toBe(360); // stake back plus 350
+    expect(payoutFor(on('green'), 100, pocket(0))).toBe(3_600);
+    expect(payoutFor(on('green'), 500, pocket(0))).toBe(18_000);
   });
 
   it('pays nothing when the colour is wrong, for every pocket and every colour', () => {
     for (const bet of ROULETTE_COLORS) {
       for (const landed of POCKETS) {
         const expected = landed.color === bet ? 100 * (PAYOUT_ODDS[bet] + 1) : 0;
-        expect(payoutFor(bet, 100, landed), `${bet} bet, ${landed.number}`).toBe(expected);
+        expect(payoutFor(on(bet), 100, landed), `${bet} bet, ${landed.number}`).toBe(expected);
       }
     }
   });
 
   it('wins a green bet only on the zero, and a colour bet never on the zero', () => {
     for (const landed of POCKETS) {
-      expect(payoutFor('green', 10, landed) > 0).toBe(landed.number === 0);
+      expect(payoutFor(on('green'), 10, landed) > 0).toBe(landed.number === 0);
       if (landed.number === 0) {
-        expect(payoutFor('red', 10, landed)).toBe(0);
-        expect(payoutFor('black', 10, landed)).toBe(0);
+        expect(payoutFor(on('red'), 10, landed)).toBe(0);
+        expect(payoutFor(on('black'), 10, landed)).toBe(0);
       }
     }
   });
@@ -124,16 +244,16 @@ describe('payouts', () => {
   it('takes the house edge: the zero loses every red and black bet', () => {
     // A fair 36-number wheel would pay 18/37 of spins at 1:1 evenly; the zero is the house advantage.
     const zero = pocket(0);
-    expect(resolveSpin(zero, 'red', 100)).toMatchObject({ won: false, payout: 0, net: -100 });
-    expect(resolveSpin(zero, 'black', 100)).toMatchObject({ won: false, payout: 0, net: -100 });
+    expect(resolveSpin(zero, on('red'), 100)).toMatchObject({ won: false, payout: 0, net: -100 });
+    expect(resolveSpin(zero, on('black'), 100)).toMatchObject({ won: false, payout: 0, net: -100 });
   });
 });
 
 describe('resolveSpin', () => {
   it('reports a win with the net chips', () => {
-    expect(resolveSpin({ number: 32, color: 'red' }, 'red', 100)).toEqual({
+    expect(resolveSpin({ number: 32, color: 'red' }, on('red'), 100)).toEqual({
       pocket: { number: 32, color: 'red' },
-      color: 'red',
+      selection: { kind: 'color', color: 'red' },
       bet: 100,
       won: true,
       payout: 200,
@@ -142,17 +262,17 @@ describe('resolveSpin', () => {
   });
 
   it('reports a loss as losing the bet', () => {
-    expect(resolveSpin({ number: 15, color: 'black' }, 'red', 50)).toMatchObject({ won: false, payout: 0, net: -50 });
+    expect(resolveSpin({ number: 15, color: 'black' }, on('red'), 50)).toMatchObject({ won: false, payout: 0, net: -50 });
   });
 
   it('reports a green win as +35 times the bet', () => {
-    expect(resolveSpin({ number: 0, color: 'green' }, 'green', 10)).toMatchObject({ won: true, payout: 360, net: 350 });
+    expect(resolveSpin({ number: 0, color: 'green' }, on('green'), 10)).toMatchObject({ won: true, payout: 360, net: 350 });
   });
 
   it('keeps net equal to payout minus bet for every bet and outcome', () => {
     for (const color of ROULETTE_COLORS) {
       for (const pocket of POCKETS) {
-        const result = resolveSpin(pocket, color, 25);
+        const result = resolveSpin(pocket, on(color), 25);
         expect(result.net).toBe(result.payout - result.bet);
         expect(result.won).toBe(result.net > 0);
       }

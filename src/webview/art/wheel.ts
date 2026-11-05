@@ -22,6 +22,32 @@ export const WHEEL_PALETTE: Palette = {
   b: '#f2f0e8', // ball
 };
 
+/** The part of a theme's colors the wheel uses (`resolved.tokens` has them all). */
+export interface WheelPaletteTheme {
+  /** The rim, the dividers, the spokes and the hub. */
+  readonly rim: string;
+  /** The hub's highlight. */
+  readonly rimLight: string;
+  /** The wooden bowl. */
+  readonly bowl: string;
+}
+
+const isHex = (value: string): boolean => /^#[0-9a-f]{6}$/i.test(value);
+
+/**
+ * The palette for a theme: its rim (`y`), hub highlight (`h`) and bowl (`w`). The pockets (`r`, `k`, `g`), the cone
+ * and the ball keep their colors, because the red, black and green mean something in the game. A color that is not
+ * `#rrggbb` is ignored, and in the classic theme this is exactly `WHEEL_PALETTE`.
+ */
+export function wheelPaletteFor(theme: WheelPaletteTheme): Palette {
+  return {
+    ...WHEEL_PALETTE,
+    ...(isHex(theme.rim) ? { y: theme.rim } : {}),
+    ...(isHex(theme.rimLight) ? { h: theme.rimLight } : {}),
+    ...(isHex(theme.bowl) ? { w: theme.bowl } : {}),
+  };
+}
+
 const TAU = Math.PI * 2;
 const mod = (value: number, modulus: number): number => ((value % modulus) + modulus) % modulus;
 

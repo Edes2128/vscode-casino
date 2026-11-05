@@ -1,5 +1,7 @@
 import { useCallback, useState } from 'react';
-import type { RouletteView } from '../../game/roulette/view';
+import type { RouletteSelection } from '../../game/roulette/types';
+import type { RouletteAction, RouletteView } from '../../game/roulette/view';
+import { betProblem } from '../betting';
 
 export type SpinPhase = 'idle' | 'spinning' | 'result';
 
@@ -18,6 +20,26 @@ interface Tracked {
   readonly phase: SpinPhase;
   readonly live: boolean;
   readonly landedOn: number | null;
+}
+
+export interface SpinInput {
+  readonly selection: RouletteSelection | undefined;
+  readonly bet: number;
+  readonly chips: number;
+  /** The wheel is turning. */
+  readonly spinning: boolean;
+  /** A spin has been sent and the host has not answered yet. */
+  readonly pending: boolean;
+}
+
+/**
+ * The spin the player may send right now, or `undefined`. Nothing can be sent while the wheel is turning, or
+ * while the host has not answered the last spin, or without a bet on something and an amount the chips cover.
+ * The SPIN button and the click handler both ask this, so a second spin cannot be started whatever a click does.
+ */
+export function spinAction({ selection, bet, chips, spinning, pending }: SpinInput): RouletteAction | undefined {
+  if (spinning || pending || selection === undefined || bet <= 0 || betProblem(bet, chips) !== undefined) return undefined;
+  return { kind: 'spin', selection, bet };
 }
 
 /**

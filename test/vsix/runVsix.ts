@@ -67,6 +67,11 @@ function checkPackage(): string[] {
   const forbidden = entries.flatMap((entry) => FORBIDDEN.filter(([pattern]) => pattern.test(entry)).map(([, what]) => `${entry} (${what})`));
   if (forbidden.length > 0) throw new Error(`The package contains things that must not ship:\n  ${forbidden.join('\n  ')}`);
 
+  // Nothing may be in the package that this list does not name: a new stray file is a failure, not a surprise.
+  const known = new Set([...REQUIRED, '[Content_Types].xml', 'extension.vsixmanifest'].map((entry) => entry.toLowerCase()));
+  const stray = entries.filter((entry) => !known.has(entry.toLowerCase()) && !/^extension\/dist\/webview\/assets\/[\w.-]+\.woff2$/.test(entry));
+  if (stray.length > 0) throw new Error(`The package contains files nobody listed:\n  ${stray.join('\n  ')}`);
+
   const fonts = entries.filter((entry) => entry.endsWith('.woff2'));
   if (fonts.length !== 2) throw new Error(`Expected the two pixel fonts in the package, found ${fonts.length}`);
   return entries;

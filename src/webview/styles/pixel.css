@@ -30,7 +30,7 @@
    classic notched 8-bit panel. Set --frame-color to recolor it. */
 
 .px-frame {
-  --frame-color: var(--c-muted);
+  --frame-color: var(--c-panel-frame);
   background: var(--c-bg-2);
   box-shadow:
     calc(var(--px) * -1) 0 0 0 var(--frame-color),
@@ -61,13 +61,13 @@
 }
 
 .px-card--felt {
-  --frame-color: #2f8f5b;
+  --frame-color: var(--c-frame);
   background: var(--c-felt);
 }
 
 .px-card__title {
   color: var(--c-gold);
-  font-size: 9px;
+  font-size: calc(11px * var(--text-scale));
   letter-spacing: 0.1em;
   line-height: 1.4;
 }
@@ -75,9 +75,9 @@
 /* ------------------------------------------------------------------ button */
 
 .px-button {
-  --btn-bg: var(--c-neon);
-  --btn-fg: #0d1a10;
-  --btn-shade: #2f8f3b;
+  --btn-bg: var(--c-button);
+  --btn-fg: var(--c-button-fg);
+  --btn-shade: var(--c-button-shade);
   --btn-light: rgba(255, 255, 255, 0.45);
   --notch: var(--px);
 
@@ -117,21 +117,28 @@
 
 .px-button--gold {
   --btn-bg: var(--c-gold);
-  --btn-fg: #2a1c04;
-  --btn-shade: #b8862b;
+  --btn-fg: var(--c-on-gold);
+  --btn-shade: var(--c-gold-shade);
 }
 
 .px-button--danger {
   --btn-bg: var(--c-red);
-  --btn-fg: #1a0707;
-  --btn-shade: #a82f2f;
+  --btn-fg: var(--c-on-red);
+  --btn-shade: var(--c-red-shade);
 }
 
-/* The "Support me" button, in the colours of the Buy Me a Coffee button: red with white text. */
+/* The Buy Me a Coffee button: quiet, outlined in the theme's gold, filled on hover. */
 .px-button--support {
-  --btn-bg: #ff5f5f;
-  --btn-fg: #ffffff;
-  --btn-shade: #c23a3a;
+  --btn-bg: transparent;
+  --btn-fg: var(--c-gold);
+  --btn-shade: transparent;
+  --btn-light: transparent;
+  box-shadow: inset 0 0 0 var(--px) var(--c-gold);
+}
+
+.px-button--support:hover:not(:disabled) {
+  --btn-bg: var(--c-gold);
+  --btn-fg: var(--c-on-gold);
 }
 
 .px-button--ghost {
@@ -144,17 +151,17 @@
 
 .px-button--sm {
   padding: calc(var(--px) * 2) calc(var(--px) * 3);
-  font-size: 8px;
+  font-size: calc(11px * var(--text-scale));
 }
 
 .px-button--md {
   padding: calc(var(--px) * 3) calc(var(--px) * 4);
-  font-size: 10px;
+  font-size: calc(12px * var(--text-scale));
 }
 
 .px-button--lg {
   padding: calc(var(--px) * 4) calc(var(--px) * 6);
-  font-size: 12px;
+  font-size: calc(14px * var(--text-scale));
 }
 
 .px-button--block {
@@ -270,11 +277,11 @@ button.px-chip:disabled {
   color: var(--c-gold);
   font-family: var(--font-title);
   line-height: 1;
-  text-shadow: 0 0 8px rgba(245, 196, 81, 0.35);
+  text-shadow: 0 0 8px color-mix(in srgb, var(--c-gold) 35%, transparent);
 }
 
 .balance--sm {
-  font-size: 10px;
+  font-size: calc(12px * var(--text-scale));
 }
 
 .balance--sm .balance__coin {
@@ -284,15 +291,15 @@ button.px-chip:disabled {
 /* The large balance scales with the width of the webview and steps down for longer numbers.
    A number is never allowed to wrap. */
 .balance--lg.balance--short {
-  font-size: clamp(16px, 9vw, 24px);
+  font-size: clamp(calc(12px * var(--text-scale)), 8vw, calc(26px * var(--text-scale)));
 }
 
 .balance--lg.balance--medium {
-  font-size: clamp(12px, 6vw, 16px);
+  font-size: clamp(calc(14px * var(--text-scale)), 6vw, calc(18px * var(--text-scale)));
 }
 
 .balance--lg.balance--long {
-  font-size: clamp(8px, 4.5vw, 12px);
+  font-size: clamp(calc(11px * var(--text-scale)), 4.5vw, calc(14px * var(--text-scale)));
 }
 
 .balance--lg .balance__coin {
@@ -346,7 +353,7 @@ button.px-chip:disabled {
 
 .stat-tile__label {
   color: var(--c-muted);
-  font-size: 16px;
+  font-size: calc(20px * var(--text-scale));
 }
 
 .stat-tile__value {
@@ -354,7 +361,7 @@ button.px-chip:disabled {
   white-space: nowrap;
   color: var(--c-white);
   font-family: var(--font-title);
-  font-size: 10px;
+  font-size: calc(12px * var(--text-scale));
   line-height: 1.3;
 }
 
@@ -363,7 +370,7 @@ button.px-chip:disabled {
 }
 
 .stat-tile--loss .stat-tile__value {
-  color: var(--c-red);
+  color: var(--c-red-text);
 }
 
 /* ------------------------------------------------------------------ segmented control */
@@ -382,7 +389,7 @@ button.px-chip:disabled {
   box-shadow: inset 0 calc(var(--px) * -1) 0 0 transparent;
   color: var(--c-muted);
   font-family: var(--font-body);
-  font-size: 18px;
+  font-size: calc(22px * var(--text-scale));
   line-height: 1;
   cursor: pointer;
 }
@@ -424,7 +431,7 @@ button.px-chip:disabled {
 
 .result-bar__block--empty {
   background: var(--c-bg);
-  box-shadow: inset 0 0 0 1px #2a2f3a;
+  box-shadow: inset 0 0 0 1px var(--c-line);
 }
 
 /* ------------------------------------------------------------------ history */
@@ -453,7 +460,7 @@ button.px-chip:disabled {
 }
 
 .history__row--loss {
-  --row-accent: var(--c-red);
+  --row-accent: var(--c-red-text);
 }
 
 .history__row--push {
@@ -462,8 +469,9 @@ button.px-chip:disabled {
 
 .history__main {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: calc(var(--px) * 2);
+  gap: calc(var(--px) / 2) calc(var(--px) * 2);
 }
 
 .history__icon {
@@ -471,25 +479,25 @@ button.px-chip:disabled {
   color: var(--c-muted);
 }
 
+/* The name of the game is never cut short: when the row is too narrow for it and the result, the result goes to
+   the next line instead. */
 .history__game {
-  min-width: 0;
-  flex: 1;
-  overflow: hidden;
+  flex: 1 0 auto;
   color: var(--c-white);
-  font-size: 18px;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  font-size: calc(22px * var(--text-scale));
+  overflow-wrap: anywhere;
 }
 
 .history__outcome,
 .history__payout {
   color: var(--row-accent);
   font-family: var(--font-title);
-  font-size: 8px;
+  font-size: calc(11px * var(--text-scale));
 }
 
 .history__payout {
   min-width: 5ch;
+  margin-left: auto;
   text-align: right;
 }
 
@@ -498,7 +506,7 @@ button.px-chip:disabled {
   flex-wrap: wrap;
   gap: 0 calc(var(--px) * 3);
   color: var(--c-muted);
-  font-size: 16px;
+  font-size: calc(20px * var(--text-scale));
 }
 
 .history__detail {

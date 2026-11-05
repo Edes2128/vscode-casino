@@ -1,0 +1,359 @@
+/* ================================================================== playing card designs
+
+   Six looks for the same card. The card itself (its size, its two corner indexes, the centre suit, the deal and
+   flip animations, the overlap in a hand) is in blackjack.css and is the same for all of them: a design only
+   changes what is painted on it, never where anything is.
+
+   * Classic Pixel is the base card and has no rules in this file.
+   * Every rule is keyed off `.playing-card[data-design='x']`, never off the page, so a preview can show any design
+     whichever one is in use.
+   * A card is a physical object: a design brings its own paper and inks (`--card-face`, `--card-ink`,
+     `--card-ink-red`, `--card-back*`), which customization/cardDesigns.ts lists too, with a test that the two agree
+     and that every ink reads on its paper at 4.5 to 1 or better.
+   * Nothing here loops. A design is painted with gradients and shadows only: no images, no requests.
+   * Never `animation` on a card: the deal and the flip are the base card's, and are switched off for calm and off
+     motion by animations.css. */
+
+/* ------------------------------------------------------------------ the inks of each design */
+
+.playing-card[data-design='retro'] {
+  --card-face: #fcfcfc;
+  --card-ink: #101010;
+  --card-ink-red: #c40000;
+  --card-back: #0058f8;
+  --card-back-accent: #3cbcfc;
+  --card-back-edge: #fcfcfc;
+}
+
+.playing-card[data-design='neon'] {
+  --card-face: #0c0a24;
+  --card-ink: #5ff4ff;
+  --card-ink-red: #ff6ec7;
+  --card-back: #220a4a;
+  --card-back-accent: #ff6ec7;
+  --card-back-edge: #5ff4ff;
+}
+
+.playing-card[data-design='medieval'] {
+  --card-face: #ead9ae;
+  --card-ink: #2a1a0c;
+  --card-ink-red: #8e1b1b;
+  --card-back: #5a1428;
+  --card-back-accent: #d9a93f;
+  --card-back-edge: #d9a93f;
+}
+
+.playing-card[data-design='minimal'] {
+  --card-face: #ffffff;
+  --card-ink: #1c1c1c;
+  --card-ink-red: #c0262d;
+  --card-back: #2b3340;
+  --card-back-accent: #8fa3b8;
+  --card-back-edge: #ffffff;
+}
+
+.playing-card[data-design='dark'] {
+  --card-face: #17171c;
+  --card-ink: #e9e2d0;
+  --card-ink-red: #ff6b6b;
+  --card-back: #0e0e12;
+  --card-back-accent: #c9a24b;
+  --card-back-edge: #c9a24b;
+}
+
+/* Every design but the classic one paints its decoration on a layer behind the indexes and suit. */
+.playing-card[data-design='retro'],
+.playing-card[data-design='neon'],
+.playing-card[data-design='medieval'],
+.playing-card[data-design='minimal'],
+.playing-card[data-design='dark'] {
+  isolation: isolate;
+}
+
+.playing-card--face[data-design='retro'],
+.playing-card--face[data-design='neon'],
+.playing-card--face[data-design='medieval'],
+.playing-card--face[data-design='minimal'],
+.playing-card--face[data-design='dark'] {
+  color: var(--card-ink);
+}
+
+.playing-card--face.playing-card--red[data-design='retro'],
+.playing-card--face.playing-card--red[data-design='neon'],
+.playing-card--face.playing-card--red[data-design='medieval'],
+.playing-card--face.playing-card--red[data-design='minimal'],
+.playing-card--face.playing-card--red[data-design='dark'] {
+  color: var(--card-ink-red);
+}
+
+/* ------------------------------------------------------------------ Retro 8-Bit
+   Notched corners (the outline has no corner pixels, as on an 8-bit panel), a hard shadow, a blue frame,
+   chunky suits with a shine pixel, and a bold rank. The back is blue dither. */
+
+.playing-card--face[data-design='retro'] {
+  background: var(--card-face);
+  box-shadow:
+    inset 0 0 0 2px #0058f8,
+    calc(var(--px) * -0.5) 0 0 0 #000,
+    calc(var(--px) * 0.5) 0 0 0 #000,
+    0 calc(var(--px) * -0.5) 0 0 #000,
+    0 calc(var(--px) * 0.5) 0 0 #000,
+    calc(var(--px) * 1.5) calc(var(--px) * 1.5) 0 0 rgba(0, 0, 0, 0.5);
+}
+
+.playing-card[data-design='retro'] .playing-card__rank {
+  text-shadow: 1px 0 0 currentColor;
+}
+
+.playing-card--back[data-design='retro'] {
+  background: conic-gradient(var(--card-back) 25%, var(--card-back-accent) 0 50%, var(--card-back) 0 75%, var(--card-back-accent) 0) 0 0 / 4px 4px;
+  box-shadow:
+    inset 0 0 0 4px var(--card-back-edge),
+    inset 0 0 0 6px #000,
+    calc(var(--px) * -0.5) 0 0 0 #000,
+    calc(var(--px) * 0.5) 0 0 0 #000,
+    0 calc(var(--px) * -0.5) 0 0 #000,
+    0 calc(var(--px) * 0.5) 0 0 #000,
+    calc(var(--px) * 1.5) calc(var(--px) * 1.5) 0 0 rgba(0, 0, 0, 0.5);
+}
+
+/* ------------------------------------------------------------------ Neon
+   Dark glass with a faint grid. The edge, the rank and the suit glow in the suit's own color: cyan for the black
+   suits, pink for the red ones. The back is a mesh of both. */
+
+.playing-card--face[data-design='neon'] {
+  background:
+    linear-gradient(rgba(95, 244, 255, 0.07) 1px, transparent 1px) 0 0 / 8px 8px,
+    linear-gradient(90deg, rgba(95, 244, 255, 0.07) 1px, transparent 1px) 0 0 / 8px 8px,
+    var(--card-face);
+  box-shadow:
+    inset 0 0 0 2px currentColor,
+    0 0 0 2px #05040f,
+    0 0 calc(var(--px) * 2) calc(var(--px) * 0.5) color-mix(in srgb, currentColor 55%, transparent),
+    calc(var(--px) * 1) calc(var(--px) * 1) 0 2px rgba(0, 0, 0, 0.45);
+}
+
+.playing-card[data-design='neon'] .playing-card__rank {
+  text-shadow: 0 0 6px currentColor;
+}
+
+.playing-card[data-design='neon'] .pixel-sprite {
+  filter: drop-shadow(0 0 2px currentColor);
+}
+
+.playing-card--back[data-design='neon'] {
+  background:
+    repeating-linear-gradient(45deg, transparent 0 6px, color-mix(in srgb, var(--card-back-accent) 70%, transparent) 6px 8px),
+    repeating-linear-gradient(-45deg, transparent 0 6px, color-mix(in srgb, var(--card-back-edge) 70%, transparent) 6px 8px),
+    var(--card-back);
+  box-shadow:
+    inset 0 0 0 3px var(--card-back),
+    inset 0 0 0 5px var(--card-back-edge),
+    0 0 0 2px #05040f,
+    0 0 calc(var(--px) * 2) calc(var(--px) * 0.5) color-mix(in srgb, var(--card-back-edge) 55%, transparent),
+    calc(var(--px) * 1) calc(var(--px) * 1) 0 2px rgba(0, 0, 0, 0.45);
+}
+
+/* ------------------------------------------------------------------ Medieval Fantasy
+   Parchment with flecks, a bronze frame, gold studs in the two free corners, a serif rank and suits set with a
+   gem. The back is a burgundy lattice in gold leaf. */
+
+.playing-card--face[data-design='medieval'] {
+  background:
+    linear-gradient(#b8862b, #b8862b) top 3px right 3px / 4px 4px no-repeat,
+    linear-gradient(#b8862b, #b8862b) bottom 3px left 3px / 4px 4px no-repeat,
+    radial-gradient(rgba(94, 60, 20, 0.1) 1px, transparent 1px) 0 0 / 6px 6px,
+    var(--card-face);
+  box-shadow:
+    inset 0 0 0 2px #8a5a24,
+    0 0 0 2px #2a1a0c,
+    calc(var(--px) * 1) calc(var(--px) * 1) 0 2px rgba(0, 0, 0, 0.35);
+  --card-font: 17px;
+}
+
+.playing-card[data-design='medieval'] .playing-card__rank {
+  font-family: Georgia, 'DejaVu Serif', 'Times New Roman', serif;
+  font-weight: 700;
+}
+
+.playing-card--back[data-design='medieval'] {
+  background:
+    repeating-linear-gradient(45deg, transparent 0 4px, var(--card-back-accent) 4px 5px),
+    repeating-linear-gradient(-45deg, transparent 0 4px, var(--card-back-accent) 4px 5px),
+    var(--card-back);
+  box-shadow:
+    inset 0 0 0 4px var(--card-back-edge),
+    inset 0 0 0 6px var(--card-back),
+    0 0 0 2px #2a1a0c,
+    calc(var(--px) * 1) calc(var(--px) * 1) 0 2px rgba(0, 0, 0, 0.35);
+}
+
+/* ------------------------------------------------------------------ Minimal Pixel
+   Flat white, one hairline, small suits, a quiet slate back. Nothing is decorated. */
+
+.playing-card--face[data-design='minimal'] {
+  background: var(--card-face);
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.55),
+    2px 2px 0 1px rgba(0, 0, 0, 0.25);
+  --card-font: 20px;
+}
+
+.playing-card[data-design='minimal'] .playing-card__rank {
+  font-family: var(--font-body);
+  text-shadow: 1px 0 0 currentColor;
+}
+
+.playing-card[data-design='minimal'] .playing-card__suit {
+  --sprite-cell: calc(var(--card-cell) + 1px);
+}
+
+/* On the narrowest cards there is only the one index, so its suit can be a little larger. */
+@media (max-width: 399px) {
+  .playing-card[data-design='minimal'] .playing-card__mini {
+    --sprite-cell: calc(var(--card-mini) + 1px);
+  }
+}
+
+.playing-card--back[data-design='minimal'] {
+  background: var(--card-back);
+  box-shadow:
+    inset 0 0 0 4px var(--card-back),
+    inset 0 0 0 5px var(--card-back-accent),
+    0 0 0 1px rgba(0, 0, 0, 0.55),
+    2px 2px 0 1px rgba(0, 0, 0, 0.25);
+}
+
+.playing-card--back[data-design='minimal']::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: -1;
+  width: 14px;
+  height: 14px;
+  background: var(--card-back-accent);
+  clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
+  transform: translate(-50%, -50%);
+}
+
+/* ------------------------------------------------------------------ Dark Casino
+   Black paper in a gold frame, cream and coral inks, the centre suit edged in gold leaf. The back is black with
+   a gold lattice and a red diamond. */
+
+.playing-card--face[data-design='dark'] {
+  background: var(--card-face);
+  box-shadow:
+    inset 0 0 0 2px var(--card-back-edge),
+    0 0 0 2px #000,
+    calc(var(--px) * 1) calc(var(--px) * 1) 0 2px rgba(0, 0, 0, 0.6);
+  --card-font: 20px;
+}
+
+.playing-card[data-design='dark'] .playing-card__rank {
+  font-family: var(--font-body);
+  text-shadow: 1px 0 0 currentColor;
+}
+
+.playing-card--back[data-design='dark'] {
+  background:
+    repeating-linear-gradient(45deg, transparent 0 5px, color-mix(in srgb, var(--card-back-accent) 60%, transparent) 5px 6px),
+    repeating-linear-gradient(-45deg, transparent 0 5px, color-mix(in srgb, var(--card-back-accent) 60%, transparent) 5px 6px),
+    var(--card-back);
+  box-shadow:
+    inset 0 0 0 3px var(--card-back-edge),
+    inset 0 0 0 6px var(--card-back),
+    0 0 0 2px #000,
+    calc(var(--px) * 1) calc(var(--px) * 1) 0 2px rgba(0, 0, 0, 0.6);
+}
+
+.playing-card--back[data-design='dark']::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: -1;
+  width: 46%;
+  height: 34%;
+  background: #9c1c28;
+  clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
+  transform: translate(-50%, -50%);
+}
+
+/* The little cards in the Themes tab's previews (28 by 40) have room for one index and nothing else, as the
+   narrowest cards do. The classic card is left as it is. */
+.scene .playing-card:is([data-design='retro'], [data-design='neon'], [data-design='medieval'], [data-design='minimal'], [data-design='dark']) :is(.playing-card__suit, .playing-card__index--end) {
+  display: none;
+}
+
+/* The rank's size follows each design's own font; the larger card at 640px and up takes the larger size. */
+@media (min-width: 640px) {
+  .playing-card--face[data-design='medieval'] {
+    --card-font: 23px;
+  }
+
+  .playing-card--face[data-design='minimal'],
+  .playing-card--face[data-design='dark'] {
+    --card-font: 26px;
+  }
+}
+
+/* ------------------------------------------------------------------ the Cards tab of Customize
+   Cards shown on a patch of felt, as on the table, and never moving: a preview does not deal itself. */
+
+.card-preview {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: calc(var(--px) * 2) calc(var(--px) * 3) calc(var(--px) * 3) calc(var(--px) * 2);
+  background: var(--c-felt);
+}
+
+.card-preview .playing-card,
+.card-showcase .playing-card {
+  animation: none;
+}
+
+/* A small hand: each card covers the one before it, like a hand on the table. */
+.card-preview .playing-card + .playing-card {
+  margin-left: calc(var(--card-w) * -0.4);
+}
+
+.card-showcase {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--px) * 2);
+}
+
+.card-showcase__title {
+  margin: 0;
+  color: var(--c-gold);
+  font-family: var(--font-title);
+  font-size: calc(11px * var(--text-scale));
+  line-height: 1.4;
+}
+
+.card-showcase__table {
+  --frame-color: var(--c-frame);
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--px) * 3);
+  padding: calc(var(--px) * 3);
+  background: var(--c-felt);
+}
+
+.card-showcase__label {
+  margin: 0;
+  color: var(--c-white);
+  font-family: var(--font-title);
+  font-size: calc(11px * var(--text-scale));
+  line-height: 1.4;
+}
+
+.card-showcase__row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(var(--px) * 2);
+  padding: 0 calc(var(--px) * 1.5) calc(var(--px) * 1.5) 0;
+}

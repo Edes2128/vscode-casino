@@ -8,16 +8,18 @@ A retro pixel-art casino hidden in your editor. Play **Blackjack** and **Roulett
 ## What you get
 
 - **Blackjack** against the dealer, with every move you'd expect: hit, stand, double down and split.
-- **Roulette** on a European wheel. Bet on a colour and watch the ball settle.
+- **Roulette** on a European wheel. Bet on a colour, or pick any of the 37 numbers, and watch the ball settle.
 - **One wallet** for both games. You start with **1,000 chips**; it is kept between sessions.
 - **Statistics and history** for the whole casino and for each game: wins, losses, pushes, win rate,
   biggest win and loss, chips wagered, and your latest rounds.
 - **Sidebar or editor tab.** Open the casino in the Activity Bar, or in a larger editor tab. Both always
   show the same wallet, tables and settings, so you can use either (or both at once).
-- **Retro sound effects** made on the fly, with an on/off switch and a volume slider. Nothing plays when you
-  open the casino; sounds only follow something you did.
-- **Settings for comfort:** switch animations off, or turn on reduced motion (it also follows your
-  system's own setting).
+- **Make it yours, all free:** 8 casino themes, 6 playing-card designs, 5 roulette wheel animations, 5 sound
+  packs and your own colors, from the **Style** tab. Changes apply at once and are remembered.
+- **Retro sound effects** made on the fly, with an on/off switch, a volume slider and a switch for each kind of
+  sound. Nothing plays when you open the casino; sounds only follow something you did.
+- **Settings for comfort:** a text size setting (normal, large, extra large), animations off, or reduced motion
+  (it also follows your system's own setting).
 
 ## Getting started
 
@@ -39,20 +41,34 @@ Commands (Command Palette, <kbd>Cmd/Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd>):
 - Beat the dealer without going over 21. The dealer must draw to 16 and **stands on every 17**.
 - A natural blackjack pays **3 to 2**; a half chip is rounded down. Ordinary wins pay 1 to 1.
 - **Double down** on any two-card hand: you double the bet and get exactly one more card.
-- **Split** a pair into separate hands, up to four hands in all. Split aces receive one card each.
+- **Split** any two cards of the same value (so a king and a queen can be split, and so can a ten and a jack) into separate hands with the same bet each, up to four hands in all. A hand may be doubled after a split. Split aces receive one card each and stand, and a 21 after a split is an ordinary 21, not a blackjack.
 - If you or the dealer is dealt a natural, the round is settled at once.
 - There is no insurance and no surrender.
 
 ### Roulette
 
 - A European wheel: 37 pockets, a single green zero.
-- You can only bet on a **colour**. Red and black pay **1 to 1**; green pays **35 to 1**.
+- Bet on a **colour** or on a **single number**. Red and black pay **1 to 1**; green pays **35 to 1**; a number from 0 to 36 pays **35 to 1**. There are no other bets.
+- The SPIN button stays at the bottom of the screen, so it is always in reach.
 - Where the ball lands is decided the instant you press SPIN. The animation only reveals it.
 
 ### Chips and bets
 
 - Chips come in 10, 25, 50, 100 and 500, and you can type any custom amount.
 - The minimum bet is **10 chips**. You can bet your whole balance.
+
+## Style
+
+Open the **Style** tab (the palette) to make the casino yours. Everything on it is free and nothing is
+locked. A choice is saved and applied at once, with no restart.
+
+| Tab | What you can change |
+| --- | --- |
+| Themes | 8 looks: Classic Casino, Neon Arcade, Retro 8-Bit, Midnight Casino, Blood Casino, Cyber Casino, Forest Casino and Royal Casino. Each is shown as a small table before you choose it. |
+| Cards | 6 playing-card designs: Classic Pixel, Retro 8-Bit, Neon, Medieval Fantasy, Minimal Pixel and Dark Casino, with all 52 cards and a back for each. |
+| Wheel | 5 roulette animations: Classic, Arcade, Neon, Pixel Explosion and Slow Motion. **Try it** runs one on a sample wheel. In every style the ball stops on the number the casino chose. |
+| Sounds | 5 sound packs (Classic Casino, Retro Arcade, Pixel Adventure, Neon Cyber, Minimal Sounds), a switch for each kind of sound (interface, chips, cards, roulette, results), the master switch and the volume. **Play sample** plays the pack you picked. All sounds are made on the spot, so nothing is downloaded. |
+| Colors | Your own table, background, accent, main button, text and chip colors, six ready-made sets, a live preview and a reset to the theme's colors. Text always stays easy to read: a color that would make it hard to read is nudged, and the screen says so. |
 
 ## Settings
 
@@ -64,6 +80,7 @@ Open the **Settings** tab (the gear) inside the casino.
 | Volume | 0 to 100. Slide it to hear the new level. **Test sound** plays a short sample. |
 | Animations | Dealing, the dealer's reveal and the wheel. Off shows every result at once. |
 | Reduced motion | Nothing moves, flashes or floats. Results still arrive one step at a time. Also on when your system asks for reduced motion. |
+| Text size | Normal, large or extra large. Makes every letter in the casino bigger. |
 | Reset balance | Back to 1,000 chips. Statistics and history are kept. |
 | Reset statistics | Clears statistics and history. Your chips are kept. |
 | Reset all | Balance, statistics and history. Your settings are kept. |
@@ -109,8 +126,9 @@ VS Code 1.90 or newer. No other software is needed. The extension uses only VS C
 
 ## Support
 
-If you enjoy the casino you can leave an optional tip with the **Support me** button on the Home,
-Statistics and Settings screens. Thank you!
+If you enjoy the casino you can leave an optional tip with the **Buy me a coffee** button on the Home screen
+and in the About card of Settings. It opens the Buy Me a Coffee page in your browser. It is entirely optional:
+every theme, card design, animation, sound pack and color is free, nothing is locked, and a tip gives no chips.
 
 ## Licence
 

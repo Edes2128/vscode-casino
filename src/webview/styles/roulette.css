@@ -68,7 +68,7 @@
   margin: 0;
   color: var(--c-white);
   font-family: var(--font-title);
-  font-size: 8px;
+  font-size: calc(11px * var(--text-scale));
   letter-spacing: 0.1em;
 }
 
@@ -113,7 +113,7 @@
 .rl-stage__rules {
   margin: 0;
   color: var(--c-gold);
-  font-size: 16px;
+  font-size: calc(20px * var(--text-scale));
   line-height: 1.05;
   text-align: center;
   opacity: 0.85;
@@ -130,7 +130,7 @@
 
 .rl-recent__empty {
   color: var(--c-muted);
-  font-size: 16px;
+  font-size: calc(20px * var(--text-scale));
 }
 
 /* ------------------------------------------------------------------ pocket badges */
@@ -145,18 +145,20 @@
   box-shadow: 0 0 0 2px #14171d;
   color: var(--c-white);
   font-family: var(--font-title);
-  font-size: 8px;
+  font-size: calc(11px * var(--text-scale));
   line-height: 1;
 }
 
 .pocket-badge--lg {
   min-width: calc(var(--px) * 8);
   height: calc(var(--px) * 8);
-  font-size: 10px;
+  font-size: calc(12px * var(--text-scale));
 }
 
+/* Dark ink on the red pockets: white on this red is only 3.8 to 1, dark ink is 4.8 to 1. */
 .pocket-badge--red {
   --badge: #e94b4b;
+  color: #14171d;
 }
 
 .pocket-badge--black {
@@ -196,13 +198,14 @@
   box-shadow: inset 0 calc(var(--px) * -1) 0 0 rgba(0, 0, 0, 0.35);
   color: var(--c-white);
   font-family: var(--font-title);
-  font-size: 9px;
+  font-size: calc(11px * var(--text-scale));
   line-height: 1;
   cursor: pointer;
 }
 
 .color-pick--red {
   --pick: #e94b4b;
+  color: #14171d;
 }
 
 .color-pick--black {
@@ -216,8 +219,7 @@
 
 .color-pick__odds {
   font-family: var(--font-body);
-  font-size: 16px;
-  opacity: 0.85;
+  font-size: calc(20px * var(--text-scale));
 }
 
 .color-pick:hover:not(:disabled) {
@@ -235,4 +237,253 @@
 .color-pick:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+/* ------------------------------------------------------------------ the number grid */
+/* 0 on its own, then 1 to 36 in rows of three. The colours are the wheel's own. */
+
+.number-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--px);
+}
+
+@media (min-width: 520px) {
+  .number-grid {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+}
+
+.number-pick {
+  position: relative;
+  min-height: calc(var(--px) * 9);
+  padding: var(--px) 0;
+  border: 0;
+  background: var(--pick, var(--c-muted));
+  box-shadow: inset 0 calc(var(--px) * -1) 0 0 rgba(0, 0, 0, 0.35);
+  color: var(--c-white);
+  font-family: var(--font-title);
+  font-size: calc(12px * var(--text-scale));
+  line-height: 1;
+  cursor: pointer;
+}
+
+.number-pick--red {
+  --pick: #e94b4b;
+  color: #14171d;
+}
+
+.number-pick--black {
+  --pick: #2c3240;
+  box-shadow:
+    inset 0 calc(var(--px) * -1) 0 0 rgba(0, 0, 0, 0.35),
+    inset 0 0 0 1px #4a5367;
+}
+
+.number-pick--green {
+  --pick: #2fbf5a;
+  color: #0d1a10;
+}
+
+.number-pick--zero {
+  grid-column: 1 / -1;
+}
+
+.number-pick:hover:not(:disabled) {
+  filter: brightness(1.15);
+}
+
+/* The chosen number is ringed in gold and raised, the way the chosen colour is. */
+.number-pick--selected {
+  box-shadow:
+    inset 0 calc(var(--px) * -1) 0 0 rgba(0, 0, 0, 0.35),
+    inset 0 0 0 var(--px) var(--c-gold);
+  transform: translateY(calc(var(--px) * -0.5));
+}
+
+/* A small gold marker on the number the ball landed on last. */
+.number-pick--last::after {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: var(--px);
+  height: var(--px);
+  background: var(--c-gold);
+  content: '';
+}
+
+.number-pick:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ------------------------------------------------------------------ the spin bar */
+/* The bar itself is the shared .action-dock; this is what the bar says. */
+
+.rl-spin-bar__bet {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0 calc(var(--px) * 3);
+  margin: 0;
+  color: var(--c-muted);
+  font-size: calc(22px * var(--text-scale));
+  line-height: 1.1;
+}
+
+.rl-spin-bar__bet b {
+  color: var(--c-gold);
+  font-weight: 400;
+}
+
+.rl-spin-bar__pays b {
+  color: var(--c-neon);
+}
+
+/* ================================================================== wheel styles (Customize, WHEEL) */
+/* Nothing here loops. The burst plays once and its elements are taken away; the effects of Neon Spin are drawn on
+   the wheel's canvas only while the ball is going round. */
+
+/* The wheel on the preview is half the size of the game's, in whole pixels so it stays crisp. */
+.rl-wheel--preview {
+  --wheel-cell: 1px;
+}
+
+@media (min-width: 190px) {
+  .rl-wheel--preview {
+    --wheel-cell: 2px;
+  }
+}
+
+@media (min-width: 330px) {
+  .rl-wheel--preview {
+    --wheel-cell: 3px;
+  }
+}
+
+@media (min-width: 640px) {
+  .rl-wheel--preview {
+    --wheel-cell: 4px;
+  }
+}
+
+/* Pixel Explosion: the pixels fly out of the pocket under the pointer (8.75 wheel pixels below the wheel's top). */
+.wheel-burst {
+  position: absolute;
+  top: calc(var(--wheel-top, calc(var(--px) * 4)) + 8.75 * var(--wheel-cell));
+  left: 50%;
+  z-index: 3;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+.wheel-burst__dot {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: calc(var(--size) * var(--wheel-cell));
+  height: calc(var(--size) * var(--wheel-cell));
+  margin: calc(var(--size) * var(--wheel-cell) / -2) 0 0 calc(var(--size) * var(--wheel-cell) / -2);
+  background: var(--c-rim, var(--c-gold));
+  animation: wheel-burst-fly var(--burst-ms, 1000ms) steps(10, end) var(--delay, 0ms) 1 both;
+}
+
+.wheel-burst__dot--light {
+  background: var(--c-rim-light, var(--c-gold));
+}
+
+.wheel-burst__dot--neon {
+  background: var(--c-neon);
+}
+
+.wheel-burst__dot--white {
+  background: var(--c-white);
+}
+
+@keyframes wheel-burst-fly {
+  from {
+    opacity: 1;
+    transform: translate(0, 0);
+  }
+  60% {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+    transform: translate(calc(var(--dx) * var(--wheel-cell)), calc(var(--dy) * var(--wheel-cell)));
+  }
+}
+
+/* The frozen burst on the style's thumbnail: the dots stand where they would be part of the way out. */
+.wheel-burst--still .wheel-burst__dot {
+  animation: none;
+  transform: translate(calc(var(--dx) * var(--wheel-cell) * 0.6), calc(var(--dy) * var(--wheel-cell) * 0.6));
+}
+
+/* Calm and off never draw a burst (the wheel does not even render it); this is the belt to those braces. */
+.casino-app[data-motion='calm'] .wheel-burst:not(.wheel-burst--still),
+.casino-app[data-motion='off'] .wheel-burst:not(.wheel-burst--still) {
+  display: none;
+}
+
+/* A still picture of a style, on its choice card. */
+.anim-thumb {
+  --wheel-cell: 1px;
+  --wheel-top: calc(var(--px) * 3);
+  position: relative;
+  display: block;
+  padding-top: var(--wheel-top);
+  line-height: 0;
+}
+
+@media (min-width: 190px) {
+  .anim-thumb {
+    --wheel-cell: 2px;
+  }
+}
+
+.anim-thumb__canvas {
+  display: block;
+  width: calc(64 * var(--wheel-cell));
+  height: calc(64 * var(--wheel-cell));
+  image-rendering: pixelated;
+}
+
+/* The wheel to try a style on. */
+.anim-preview {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: calc(var(--px) * 3);
+  padding: calc(var(--px) * 3);
+  background:
+    radial-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px) 0 0 / 8px 8px,
+    var(--c-bg-2);
+  box-shadow: 0 0 0 var(--px) var(--c-line);
+}
+
+.anim-preview__result {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: calc(var(--px) * 2);
+  min-height: calc(var(--px) * 7);
+  margin: 0;
+  color: var(--c-white);
+  font-family: var(--font-title);
+  font-size: calc(11px * var(--text-scale));
+  letter-spacing: 0.1em;
+  line-height: 1.3;
+  text-align: center;
+}
+
+.anim-preview__note {
+  margin: 0;
+  color: var(--c-muted);
+  font-size: calc(20px * var(--text-scale));
+  line-height: 1.1;
+  text-align: center;
 }

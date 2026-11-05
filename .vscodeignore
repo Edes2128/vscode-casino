@@ -2,6 +2,8 @@
 # built webview), media/, package.json, README, CHANGELOG, LICENSE and THIRD_PARTY_NOTICES.
 # Everything else (sources, tests, tooling, local state) stays out.
 .claude/**
+.vitest/**
+DEVELOPMENT_CHECKLIST.md
 .git/**
 .vscode/**
 .vscode-test/**

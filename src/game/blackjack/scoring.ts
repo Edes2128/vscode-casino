@@ -40,6 +40,11 @@ export const isBlackjack = (cards: readonly Card[]): boolean =>
 
 export const isBust = (cards: readonly Card[]): boolean => scoreHand(cards).total > BLACKJACK;
 
-/** A splittable pair: two cards of the same rank (a 10 and a king are not a pair). */
-export const isPair = (cards: readonly Card[]): boolean =>
-  cards.length === 2 && cards[0]?.rank === cards[1]?.rank;
+/**
+ * A splittable pair: two cards of the same VALUE, as at a real table. Any two ten-value cards qualify
+ * (10, J, Q and K are all worth 10), as do two aces, and so do two 8s. An ace and a king do not.
+ */
+export const isPair = (cards: readonly Card[]): boolean => {
+  const [first, second] = cards;
+  return cards.length === 2 && first !== undefined && second !== undefined && baseValue(first.rank) === baseValue(second.rank);
+};

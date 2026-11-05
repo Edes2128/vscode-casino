@@ -41,7 +41,7 @@ export function Home({ snapshot, onNavigate }: HomeProps) {
         />
         <GameCard
           title="ROULETTE"
-          tagline="Bet red, black or green. Green pays 35:1."
+          tagline="Bet a color or a number. Numbers and green pay 35:1."
           tone="red"
           art={<RouletteArt />}
           onPlay={() => onNavigate('roulette')}

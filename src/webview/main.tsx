@@ -8,8 +8,12 @@ import './styles/pixel.css';
 import './styles/animations.css';
 import './styles/casino.css';
 import './styles/blackjack.css';
+import './styles/cards.css';
 import './styles/roulette.css';
 import './styles/settings.css';
+import './styles/customize.css';
+import './styles/themes.css';
+import './styles/sounds.css';
 import './styles/ambient.css';
 
 const host = connectToHost();

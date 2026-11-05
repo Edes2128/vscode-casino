@@ -1,0 +1,92 @@
+/* ------------------------------------------------------------------ themes
+   The colors come from custom properties that the page root carries (see customization/appearance.ts), so
+   everything that is drawn from them follows a theme without being told. This file is only what a palette
+   cannot say: the pattern behind the page, glow, the metal of a frame, how chunky a button corner is. */
+
+/* The pattern behind everything. `grid` is the base look and is set in global.css. */
+:root[data-pattern='dots'] body {
+  background-image: radial-gradient(color-mix(in srgb, var(--c-white) 9%, transparent) 1px, transparent 1.5px);
+  background-size: calc(var(--px) * 4) calc(var(--px) * 4);
+}
+
+:root[data-pattern='diagonal'] body {
+  background-image: repeating-linear-gradient(
+    45deg,
+    color-mix(in srgb, var(--c-white) 4%, transparent) 0 2px,
+    transparent 2px calc(var(--px) * 4)
+  );
+  background-size: auto;
+}
+
+:root[data-pattern='stars'] body {
+  background-image:
+    radial-gradient(color-mix(in srgb, var(--c-white) 22%, transparent) 1px, transparent 1.5px),
+    radial-gradient(color-mix(in srgb, var(--c-white) 12%, transparent) 1px, transparent 1.5px);
+  background-position:
+    0 0,
+    calc(var(--px) * 6) calc(var(--px) * 9);
+  background-size:
+    calc(var(--px) * 16) calc(var(--px) * 16),
+    calc(var(--px) * 11) calc(var(--px) * 11);
+}
+
+:root[data-pattern='bars'] body {
+  background-image: repeating-linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--c-white) 4%, transparent) 0 2px,
+    transparent 2px calc(var(--px) * 5)
+  );
+  background-size: auto;
+}
+
+/* Neon: titles and the active tab shine. */
+:root[data-glow='on'] .page-title,
+:root[data-glow='on'] .game-shell__title,
+:root[data-glow='on'] .nav-bar__item[aria-current='page'] {
+  text-shadow:
+    0 0 2px var(--c-neon),
+    0 0 10px color-mix(in srgb, var(--c-neon) 60%, transparent);
+}
+
+:root[data-glow='on'] .px-button:not(.px-button--ghost):not(:disabled) {
+  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--c-button) 55%, transparent));
+}
+
+/* The metal of an ordinary panel's border, and a few touches that make each theme its own place. */
+:root[data-theme='midnight'] {
+  --c-panel-frame: #5f739d;
+}
+
+:root[data-theme='royal'] {
+  --c-panel-frame: var(--c-gold);
+}
+
+:root[data-theme='forest'] {
+  --c-panel-frame: #8a6a3d;
+}
+
+:root[data-theme='blood'] {
+  --c-panel-frame: #8a3a3a;
+}
+
+:root[data-theme='blood'] body {
+  box-shadow: inset 0 0 90px 10px rgba(0, 0, 0, 0.55);
+}
+
+:root[data-theme='cyber'] {
+  --c-panel-frame: var(--c-gold);
+}
+
+/* Retro: chunkier corners on buttons, as on an old console. */
+:root[data-theme='retro'] .px-button {
+  --notch: calc(var(--px) * 2);
+}
+
+:root[data-theme='retro'] {
+  --c-panel-frame: var(--c-neon);
+}
+
+/* Neon: panels glow faintly in their frame color. */
+:root[data-theme='neon'] {
+  --c-panel-frame: var(--c-gold);
+}

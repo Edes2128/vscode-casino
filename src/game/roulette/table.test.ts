@@ -5,9 +5,9 @@ import { CasinoStore } from '../../casino/store';
 import { MemoryStorage } from '../../casino/testing';
 import type { HistoryEntry } from '../../casino/types';
 import { cryptoRng, seededRng, type Rng } from '../rng';
-import { payoutFor } from './betting';
+import { payoutFor, selectionWins } from './betting';
 import { RouletteTable, recentFromHistory } from './table';
-import { ROULETTE_COLORS } from './types';
+import { ROULETTE_COLORS, type RouletteColor, type RouletteSelection } from './types';
 import { MAX_RECENT, type RouletteView } from './view';
 import { POCKETS, POCKET_COUNT, WHEEL_ORDER, describePocket, pocketIndexOfNumber } from './wheel';
 
@@ -30,7 +30,11 @@ function setup(rng: Rng, storage = new MemoryStorage()) {
   return { store, table, storage, errors };
 }
 
-const spin = (color: 'red' | 'black' | 'green', bet: number) => ({ kind: 'spin', color, bet }) as const;
+/** A spin on a colour (by name) or on any selection, such as `number(17)`. */
+const spin = (on: RouletteColor | RouletteSelection, bet: number) =>
+  ({ kind: 'spin', selection: typeof on === 'string' ? ({ kind: 'color', color: on } as const) : on, bet }) as const;
+const number = (n: number): RouletteSelection => ({ kind: 'number', number: n });
+const colorBet = (color: RouletteColor): RouletteSelection => ({ kind: 'color', color });
 
 describe('a fresh table', () => {
   it('has not spun yet', () => {
@@ -94,7 +98,7 @@ describe('spinning', () => {
       for (const color of ROULETTE_COLORS) {
         const { table, store } = setup(ballLandingOn(pocket.number));
         table.perform(spin(color, 10));
-        const expected = STARTING_BALANCE - 10 + payoutFor(color, 10, pocket);
+        const expected = STARTING_BALANCE - 10 + payoutFor(colorBet(color), 10, pocket);
         expect(store.snapshot.balance, `${color} bet on ${describePocket(pocket)}`).toBe(expected);
         expect(store.snapshot.history[0]?.detail).toBe(describePocket(pocket));
         expect(store.openRounds).toEqual([]);
@@ -109,6 +113,62 @@ describe('spinning', () => {
       expect(store.snapshot.stats.roulette.gamesPlayed).toBe(spins);
       expect(store.snapshot.history).toHaveLength(spins);
     }
+  });
+});
+
+describe('number bets', () => {
+  it('pay 35 to 1 through the wallet when the ball lands on the chosen number, and record it', () => {
+    const { table, store } = setup(ballLandingOn(17));
+    expect(table.perform(spin(number(17), 100))).toEqual({ ok: true });
+
+    expect(store.snapshot.balance).toBe(STARTING_BALANCE - 100 + 3_600);
+    expect(store.snapshot.history[0]).toMatchObject({ game: 'roulette', bet: 100, outcome: 'win', payout: 3_500, detail: 'Black 17' });
+    expect(table.view.last).toMatchObject({ selection: { kind: 'number', number: 17 }, won: true, net: 3_500, payout: 3_600 });
+    expect(store.openRounds).toEqual([]);
+  });
+
+  it('lose the bet on any other number, even a neighbour and even the right colour', () => {
+    const { table, store } = setup(ballLandingOn(15)); // black 15, a black number like 17
+    table.perform(spin(number(17), 100));
+    expect(store.snapshot.balance).toBe(STARTING_BALANCE - 100);
+    expect(table.view.last).toMatchObject({ won: false, net: -100, payout: 0 });
+  });
+
+  it('can be placed on the zero, and pay 35 to 1 there too', () => {
+    const { table, store } = setup(ballLandingOn(0));
+    table.perform(spin(number(0), 10));
+    expect(store.snapshot.balance).toBe(STARTING_BALANCE - 10 + 360);
+  });
+
+  it('settle every number against every pocket, with the exact balance, through the real wallet (1,369 spins)', () => {
+    for (let chosen = 0; chosen <= 36; chosen += 1) {
+      for (const pocket of POCKETS) {
+        const { table, store } = setup(ballLandingOn(pocket.number));
+        expect(table.perform(spin(number(chosen), 10)), `bet ${chosen}`).toEqual({ ok: true });
+        const expected = STARTING_BALANCE - 10 + (pocket.number === chosen ? 360 : 0);
+        expect(store.snapshot.balance, `bet ${chosen}, landed ${pocket.number}`).toBe(expected);
+        expect(store.openRounds).toEqual([]);
+      }
+    }
+  });
+
+  it('are refused when the number is not on the wheel, before any chips move', () => {
+    const { table, store } = setup(ballLandingOn(1));
+    const snapshot = store.snapshot;
+    for (const bad of [-1, 37, 100, 1.5, Number.NaN]) {
+      expect(table.perform({ kind: 'spin', selection: { kind: 'number', number: bad }, bet: 10 }), String(bad)).toEqual({ ok: false, error: 'not-allowed' });
+    }
+    expect(table.perform({ kind: 'spin', selection: { kind: 'dozen' } as never, bet: 10 })).toEqual({ ok: false, error: 'not-allowed' });
+    expect(store.snapshot).toBe(snapshot);
+    expect(table.view.spin).toBe(0);
+  });
+
+  it('are subject to the same limits as any bet: the minimum, whole chips and the balance', () => {
+    const { table, store } = setup(ballLandingOn(1));
+    expect(table.perform(spin(number(5), 5))).toEqual({ ok: false, error: 'below-minimum' });
+    expect(table.perform(spin(number(5), 12.5))).toEqual({ ok: false, error: 'invalid-amount' });
+    expect(table.perform(spin(number(5), STARTING_BALANCE + 1))).toEqual({ ok: false, error: 'insufficient-funds' });
+    expect(store.snapshot.balance).toBe(STARTING_BALANCE);
   });
 });
 
@@ -159,7 +219,7 @@ describe('what the views are shown', () => {
     expect(table.view.spin).toBe(1);
     expect(table.view.last).toEqual({
       pocket: { number: 0, color: 'green' },
-      color: 'green',
+      selection: { kind: 'color', color: 'green' },
       bet: 10,
       won: true,
       net: 350,
@@ -279,15 +339,17 @@ describe('random play through the whole stack', () => {
       const before = store.snapshot.balance;
       const bet = Math.min(before, 10 * (1 + Math.floor(picker() * 30)));
       const color = ROULETTE_COLORS[Math.floor(picker() * 3)] ?? 'red';
+      const selection: RouletteSelection = picker() < 0.5 ? colorBet(color) : number(Math.floor(picker() * 37));
 
-      expect(table.perform(spin(color, bet))).toEqual({ ok: true });
+      expect(table.perform(spin(selection, bet))).toEqual({ ok: true });
       const last = table.view.last;
       expect(last).toBeDefined();
       if (last === undefined) continue;
 
       expect(last.pocket.color).toBe(POCKETS.find((p) => p.number === last.pocket.number)?.color);
-      expect(last.payout).toBe(payoutFor(color, bet, last.pocket));
-      expect(last.won).toBe(last.pocket.color === color);
+      expect(last.payout).toBe(payoutFor(selection, bet, last.pocket));
+      expect(last.won).toBe(selectionWins(selection, last.pocket));
+      expect(last.selection).toEqual(selection);
       expect(store.snapshot.balance).toBe(before + last.net);
       expect(store.openRounds).toEqual([]);
       expect(Number.isSafeInteger(store.snapshot.balance)).toBe(true);

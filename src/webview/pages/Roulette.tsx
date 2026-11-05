@@ -2,23 +2,22 @@ import { useEffect, useRef, useState } from 'react';
 import { MIN_BET } from '../../casino/chips';
 import type { RouletteAction, RouletteView } from '../../game/roulette/view';
 import { IDLE_ROULETTE_VIEW } from '../../game/roulette/view';
-import type { RouletteColor } from '../../game/roulette/types';
+import type { RouletteSelection } from '../../game/roulette/types';
 import { pocketIndexOfNumber } from '../../game/roulette/wheel';
-import { betProblem, rejectionText } from '../betting';
-import { BetControls } from '../components/BetControls';
-import { ColorPicker } from '../components/ColorPicker';
+import { rejectionText } from '../betting';
 import { GameShell } from '../components/GameShell';
-import { OutOfChips } from '../components/OutOfChips';
-import { PixelButton } from '../components/PixelButton';
 import { PocketBadge } from '../components/PocketBadge';
 import { OutcomeBanner, OutcomeOverlay } from '../components/ResultEffects';
-import { CALM_PAUSE_MS, RouletteWheel } from '../components/RouletteWheel';
+import { RouletteControls, type BetKind } from '../components/RouletteControls';
+import { RouletteWheel } from '../components/RouletteWheel';
+import { useAppearance } from '../customization/AppearanceContext';
+import { rouletteAnimation } from '../customization/rouletteAnimations';
 import { cx } from '../cx';
 import { formatChips } from '../format';
-import { useRouletteSpin, type SpinPhase } from '../hooks/useRouletteSpin';
+import { spinAction, useRouletteSpin, type SpinPhase } from '../hooks/useRouletteSpin';
 import { useMotion } from '../motion';
 import { usePresentation } from '../presentation';
-import { SPIN_DURATION_MS } from '../art/rouletteWheel';
+import { wheelMotion } from '../art/rouletteWheel';
 import { pocketWords, spinOutcomeText, visibleRecent } from '../rouletteText';
 import { rouletteCues, type RouletteFrame } from '../sound/gameCues';
 import { useSound } from '../sound/SoundProvider';
@@ -45,10 +44,12 @@ interface RouletteProps {
 }
 
 const DEFAULT_BET = 25;
+
 const NOTICE_MS = 3_500;
 
 export function Roulette({ view, balance, rejection, onAction, onBack, onOpenSettings, onShown }: RouletteProps) {
   const motion = useMotion();
+  const animation = rouletteAnimation(useAppearance().rouletteAnimation);
   const presentation = usePresentation();
   const play = useSound();
   const ownPlay = useOwnPlay();
@@ -56,7 +57,8 @@ export function Roulette({ view, balance, rejection, onAction, onBack, onOpenSet
   const spin = useRouletteSpin(table, motion !== 'off');
 
   const [bet, setBet] = useState(DEFAULT_BET);
-  const [color, setColor] = useState<RouletteColor>();
+  const [selection, setSelection] = useState<RouletteSelection>();
+  const [betKind, setBetKind] = useState<BetKind>('color');
   const [pending, setPending] = useState(false);
   const [notice, setNotice] = useState<string>();
 
@@ -103,19 +105,22 @@ export function Roulette({ view, balance, rejection, onAction, onBack, onOpenSet
     const now: RouletteFrame = { spin: table.spin, phase: spin.phase, live: spin.live, kind: outcomeKind };
     lastFrame.current = now;
     if (!ownPlay.isMine()) return;
-    const turnMs = motion === 'full' ? SPIN_DURATION_MS : CALM_PAUSE_MS;
+    // The rattle lasts as long as the wheel does: the chosen style's spin, or the calm pause.
+    const turnMs = wheelMotion(motion, animation).durationMs;
     for (const { cue, options } of rouletteCues(before, now, turnMs)) play(cue, options);
-  }, [table.spin, spin.phase, spin.live, outcomeKind, motion, ownPlay, play]);
+  }, [table.spin, spin.phase, spin.live, outcomeKind, motion, animation, ownPlay, play]);
 
   const shownRecent = visibleRecent(table.recent, spinning);
   const latest = shownRecent[0];
-  const canSpin = !pending && !spinning && color !== undefined && bet > 0 && betProblem(bet, chips) === undefined;
+  // One question for the button and for the click: no spin while the wheel turns, whatever is clicked.
+  const request = spinAction({ selection, bet, chips, spinning, pending });
+  const canSpin = request !== undefined;
 
   const doSpin = (): void => {
-    if (color === undefined) return;
+    if (request === undefined) return;
     ownPlay.mark();
     setPending(true);
-    onAction({ kind: 'spin', color, bet });
+    onAction(request);
   };
 
   return (
@@ -143,7 +148,7 @@ export function Roulette({ view, balance, rejection, onAction, onBack, onOpenSet
 
             <div className="rl-stage__centre">
               {outcome === undefined ? (
-                <p className="rl-stage__rules">RED AND BLACK PAY 1 TO 1. GREEN PAYS 35 TO 1.</p>
+                <p className="rl-stage__rules">RED OR BLACK PAYS 1 TO 1. GREEN OR A NUMBER PAYS 35 TO 1.</p>
               ) : (
                 <OutcomeBanner {...outcome} />
               )}
@@ -169,19 +174,24 @@ export function Roulette({ view, balance, rejection, onAction, onBack, onOpenSet
             </span>
           </p>
 
-          {chips < MIN_BET && !spinning ? (
-            <OutOfChips onOpenSettings={onOpenSettings} />
-          ) : (
-            <>
-              <ColorPicker value={color} onChange={setColor} disabled={spinning || pending} />
-              <BetControls balance={chips} bet={bet} onBetChange={setBet} disabled={spinning || pending} />
-              <PixelButton variant="gold" size="lg" block disabled={!canSpin} onClick={doSpin}>
-                {spinning ? 'SPINNING' : color === undefined ? 'PICK A COLOR' : 'SPIN'}
-              </PixelButton>
-            </>
-          )}
+          <RouletteControls
+            chips={chips}
+            bet={bet}
+            onBetChange={setBet}
+            selection={selection}
+            onSelectionChange={setSelection}
+            betKind={betKind}
+            onBetKindChange={setBetKind}
+            spinning={spinning}
+            pending={pending}
+            canSpin={canSpin}
+            onSpin={doSpin}
+            notice={notice}
+            lastNumber={latest?.number}
+            onOpenSettings={onOpenSettings}
+          />
 
-          {notice !== undefined && (
+          {notice !== undefined && chips < MIN_BET && !spinning && (
             <p className="bj-notice" role="alert">
               {notice}
             </p>

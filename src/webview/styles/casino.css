@@ -40,7 +40,7 @@
 .casino-footer {
   padding: calc(var(--px) * 3) calc(var(--px) * 4) calc(var(--px) * 4);
   color: var(--c-muted);
-  font-size: 16px;
+  font-size: calc(20px * var(--text-scale));
   letter-spacing: 0.04em;
   text-align: center;
 }
@@ -59,10 +59,19 @@
   --sprite-cell: 2px;
 }
 
+.support__text {
+  max-width: 32ch;
+  color: var(--c-white);
+  font-size: calc(22px * var(--text-scale));
+  line-height: 1.1;
+  text-align: center;
+  text-transform: uppercase;
+}
+
 .support__note {
   max-width: 30ch;
   color: var(--c-muted);
-  font-size: 16px;
+  font-size: calc(20px * var(--text-scale));
   line-height: 1.1;
   text-align: center;
 }
@@ -70,7 +79,7 @@
 .connecting {
   color: var(--c-gold);
   font-family: var(--font-title);
-  font-size: 10px;
+  font-size: calc(12px * var(--text-scale));
   text-align: center;
 }
 
@@ -102,9 +111,9 @@
 .casino-header__name {
   color: var(--c-neon);
   font-family: var(--font-title);
-  font-size: 10px;
+  font-size: calc(12px * var(--text-scale));
   letter-spacing: 0.1em;
-  text-shadow: 0 0 8px rgba(101, 229, 114, 0.5);
+  text-shadow: 0 0 8px color-mix(in srgb, var(--c-neon) 50%, transparent);
 }
 
 /* ------------------------------------------------------------------ navigation */
@@ -128,7 +137,7 @@
   box-shadow: inset 0 calc(var(--px) * -1) 0 0 transparent;
   color: var(--c-muted);
   font-family: var(--font-body);
-  font-size: 16px;
+  font-size: calc(20px * var(--text-scale));
   line-height: 1;
   cursor: pointer;
 }
@@ -148,10 +157,35 @@
   --sprite-cell: 2px;
 }
 
-/* Five tabs share the width, so the tabs show icons only until there is room for the longest label
-   (BLACKJACK). The label stays for screen readers and as a tooltip, and every screen is titled. */
-@media (max-width: 399px) {
+/* Six tabs share the width, so the tabs show icons only until there is room for the longest label
+   (BLACKJACK). Bigger text needs more room, so each Text size hides the labels up to a wider screen. The label
+   stays for screen readers and as a tooltip, and every screen is titled. */
+@media (max-width: 479px) {
   .nav-bar__label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 575px) {
+  .casino-app[data-text='large'] .nav-bar__label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 719px) {
+  .casino-app[data-text='xlarge'] .nav-bar__label {
     position: absolute;
     width: 1px;
     height: 1px;
@@ -201,7 +235,7 @@
 
 .logo__kicker {
   color: var(--c-gold);
-  font-size: 8px;
+  font-size: calc(11px * var(--text-scale));
   letter-spacing: 0.4em;
   text-indent: 0.4em;
 }
@@ -210,12 +244,12 @@
   display: flex;
   justify-content: center;
   color: var(--c-neon);
-  font-size: clamp(14px, 9vw, 28px);
+  font-size: clamp(calc(14px * var(--text-scale)), 9vw, calc(28px * var(--text-scale)));
   letter-spacing: 0.08em;
   text-shadow:
     0 0 2px var(--c-neon),
-    0 0 10px rgba(101, 229, 114, 0.7),
-    0 0 24px rgba(101, 229, 114, 0.4);
+    0 0 10px color-mix(in srgb, var(--c-neon) 70%, transparent),
+    0 0 24px color-mix(in srgb, var(--c-neon) 40%, transparent);
 }
 
 /* One tube is flaky, as on every proper neon sign. */
@@ -258,7 +292,7 @@
 }
 
 .game-card--felt {
-  --frame-color: #2f8f5b;
+  --frame-color: var(--c-frame);
 }
 
 .game-card--red {
@@ -279,14 +313,15 @@
 
 .game-card__title {
   color: var(--c-white);
-  font-size: 11px;
+  font-size: calc(12px * var(--text-scale));
   letter-spacing: 0.08em;
+  overflow-wrap: anywhere;
 }
 
 .game-card__tagline {
   flex: 1;
   color: var(--c-muted);
-  font-size: 19px;
+  font-size: calc(22px * var(--text-scale));
   line-height: 1.15;
 }
 
@@ -301,7 +336,7 @@
 
 .game-shell__title {
   color: var(--c-gold);
-  font-size: 11px;
+  font-size: calc(12px * var(--text-scale));
   letter-spacing: 0.1em;
 }
 
@@ -309,8 +344,9 @@
 
 .page-title {
   color: var(--c-gold);
-  font-size: 11px;
+  font-size: calc(12px * var(--text-scale));
   letter-spacing: 0.1em;
+  overflow-wrap: anywhere;
 }
 
 .stats-balance {
@@ -321,7 +357,7 @@
 
 .stats-balance__label {
   color: var(--c-muted);
-  font-size: 16px;
+  font-size: calc(20px * var(--text-scale));
 }
 
 .stats-list {
@@ -338,7 +374,7 @@
   justify-content: space-between;
   gap: 0 calc(var(--px) * 3);
   padding: calc(var(--px) * 2) 0;
-  box-shadow: inset 0 calc(var(--px) * -0.5) 0 0 #2a2f3a;
+  box-shadow: inset 0 calc(var(--px) * -0.5) 0 0 var(--c-line);
 }
 
 .stats-list__row:last-child {
@@ -347,7 +383,7 @@
 
 .stats-list__row dt {
   color: var(--c-muted);
-  font-size: 18px;
+  font-size: calc(22px * var(--text-scale));
 }
 
 .stats-list__row dd {
@@ -355,7 +391,7 @@
   margin: 0 0 0 auto;
   color: var(--value-color);
   font-family: var(--font-title);
-  font-size: 10px;
+  font-size: calc(12px * var(--text-scale));
   white-space: nowrap;
 }
 
@@ -364,7 +400,7 @@
 }
 
 .stats-list__row--loss dd {
-  --value-color: var(--c-red);
+  --value-color: var(--c-red-text);
 }
 
 .stats-list__row--push dd {
@@ -381,7 +417,7 @@
 
 @media (min-width: 300px) {
   .stat-tile__value {
-    font-size: 12px;
+    font-size: calc(14px * var(--text-scale));
   }
 }
 
@@ -399,4 +435,57 @@
   .casino-top {
     padding-top: calc(var(--px) * 4);
   }
+}
+
+/* ------------------------------------------------------------------ text size */
+/* The Text size setting: the whole interface scales, so what is small stays readable. */
+
+.casino-app[data-text='large'] {
+  --text-scale: 1.2;
+}
+
+.casino-app[data-text='xlarge'] {
+  --text-scale: 1.4;
+}
+
+/* The narrowest sidebar VS Code allows is about 170px. The bigger default text would not fit there, so below 200px the
+   scale steps down, and the Text size setting still makes each choice one step bigger than the last. */
+@media (max-width: 199px) {
+  .casino-app {
+    --text-scale: 0.8;
+  }
+
+  /* Every pixel counts: the longest word on a button (STATISTICS) has to fit. */
+  .casino-app .px-button {
+    padding-right: 4px;
+    padding-left: 4px;
+    letter-spacing: 0.02em;
+  }
+
+  .casino-app[data-text='large'] {
+    --text-scale: 0.95;
+  }
+
+  .casino-app[data-text='xlarge'] {
+    --text-scale: 1.1;
+  }
+}
+
+/* ------------------------------------------------------------------ the action dock */
+/* The main button of a game (DEAL, HIT and STAND, SPIN) stays at the bottom of the view while the page
+   scrolls, so it is never somewhere below the fold that the player has to hunt for. */
+
+.action-dock {
+  position: sticky;
+  bottom: 0;
+  z-index: 8;
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--px) * 2);
+  padding: calc(var(--px) * 2) calc(var(--px) * 2) calc(var(--px) * 3);
+  background: var(--c-bg);
+  /* A band of the page colour above it, so nothing shows through at its top edge, and a rule to mark it. */
+  box-shadow:
+    0 calc(var(--px) * -2) 0 0 var(--c-bg),
+    0 calc(var(--px) * -3) 0 0 var(--c-muted);
 }

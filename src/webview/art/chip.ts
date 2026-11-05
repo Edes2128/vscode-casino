@@ -1,4 +1,5 @@
 import type { ChipValue } from '../../casino/chips';
+import { darken, parseHex } from '../color';
 import type { Palette } from './pixelRuns';
 
 /**
@@ -63,3 +64,14 @@ export const GOLD_CHIP_PALETTE: Palette = chipPalette('#f5c451', WHITE, '#c8962b
 
 export const CHIP_ROWS_LARGE = chipRows(13, true);
 export const CHIP_ROWS_SMALL = chipRows(9, false);
+
+/**
+ * A chip palette with the stripes and the inner ring in `tint`. The edge keeps its denomination's color, so a
+ * 25 is still red and a 500 still purple. With no tint, or one that is not a color, the palette is unchanged.
+ */
+export function tintChip(palette: Palette, tint: string | undefined): Palette {
+  const rgb = tint === undefined ? undefined : parseHex(tint);
+  if (rgb === undefined) return palette;
+  const toHex = (channels: readonly number[]): string => `#${channels.map((channel) => Math.round(channel).toString(16).padStart(2, '0')).join('')}`;
+  return { ...palette, b: toHex(rgb), d: toHex(darken(rgb, 0.35)) };
+}

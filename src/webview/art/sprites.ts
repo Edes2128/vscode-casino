@@ -72,6 +72,18 @@ export const COFFEE: Sprite = {
   palette: { o: '#000000', Y: '#ffdd00', s: '#ffffff' },
 };
 
+/** A coffee cup with steam, in one color (the surrounding text's), for the Buy Me a Coffee button. */
+export const COFFEE_ICON: readonly string[] = [
+  '..#..#.....',
+  '...#..#....',
+  '.#######...',
+  '.#######.##',
+  '.#######..#',
+  '.#######.##',
+  '..#####....',
+  '.#########.',
+];
+
 // ---------------------------------------------------------------- coin
 
 export const COIN: Sprite = {
@@ -121,6 +133,20 @@ export const STATS_ICON: readonly string[] = [
   '##..##..##',
   '##..##..##',
   '##..##..##',
+];
+
+/** An artist's palette. */
+export const CUSTOMIZE_ICON: readonly string[] = [
+  '..######..',
+  '.########.',
+  '##########',
+  '##.##.####',
+  '#.####.###',
+  '#.#######.',
+  '##.#####..',
+  '.########.',
+  '..######..',
+  '...####...',
 ];
 
 export const SETTINGS_ICON: readonly string[] = [

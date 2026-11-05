@@ -24,7 +24,7 @@ import {
 export type ViewKind = 'sidebar' | 'panel';
 
 /** The screens of the casino. */
-export type CasinoPage = 'home' | 'blackjack' | 'roulette' | 'statistics' | 'settings';
+export type CasinoPage = 'home' | 'blackjack' | 'roulette' | 'statistics' | 'customize' | 'settings';
 
 /** Where the webview bundle was loaded from. */
 export type AssetMode = 'dev' | 'prod';
@@ -245,7 +245,7 @@ export function parseHostMessage(raw: unknown): HostToWebviewMessage | undefined
   }
 }
 
-const CASINO_PAGES: readonly CasinoPage[] = ['home', 'blackjack', 'roulette', 'statistics', 'settings'];
+const CASINO_PAGES: readonly CasinoPage[] = ['home', 'blackjack', 'roulette', 'statistics', 'customize', 'settings'];
 
 const TABLE_ERRORS: readonly unknown[] = [
   'invalid-amount',

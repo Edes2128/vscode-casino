@@ -327,11 +327,29 @@ describe('split', () => {
     ]);
   });
 
-  it('can only split a pair of the same rank', () => {
-    const tenAndKing = startRound(cards('10S 6H KD 10C 2S'), 100);
-    expect(availableActions(tenAndKing).split).toBe(false);
-    expect(split(tenAndKing)).toEqual({ ok: false, error: 'not-allowed' });
+  it('can only split two cards of the same value', () => {
     expect(availableActions(startRound(cards('8S 6H 9D 10C'), 100)).split).toBe(false);
+    expect(split(startRound(cards('8S 6H 9D 10C'), 100))).toEqual({ ok: false, error: 'not-allowed' });
+    // A 9 and a 2 are not a pair.
+    expect(availableActions(startRound(cards('9S 6H 2D 10C'), 100)).split).toBe(false);
+  });
+
+  it('splits any two ten-value cards, not only identical ranks: a 10 and a king are a pair', () => {
+    for (const pair of ['10S 6H KD 7C', 'QS 6H JD 7C', 'KS 6H KD 7C']) {
+      const round = startRound(cards(`${pair} 3S 4H 2C 5D`), 100);
+      expect(availableActions(round).split, pair).toBe(true);
+      const result = split(round);
+      expect(result.ok, pair).toBe(true);
+      if (result.ok) expect(result.round.hands.map((hand) => hand.cards.length)).toEqual([2, 2]);
+    }
+  });
+
+  it('keeps the original card of each ten-value hand, so a king and a queen become a king hand and a queen hand', () => {
+    const result = split(startRound(cards('KS 6H QD 7C 3S 4H 2C 5D'), 100));
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.round.hands[0]?.cards[0]?.rank).toBe('K');
+    expect(result.round.hands[1]?.cards[0]?.rank).toBe('Q');
   });
 
   it('can only split a two-card hand', () => {

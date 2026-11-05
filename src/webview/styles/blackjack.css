@@ -26,8 +26,9 @@
   /* Card size, in whole pixels so the pixel art never blurs. */
   --card-w: 40px;
   --card-h: 56px;
-  --card-font: 8px;
+  --card-font: 12px;
   --card-cell: 2px;
+  --card-mini: 2px;
 }
 
 @media (min-width: 400px) {
@@ -42,7 +43,7 @@
   :root {
     --card-w: 64px;
     --card-h: 88px;
-    --card-font: 10px;
+    --card-font: 16px;
     --card-cell: 4px;
   }
 }
@@ -66,28 +67,50 @@
 }
 
 .playing-card--red {
-  color: var(--c-red);
+  color: var(--c-card-red);
 }
 
 .playing-card--flip {
   animation: card-flip 0.32s steps(4, end);
 }
 
-.playing-card__rank {
+/* The index in the corner: the rank over a small suit. It is the part of a card that is always visible, even
+   when a crowded hand overlaps its cards, so it is big and it carries the suit as well as the value. */
+.playing-card__index {
   position: absolute;
-  top: 4px;
-  left: 4px;
+  top: 3px;
+  left: 3px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  line-height: 1;
+}
+
+.playing-card__index--end {
+  top: auto;
+  right: 3px;
+  bottom: 3px;
+  left: auto;
+  transform: rotate(180deg);
+}
+
+.playing-card__rank {
   font-family: var(--font-title);
   font-size: var(--card-font);
   line-height: 1;
 }
 
-.playing-card__rank--end {
-  top: auto;
-  right: 4px;
-  bottom: 4px;
-  left: auto;
-  transform: rotate(180deg);
+.playing-card__mini {
+  --sprite-cell: var(--card-mini);
+}
+
+/* On the narrowest cards there is room for one clear index and nothing else. */
+@media (max-width: 399px) {
+  .playing-card__suit,
+  .playing-card__index--end {
+    display: none;
+  }
 }
 
 /* The back: a red and dark red checkerboard inside a white border. */
@@ -125,7 +148,7 @@
 /* ------------------------------------------------------------------ the table */
 
 .bj-table {
-  --frame-color: #2f8f5b;
+  --frame-color: var(--c-frame);
   /* Lets the card fans measure the table with `cqw` units. */
   container-type: inline-size;
   position: relative;
@@ -153,7 +176,7 @@
 .bj-table__rules {
   margin: 0;
   color: var(--c-gold);
-  font-size: 16px;
+  font-size: calc(20px * var(--text-scale));
   line-height: 1.05;
   text-align: center;
   opacity: 0.85;
@@ -174,7 +197,7 @@
   justify-content: center;
   gap: calc(var(--px) * 2);
   color: var(--c-white);
-  font-size: 8px;
+  font-size: calc(11px * var(--text-scale));
   letter-spacing: 0.1em;
 }
 
@@ -196,7 +219,7 @@
   margin: auto 0;
   color: var(--c-gold);
   font-family: var(--font-title);
-  font-size: 9px;
+  font-size: calc(11px * var(--text-scale));
   letter-spacing: 0.1em;
   animation: cursor-blink 0.8s steps(1, end) infinite;
 }
@@ -218,7 +241,7 @@
 }
 
 .hand--active {
-  box-shadow: inset 0 0 0 2px rgba(245, 196, 81, 0.6);
+  box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--c-gold) 60%, transparent);
 }
 
 .hand--active .hand__arrow {
@@ -233,7 +256,7 @@
   justify-content: center;
   gap: var(--px) calc(var(--px) * 2);
   margin: 0;
-  font-size: 16px;
+  font-size: calc(20px * var(--text-scale));
 }
 
 .hand__total {
@@ -241,20 +264,20 @@
   background: rgba(0, 0, 0, 0.4);
   color: var(--c-white);
   font-family: var(--font-title);
-  font-size: 8px;
+  font-size: calc(11px * var(--text-scale));
 }
 
 .hand--over .hand__total {
-  color: var(--c-red);
+  color: var(--c-red-text);
 }
 
 .hand__bet {
-  color: #bfe3cc;
+  color: var(--c-muted);
 }
 
 .hand__tag {
   font-family: var(--font-title);
-  font-size: 8px;
+  font-size: calc(11px * var(--text-scale));
 }
 
 .hand--win .hand__tag {
@@ -271,7 +294,7 @@
 
 .hand--loss .hand__tag,
 .hand--bust .hand__tag {
-  color: var(--c-red);
+  color: var(--c-red-text);
 }
 
 /* ------------------------------------------------------------------ controls */
@@ -282,22 +305,22 @@
   gap: calc(var(--px) * 3);
   margin: 0;
   color: var(--c-muted);
-  font-size: 18px;
+  font-size: calc(22px * var(--text-scale));
 }
 
 .bj-info b {
   color: var(--c-gold);
   font-family: var(--font-title);
-  font-size: 10px;
+  font-size: calc(12px * var(--text-scale));
   font-weight: 400;
 }
 
 .bj-notice,
 .bj-broke {
   margin: 0;
-  color: var(--c-red);
+  color: var(--c-red-text);
   font-family: var(--font-title);
-  font-size: 9px;
+  font-size: calc(11px * var(--text-scale));
   line-height: 1.5;
   text-align: center;
 }
@@ -340,7 +363,7 @@
 .bet-controls__label {
   color: var(--c-gold);
   font-family: var(--font-title);
-  font-size: 8px;
+  font-size: calc(11px * var(--text-scale));
 }
 
 /* A percentage width, because an input's own width (about 240px) would otherwise stop the
@@ -354,28 +377,28 @@
   background: transparent;
   color: var(--c-white);
   font-family: var(--font-title);
-  font-size: 12px;
+  font-size: calc(14px * var(--text-scale));
   outline: none;
 }
 
 .bet-controls__input[aria-invalid='true'] {
-  color: var(--c-red);
+  color: var(--c-red-text);
 }
 
 .bet-controls__hint {
   margin: 0;
   color: var(--c-muted);
-  font-size: 16px;
+  font-size: calc(20px * var(--text-scale));
   text-align: center;
 }
 
 .bet-controls__hint--bad {
-  color: var(--c-red);
+  color: var(--c-red-text);
 }
 
 .action-bar {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: minmax(0, 1fr);
   gap: calc(var(--px) * 2);
 }
 
@@ -383,8 +406,41 @@
   width: 100%;
 }
 
-@media (min-width: 400px) {
-  .action-bar {
+/* One button per row on the very narrowest sidebar, two per row when each has room for its longest label
+   (DOUBLE), and four per row on a wide panel. How much room that takes depends on the chosen text size. */
+@media (min-width: 280px) {
+  .casino-app[data-text='normal'] .action-bar {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 300px) {
+  .casino-app[data-text='large'] .action-bar {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 340px) {
+  .casino-app[data-text='xlarge'] .action-bar {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Four buttons in a row only when each has room for its longest label (DOUBLE) at the chosen text size. */
+@media (min-width: 500px) {
+  .casino-app[data-text='normal'] .action-bar {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 540px) {
+  .casino-app[data-text='large'] .action-bar {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 620px) {
+  .casino-app[data-text='xlarge'] .action-bar {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
@@ -421,7 +477,7 @@
   gap: var(--px);
   max-width: 100%;
   padding: calc(var(--px) * 2) calc(var(--px) * 3);
-  background: rgba(16, 18, 22, 0.9);
+  background: color-mix(in srgb, var(--c-bg) 90%, transparent);
   box-shadow: 0 0 0 var(--px) var(--fx-color);
   text-align: center;
   animation: banner-pop 0.5s steps(5, end);
@@ -451,26 +507,26 @@
 .result-banner__title {
   color: var(--fx-color);
   font-family: var(--font-title);
-  font-size: 11px;
+  font-size: calc(12px * var(--text-scale));
   letter-spacing: 0.08em;
   text-shadow: 0 0 8px var(--fx-color);
 }
 
 .result-banner--special .result-banner__title {
-  font-size: 12px;
+  font-size: calc(14px * var(--text-scale));
   animation: blackjack-colours 0.6s steps(1, end) infinite;
 }
 
 .result-banner__amount {
   color: var(--c-white);
   font-family: var(--font-title);
-  font-size: 9px;
+  font-size: calc(11px * var(--text-scale));
 }
 
 .result-banner__detail {
   margin: 0;
   color: var(--c-muted);
-  font-size: 16px;
+  font-size: calc(20px * var(--text-scale));
   line-height: 1;
 }
 

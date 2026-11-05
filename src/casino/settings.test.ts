@@ -19,14 +19,26 @@ function setup(storage = new MemoryStorage()) {
 describe('the defaults', () => {
   it('are valid, with sound on at half volume and animations on', () => {
     expect(isSettings(DEFAULT_SETTINGS)).toBe(true);
-    expect(DEFAULT_SETTINGS).toEqual({ sound: true, volume: 50, animations: true, reducedMotion: false });
+    expect(DEFAULT_SETTINGS).toEqual({
+      sound: true,
+      volume: 50,
+      animations: true,
+      reducedMotion: false,
+      textSize: 'normal',
+      theme: 'classic',
+      cardDesign: 'classic',
+      rouletteAnimation: 'classic',
+      soundPack: 'classic',
+      soundCategories: { interface: true, chips: true, cards: true, roulette: true, results: true },
+      colors: {},
+    });
   });
 });
 
 describe('isSettings', () => {
   it('accepts a complete valid set and rejects anything else', () => {
-    expect(isSettings({ sound: false, volume: 0, animations: true, reducedMotion: true })).toBe(true);
-    expect(isSettings({ sound: false, volume: 100, animations: false, reducedMotion: false })).toBe(true);
+    expect(isSettings({ ...DEFAULT_SETTINGS, sound: false, volume: 0, reducedMotion: true, textSize: 'large' })).toBe(true);
+    expect(isSettings({ ...DEFAULT_SETTINGS, sound: false, volume: 100, animations: false, textSize: 'xlarge' })).toBe(true);
 
     expect(isSettings(undefined)).toBe(false);
     expect(isSettings(null)).toBe(false);
@@ -84,11 +96,13 @@ describe('parseSettingsPatch', () => {
 
 describe('sanitizeSettings', () => {
   it('keeps every valid field and defaults every invalid or missing one', () => {
-    expect(sanitizeSettings({ sound: false, volume: 80, animations: false, reducedMotion: true })).toEqual({
+    expect(sanitizeSettings({ ...DEFAULT_SETTINGS, sound: false, volume: 80, animations: false, reducedMotion: true, textSize: 'large' })).toEqual({
+      ...DEFAULT_SETTINGS,
       sound: false,
       volume: 80,
       animations: false,
       reducedMotion: true,
+      textSize: 'large',
     });
     expect(sanitizeSettings({ sound: false, volume: 9_999, animations: 'maybe' })).toEqual({
       ...DEFAULT_SETTINGS,
@@ -99,6 +113,35 @@ describe('sanitizeSettings', () => {
 
   it('falls back to the defaults for anything that is not an object', () => {
     for (const raw of [undefined, null, 'loud', 42, [], true]) expect(sanitizeSettings(raw)).toEqual(DEFAULT_SETTINGS);
+  });
+});
+
+describe('the text size', () => {
+  it('is one of three sizes, and normal unless chosen', () => {
+    expect(DEFAULT_SETTINGS.textSize).toBe('normal');
+    for (const textSize of ['normal', 'large', 'xlarge']) expect(isSettings({ ...DEFAULT_SETTINGS, textSize })).toBe(true);
+    for (const textSize of ['huge', 'LARGE', '', 1.2, null, undefined]) expect(isSettings({ ...DEFAULT_SETTINGS, textSize })).toBe(false);
+  });
+
+  it('can be changed with a patch, and a patch with a bad size is refused whole', () => {
+    expect(parseSettingsPatch({ textSize: 'large' })).toEqual({ textSize: 'large' });
+    expect(parseSettingsPatch({ textSize: 'xlarge', volume: 10 })).toEqual({ textSize: 'xlarge', volume: 10 });
+    for (const bad of [{ textSize: 'huge' }, { textSize: 2 }, { textSize: null }, { textSize: 'large', volume: 500 }]) {
+      expect(parseSettingsPatch(bad), JSON.stringify(bad)).toBeUndefined();
+    }
+  });
+
+  it('keeps a valid saved size and falls back to normal for an invalid or missing one', () => {
+    expect(sanitizeSettings({ textSize: 'xlarge' }).textSize).toBe('xlarge');
+    expect(sanitizeSettings({ textSize: 'gigantic' }).textSize).toBe('normal');
+    expect(sanitizeSettings({ volume: 10 }).textSize).toBe('normal'); // saved before the setting existed
+  });
+
+  it('is saved and restored like the other settings', async () => {
+    const first = setup();
+    first.store.update({ textSize: 'large' });
+    await first.store.flush();
+    expect(setup(first.storage).store.settings.textSize).toBe('large');
   });
 });
 
@@ -121,7 +164,7 @@ describe('SettingsStore', () => {
     expect(next).toEqual({ ...DEFAULT_SETTINGS, volume: 90, sound: false });
     expect(store.settings).toBe(next);
     expect(seen).toEqual([next]);
-    expect(storage.writes).toEqual([{ key: SETTINGS_KEY, value: { version: 1, ...next } }]);
+    expect(storage.writes).toEqual([{ key: SETTINGS_KEY, value: { version: 2, ...next } }]);
   });
 
   it('leaves everything else alone', () => {
@@ -169,7 +212,7 @@ describe('SettingsStore', () => {
     await first.store.flush();
 
     const second = setup(first.storage);
-    expect(second.store.settings).toEqual({ sound: false, volume: 15, animations: true, reducedMotion: true });
+    expect(second.store.settings).toEqual({ ...DEFAULT_SETTINGS, sound: false, volume: 15, reducedMotion: true });
   });
 
   it('starts from the defaults when the saved data is damaged, keeping the parts that are fine', () => {

@@ -55,7 +55,7 @@ describe('where the wheel stops', () => {
 
   it('always turns the wheel forwards by at least the planned number of full turns', () => {
     for (let index = 0; index < POCKET_COUNT; index += 1) {
-      const plan = planSpin(1.7, index, 4);
+      const plan = planSpin(1.7, index);
       expect(plan.endRotation - plan.startRotation).toBeGreaterThanOrEqual(4 * TAU);
       expect(plan.endRotation - plan.startRotation).toBeLessThan(5 * TAU);
     }

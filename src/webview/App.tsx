@@ -5,6 +5,7 @@ import type { BlackjackAction } from '../game/blackjack/view';
 import type { ResetScope } from '../game/resetScope';
 import type { RouletteAction } from '../game/roulette/view';
 import { CasinoHeader } from './components/CasinoHeader';
+import { AppearanceProvider, useApplyAppearance, useAppearanceValue } from './customization/AppearanceContext';
 import { NavBar } from './components/NavBar';
 import { PixelParticles } from './components/PixelParticles';
 import { SupportButton } from './components/SupportButton';
@@ -18,6 +19,7 @@ import { useSnapshotReport } from './hooks/useSnapshotReport';
 import { MotionContext, motionLevel, useSystemReducedMotion } from './motion';
 import type { Page } from './navigation';
 import { Blackjack, type BlackjackShown } from './pages/Blackjack';
+import { Customize } from './pages/Customize';
 import { Home } from './pages/Home';
 import { Roulette, type RouletteShown } from './pages/Roulette';
 import { Settings } from './pages/Settings';
@@ -32,8 +34,8 @@ interface AppProps {
 /** The balance is never held on screen for longer than this, whatever happens. */
 const MAX_HOLD_MS = 20_000;
 
-/** The support button belongs on the calm screens, never next to the controls of a game. */
-const SHOWS_SUPPORT: readonly Page[] = ['home', 'statistics'];
+/** The coffee button belongs on the calm screens (the Settings' About card has its own), never next to a game's controls. */
+const SHOWS_SUPPORT: readonly Page[] = ['home'];
 
 export function App({ host }: AppProps) {
   const { init, snapshot, blackjack, roulette, rejection, settings, resetResult } = useCasinoHost(host);
@@ -48,6 +50,8 @@ export function App({ host }: AppProps) {
   // Until the host sends the saved settings the defaults apply, which never make anything louder or
   // busier than the player's own choice would, because sound waits for the real settings (see below).
   const effectiveSettings = settings ?? DEFAULT_SETTINGS;
+  const appearance = useAppearanceValue(effectiveSettings);
+  useApplyAppearance(appearance);
   const systemReducedMotion = useSystemReducedMotion();
   const motion = motionLevel(effectiveSettings, systemReducedMotion);
   const appRef = useRef<HTMLDivElement>(null);
@@ -76,6 +80,7 @@ export function App({ host }: AppProps) {
   const requestReset = useCallback((scope: ResetScope) => host.post({ type: 'reset', scope }), [host]);
   const goHome = useCallback(() => setPage('home'), []);
   const openSettings = useCallback(() => setPage('settings'), []);
+  const openCustomize = useCallback(() => setPage('customize'), []);
 
   const shownBalance = heldBalance ?? snapshot?.balance;
 
@@ -109,6 +114,8 @@ export function App({ host }: AppProps) {
         );
       case 'statistics':
         return <Statistics snapshot={state} />;
+      case 'customize':
+        return <Customize settings={effectiveSettings} onChange={changeSettings} />;
       case 'settings':
         return (
           <Settings
@@ -120,6 +127,7 @@ export function App({ host }: AppProps) {
             onChange={changeSettings}
             onReset={requestReset}
             onSupport={openSupport}
+            onOpenCustomize={openCustomize}
           />
         );
     }
@@ -127,10 +135,11 @@ export function App({ host }: AppProps) {
 
   return (
     <PresentationContext.Provider value={presentation}>
+      <AppearanceProvider value={appearance}>
       <MotionContext.Provider value={motion}>
       <SoundProvider settings={settings}>
       <ButtonSounds />
-      <div ref={appRef} className="casino-app" data-view={init?.viewKind} data-motion={motion}>
+      <div ref={appRef} className="casino-app" data-view={init?.viewKind} data-motion={motion} data-text={effectiveSettings.textSize}>
         {motion === 'full' && <PixelParticles />}
         <div className="casino-top">
           <CasinoHeader balance={shownBalance} />
@@ -148,6 +157,7 @@ export function App({ host }: AppProps) {
       </div>
       </SoundProvider>
       </MotionContext.Provider>
+      </AppearanceProvider>
     </PresentationContext.Provider>
   );
 }

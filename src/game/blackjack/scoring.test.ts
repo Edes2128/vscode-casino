@@ -84,10 +84,12 @@ describe('isPair', () => {
     expect(isPair(cards('KS KH'))).toBe(true);
   });
 
-  it('is not two different ranks, even with the same value', () => {
-    expect(isPair(cards('10S KD'))).toBe(false);
-    expect(isPair(cards('QS JD'))).toBe(false);
-    expect(isPair(cards('8S 9D'))).toBe(false);
+  it('is any two ten-value cards, as at a real table: 10, J, Q and K are all worth 10', () => {
+    for (const hand of ['10S KD', 'QS JD', 'JH KC', '10D QS', '10S 10H']) expect(isPair(cards(hand)), hand).toBe(true);
+  });
+
+  it('is not two cards of different value', () => {
+    for (const hand of ['8S 9D', 'AS KH', 'AS 10D', '9S 10D', '2S 3D', '5H 6H']) expect(isPair(cards(hand)), hand).toBe(false);
   });
 
   it('is not a hand of three cards', () => {

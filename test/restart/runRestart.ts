@@ -117,7 +117,16 @@ async function main(): Promise<void> {
  */
 function casinoStateIsOnDisk(userData: string): boolean {
   const database = path.join(userData, 'User', 'globalStorage', 'state.vscdb');
-  const needles = ['"casino.state":{"version":1', '"balance":935', '"casino.settings":{"version":1', '"volume":35'];
+  const needles = [
+    '"casino.state":{"version":1',
+    '"balance":935',
+    '"casino.settings":{"version":2',
+    '"volume":35',
+    '"theme":"royal"',
+    '"cardDesign":"medieval"',
+    '"soundPack":"cyber"',
+    '"table":"#224466"',
+  ];
   return [database, `${database}-wal`]
     .filter((file) => fs.existsSync(file))
     .some((file) => {

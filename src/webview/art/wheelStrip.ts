@@ -1,26 +1,28 @@
 import type { Palette } from './pixelRuns';
 import { WHEEL_FRAMES, WHEEL_PALETTE, WHEEL_SIZE, wheelFrameRows } from './wheel';
 
-let cached: string | null | undefined;
+/** One strip per palette (a theme's colors), built on first use. */
+const cached = new Map<string, string | null>();
 
 /**
  * All wheel frames side by side as one PNG data URL (WHEEL_FRAMES * WHEEL_SIZE wide).
  * CSS steps through it with `background-position`, so the animation costs no JavaScript per
  * frame. Built once, on first use. Returns `undefined` if canvas is unavailable.
  */
-export function getWheelStripUrl(): string | undefined {
-  if (cached === undefined) cached = buildStrip();
-  return cached ?? undefined;
+export function getWheelStripUrl(palette: Palette = WHEEL_PALETTE): string | undefined {
+  const key = JSON.stringify(palette);
+  if (!cached.has(key)) cached.set(key, buildStrip(palette));
+  return cached.get(key) ?? undefined;
 }
 
-function buildStrip(): string | null {
+function buildStrip(palette: Palette): string | null {
   const canvas = document.createElement('canvas');
   canvas.width = WHEEL_SIZE * WHEEL_FRAMES;
   canvas.height = WHEEL_SIZE;
   const context = canvas.getContext('2d');
   if (context === null) return null;
 
-  const colours = parsePalette(WHEEL_PALETTE);
+  const colours = parsePalette(palette);
   const image = context.createImageData(canvas.width, canvas.height);
 
   for (let frame = 0; frame < WHEEL_FRAMES; frame += 1) {

@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { getWheelStripUrl } from '../art/wheelStrip';
-import { WHEEL_FRAMES, WHEEL_SIZE } from '../art/wheel';
+import { WHEEL_FRAMES, WHEEL_SIZE, wheelPaletteFor } from '../art/wheel';
+import { useAppearance } from '../customization/AppearanceContext';
 import { cssVars } from '../cssVars';
 import { PixelScene } from './PixelScene';
 
@@ -9,7 +10,9 @@ import { PixelScene } from './PixelScene';
  * it, so the animation costs no JavaScript per frame.
  */
 export function RouletteArt() {
-  const strip = useMemo(() => getWheelStripUrl(), []);
+  // The rim, hub and bowl wear the theme; the red, black and green pockets stay what they mean.
+  const { rim, rimLight, bowl } = useAppearance().resolved.tokens;
+  const strip = useMemo(() => getWheelStripUrl(wheelPaletteFor({ rim, rimLight, bowl })), [rim, rimLight, bowl]);
 
   return (
     <PixelScene cols={WHEEL_SIZE} rows={WHEEL_SIZE} className="rl-art">

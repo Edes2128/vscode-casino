@@ -1,6 +1,6 @@
 import { randomInt, type Rng } from '../rng';
 import { payoutFor } from './betting';
-import type { Pocket, RouletteColor } from './types';
+import type { Pocket, RouletteSelection } from './types';
 import { POCKET_COUNT, POCKETS } from './wheel';
 
 /** Spins the wheel: every one of the 37 pockets is equally likely. */
@@ -12,8 +12,8 @@ export function spinWheel(rng: Rng): Pocket {
 
 export interface SpinResult {
   readonly pocket: Pocket;
-  /** The colour the player bet on. */
-  readonly color: RouletteColor;
+  /** What the player bet on: a colour or a number. */
+  readonly selection: RouletteSelection;
   readonly bet: number;
   readonly won: boolean;
   /** Chips returned to the player: the stake back plus winnings, or 0. */
@@ -23,7 +23,7 @@ export interface SpinResult {
 }
 
 /** Decides a bet against where the ball landed. */
-export function resolveSpin(pocket: Pocket, color: RouletteColor, bet: number): SpinResult {
-  const payout = payoutFor(color, bet, pocket);
-  return { pocket, color, bet, won: payout > 0, payout, net: payout - bet };
+export function resolveSpin(pocket: Pocket, selection: RouletteSelection, bet: number): SpinResult {
+  const payout = payoutFor(selection, bet, pocket);
+  return { pocket, selection, bet, won: payout > 0, payout, net: payout - bet };
 }

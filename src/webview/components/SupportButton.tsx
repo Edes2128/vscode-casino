@@ -1,4 +1,4 @@
-import { COFFEE } from '../art/sprites';
+import { COFFEE_ICON, ICON_PALETTE } from '../art/sprites';
 import { PixelButton } from './PixelButton';
 import { PixelSprite } from './PixelSprite';
 
@@ -6,24 +6,30 @@ interface SupportButtonProps {
   readonly onClick: () => void;
 }
 
+/** What the invitation says. One place, so the screens that show it cannot drift apart. */
+export const SUPPORT_TEXT = 'Enjoying the casino? Buy me a coffee!';
+
 /**
- * "Support me": an optional tip for the developer on Buy Me a Coffee. It only asks the host to
- * open the page in the browser, so nothing is loaded inside the webview. The note keeps it clear
- * that this is not a way to get in-game chips: the casino is virtual chips only.
+ * An optional tip for the developer on Buy Me a Coffee. It only asks the host to open the page in the browser
+ * (the address is fixed on the host, in `src/shared/support.ts`), so nothing is loaded inside the webview. It is a
+ * small, quiet button in the theme's own colors, shown on the calm screens (the lobby and the settings' About), never
+ * beside the controls of a game, never as a pop-up. Nothing in the casino depends on it: every option is free, and
+ * it gives no chips.
  */
 export function SupportButton({ onClick }: SupportButtonProps) {
   return (
     <div className="support">
+      <p className="support__text">{SUPPORT_TEXT}</p>
       <PixelButton
         variant="support"
         size="sm"
         onClick={onClick}
-        aria-label="Support me: leave the developer an optional tip on Buy Me a Coffee. Opens in your browser. It gives no chips."
+        aria-label="Buy me a coffee: an optional tip for the developer. Opens in your browser. It gives no chips and unlocks nothing."
       >
-        <PixelSprite rows={COFFEE.rows} palette={COFFEE.palette} className="support__cup" />
-        SUPPORT ME
+        <PixelSprite rows={COFFEE_ICON} palette={ICON_PALETTE} className="support__cup" />
+        BUY ME A COFFEE
       </PixelButton>
-      <p className="support__note">OPTIONAL TIP FOR THE DEVELOPER. IT GIVES NO CHIPS.</p>
+      <p className="support__note">OPTIONAL. EVERYTHING IN THE CASINO IS FREE.</p>
     </div>
   );
 }

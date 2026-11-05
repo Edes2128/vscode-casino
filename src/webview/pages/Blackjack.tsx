@@ -46,6 +46,15 @@ interface BlackjackProps {
 const DEFAULT_BET = 25;
 const NOTICE_MS = 3_500;
 
+/** The host's refusal, said where the player is looking. */
+function Notice({ text }: { readonly text: string }) {
+  return (
+    <p className="bj-notice" role="alert">
+      {text}
+    </p>
+  );
+}
+
 export function Blackjack({ view, balance, rejection, onAction, onBack, onOpenSettings, onShown }: BlackjackProps) {
   // Calm still paces the dealer's reveal step by step (nothing moves); only "off" shows it all at once.
   const animate = useMotion() !== 'off';
@@ -167,31 +176,38 @@ export function Blackjack({ view, balance, rejection, onAction, onBack, onOpenSe
             ) : (
               <>
                 <BetControls balance={chips} bet={bet} onBetChange={setBet} disabled={pending} />
-                <PixelButton variant="gold" size="lg" block disabled={!canDeal} onClick={() => send({ kind: 'deal', bet })}>
-                  DEAL
-                </PixelButton>
+                <div className="action-dock">
+                  {notice !== undefined && <Notice text={notice} />}
+                  <PixelButton variant="gold" size="lg" block disabled={!canDeal} onClick={() => send({ kind: 'deal', bet })}>
+                    DEAL
+                  </PixelButton>
+                </div>
               </>
             ))}
 
-          {table.phase === 'player' && <ActionBar actions={table.actions} disabled={pending} onMove={onMove} />}
+          {table.phase === 'player' && (
+            <div className="action-dock">
+              {notice !== undefined && <Notice text={notice} />}
+              <ActionBar actions={table.actions} disabled={pending} onMove={onMove} />
+            </div>
+          )}
 
           {table.phase === 'settled' && (
-            <PixelButton
-              variant="gold"
-              size="lg"
-              block
-              disabled={pending || !shown.resultVisible}
-              onClick={() => send({ kind: 'newRound' })}
-            >
-              NEW ROUND
-            </PixelButton>
+            <div className="action-dock">
+              {notice !== undefined && <Notice text={notice} />}
+              <PixelButton
+                variant="gold"
+                size="lg"
+                block
+                disabled={pending || !shown.resultVisible}
+                onClick={() => send({ kind: 'newRound' })}
+              >
+                NEW ROUND
+              </PixelButton>
+            </div>
           )}
 
-          {notice !== undefined && (
-            <p className="bj-notice" role="alert">
-              {notice}
-            </p>
-          )}
+          {notice !== undefined && table.phase === 'betting' && chips < MIN_BET && <Notice text={notice} />}
         </>
       )}
     </GameShell>

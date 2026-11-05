@@ -23,11 +23,38 @@
   --c-neon: #65e572;
   --c-gold: #f5c451;
   --c-red: #e94b4b;
+  /* Red as TEXT on the dark backgrounds, and on the white of a playing card. The plain red is for fills. */
+  --c-red-text: #ff9a9a;
+  --c-card-red: #c4242b;
   --c-white: #f2f0e8;
-  --c-muted: #9299a6;
+  /* Secondary text. Bright enough to read at small pixel sizes: about 9.5 to 1 on the panel colour. */
+  --c-muted: #bcc3cf;
+  /* The frame around a table, and hairlines. */
+  --c-frame: #2f8f5b;
+  /* The border of an ordinary panel. A theme may give it a metal of its own. */
+  --c-panel-frame: var(--c-muted);
+  --c-line: #2a2f3a;
+  /* The primary button and the colors that read on the accents (a theme sets all of these; see customization/appearance.ts). */
+  --c-button: #65e572;
+  --c-button-fg: #0d1a10;
+  --c-button-shade: #2f8f3b;
+  --c-on-neon: #0d1a10;
+  --c-on-gold: #2a1c04;
+  --c-on-red: #1a0707;
+  --c-gold-shade: #b8862b;
+  --c-red-shade: #a82f2f;
+  --c-neon-shade: #2f8f3b;
+  /* The roulette wheel, and the tint of chip stripes (transparent: chips keep their own colors). */
+  --c-rim: #f5c451;
+  --c-rim-light: #ffe08a;
+  --c-bowl: #6b4423;
+  --c-chip: transparent;
 
   /* One "pixel" of the UI. Every border, gap and shadow is a multiple of it. */
   --px: 4px;
+
+  /* Scales every piece of text. Set to 1.2 or 1.4 by the Text size setting (see casino.css). */
+  --text-scale: 1;
 
   --font-title: 'Press Start 2P', ui-monospace, monospace;
   --font-body: 'VT323', ui-monospace, monospace;
@@ -74,12 +101,12 @@ body {
   background-color: var(--c-bg);
   /* Faint dither grid, so the dark background never reads as a flat web page. */
   background-image:
-    linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+    linear-gradient(color-mix(in srgb, var(--c-white) 3%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, var(--c-white) 3%, transparent) 1px, transparent 1px);
   background-size: calc(var(--px) * 4) calc(var(--px) * 4);
   color: var(--c-white);
   font-family: var(--font-body);
-  font-size: 20px;
+  font-size: calc(24px * var(--text-scale));
   line-height: 1.15;
   image-rendering: pixelated;
   -webkit-font-smoothing: none;
@@ -97,8 +124,8 @@ body::after {
     to bottom,
     transparent 0,
     transparent 2px,
-    rgba(0, 0, 0, 0.16) 2px,
-    rgba(0, 0, 0, 0.16) 4px
+    rgba(0, 0, 0, 0.06) 2px,
+    rgba(0, 0, 0, 0.06) 4px
   );
 }
 
@@ -116,7 +143,7 @@ p {
 
 ::selection {
   background: var(--c-neon);
-  color: var(--c-bg);
+  color: var(--c-on-neon);
 }
 
 :focus-visible {

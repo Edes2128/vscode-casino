@@ -1,4 +1,5 @@
-import type { Pocket } from '../game/roulette/types';
+import { describeSelection, oddsOf } from '../game/roulette/betting';
+import type { Pocket, RouletteSelection } from '../game/roulette/types';
 import type { SpinView } from '../game/roulette/view';
 import { formatChips } from './format';
 import type { OutcomeKind } from './components/ResultEffects';
@@ -10,14 +11,22 @@ export interface SpinOutcomeText {
   readonly detail: string;
 }
 
-/** The words for the result banner. A hit on the green is the special one. */
+/** The bet in capitals for the screen: "RED", "NUMBER 17". */
+export const selectionLabel = (selection: RouletteSelection): string => describeSelection(selection).toUpperCase();
+
+/** The bet's odds as the screen says them: "1 TO 1", "35 TO 1". */
+export const selectionOdds = (selection: RouletteSelection): string => `${oddsOf(selection)} TO 1`;
+
+/** The words for the result banner. A 35 to 1 win, on the green or on a number, is the special one. */
 export function spinOutcomeText(last: SpinView): SpinOutcomeText {
-  const kind: OutcomeKind = last.won ? (last.color === 'green' ? 'special' : 'win') : 'loss';
+  const big = last.won && oddsOf(last.selection) >= 35;
+  const kind: OutcomeKind = last.won ? (big ? 'special' : 'win') : 'loss';
+  const bigTitle = last.selection.kind === 'number' ? `NUMBER ${last.selection.number}! 35 TO 1` : 'GREEN! 35 TO 1';
   return {
     kind,
-    title: kind === 'special' ? 'GREEN! 35 TO 1' : last.won ? 'YOU WIN' : 'YOU LOSE',
+    title: big ? bigTitle : last.won ? 'YOU WIN' : 'YOU LOSE',
     amount: last.won ? `+${formatChips(last.net)}` : `-${formatChips(Math.abs(last.net))}`,
-    detail: `${last.detail}. You bet ${last.color}.`,
+    detail: `${last.detail}. You bet ${describeSelection(last.selection)}.`,
   };
 }
 

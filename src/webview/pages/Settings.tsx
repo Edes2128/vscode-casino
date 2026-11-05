@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
-import type { Settings as CasinoSettings, SettingsPatch } from '../../casino/settings';
+import type { Settings as CasinoSettings, SettingsPatch, TextSize } from '../../casino/settings';
 import type { ResetOutcome, ResetScope } from '../../game/resetScope';
 import { PixelButton } from '../components/PixelButton';
 import { PixelCard } from '../components/PixelCard';
+import { SegmentedControl } from '../components/SegmentedControl';
 import { SupportButton } from '../components/SupportButton';
 import { Toggle } from '../components/Toggle';
 import { VolumeSlider } from '../components/VolumeSlider';
@@ -29,15 +30,23 @@ interface SettingsProps {
   /** Asks the host to reset. The host asks the player to confirm. */
   readonly onReset: (scope: ResetScope) => void;
   readonly onSupport: () => void;
+  /** Opens the Customize screen: themes, cards, wheel animations, sound packs and colors. */
+  readonly onOpenCustomize?: (() => void) | undefined;
 }
 
 const RESETS: ReadonlyArray<{ scope: ResetScope; label: string; hint: string; variant: 'primary' | 'danger' }> = [
   { scope: 'balance', label: 'RESET BALANCE', hint: 'Back to 1,000 chips. Statistics are kept.', variant: 'primary' },
-  { scope: 'statistics', label: 'RESET STATISTICS', hint: 'Clears the statistics and the history. Chips are kept.', variant: 'primary' },
+  { scope: 'statistics', label: 'RESET STATS', hint: 'Clears the statistics and the history. Chips are kept.', variant: 'primary' },
   { scope: 'all', label: 'RESET ALL', hint: 'Balance, statistics and history. Settings are kept.', variant: 'danger' },
 ];
 
 const NOTICE_MS = 6_000;
+
+const TEXT_SIZE_OPTIONS = [
+  { value: 'normal', label: 'NORMAL' },
+  { value: 'large', label: 'LARGE' },
+  { value: 'xlarge', label: 'EXTRA LARGE' },
+] as const satisfies ReadonlyArray<{ value: TextSize; label: string }>;
 
 export function Settings({
   settings,
@@ -48,6 +57,7 @@ export function Settings({
   onChange,
   onReset,
   onSupport,
+  onOpenCustomize,
 }: SettingsProps) {
   // Waiting for the player's answer in VS Code's dialog. The window is blocked while it is open.
   const [asking, setAsking] = useState<ResetScope>();
@@ -111,6 +121,27 @@ export function Settings({
         <PixelButton size="sm" variant="ghost" block disabled={!settings.sound || settings.volume === 0} onClick={testSound}>
           TEST SOUND
         </PixelButton>
+        <p className="setting-note">MORE SOUNDS: STYLE &gt; SOUNDS</p>
+      </PixelCard>
+
+      {onOpenCustomize !== undefined && (
+        <PixelCard title="LOOK AND FEEL">
+          <p className="setting-note">8 THEMES, 6 CARD DESIGNS, 5 WHEEL ANIMATIONS, 5 SOUND PACKS AND YOUR OWN COLORS. ALL FREE.</p>
+          <PixelButton size="sm" block onClick={onOpenCustomize}>
+            OPEN CUSTOMIZE
+          </PixelButton>
+        </PixelCard>
+      )}
+
+      <PixelCard title="TEXT SIZE">
+        <SettingRow label="SIZE" hint="Makes every letter in the casino bigger. Try it: the whole screen changes.">
+          <SegmentedControl
+            label="Text size"
+            options={TEXT_SIZE_OPTIONS}
+            value={settings.textSize}
+            onChange={(textSize) => onChange({ textSize })}
+          />
+        </SettingRow>
       </PixelCard>
 
       <PixelCard title="MOTION" tone="gold">

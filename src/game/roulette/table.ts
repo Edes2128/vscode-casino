@@ -3,7 +3,7 @@ import type { HistoryEntry } from '../../casino/types';
 import { cryptoRng, type Rng } from '../rng';
 import { fail, OK, type TableResult } from '../tableResult';
 import { resolveSpin, spinWheel } from './engine';
-import type { Pocket } from './types';
+import { isRouletteSelection, type Pocket } from './types';
 import { IDLE_ROULETTE_VIEW, MAX_RECENT, type RouletteAction, type RouletteView, type SpinView } from './view';
 import { describePocket, parsePocket } from './wheel';
 
@@ -52,18 +52,21 @@ export class RouletteTable {
   }
 
   perform(action: RouletteAction): TableResult {
+    // The message boundary has already validated this. Checked again, because chips are about to move.
+    if (!isRouletteSelection(action.selection)) return fail('not-allowed');
+
     const begun = this.#store.beginRound('roulette', action.bet);
     if (!begun.ok) return fail(begun.error);
 
     // The ball has landed before the screen shows anything. The animation only reveals it.
-    const result = resolveSpin(spinWheel(this.#rng), action.color, action.bet);
+    const result = resolveSpin(spinWheel(this.#rng), action.selection, action.bet);
     const detail = describePocket(result.pocket);
 
     this.#spin += 1;
     this.#recent = [result.pocket, ...this.#recent].slice(0, MAX_RECENT);
     this.#last = {
       pocket: result.pocket,
-      color: result.color,
+      selection: result.selection,
       bet: result.bet,
       won: result.won,
       net: result.net,

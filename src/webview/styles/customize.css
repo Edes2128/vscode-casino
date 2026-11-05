@@ -1,0 +1,320 @@
+/* ------------------------------------------------------------------ the Customize screen */
+
+/* The tabs take the room their words need, and wrap onto a second row when a word is bigger than the space. */
+.customize-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--px);
+}
+
+.customize-tab {
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: calc(var(--px) * 9);
+  padding: calc(var(--px) * 2) var(--px);
+  border: 0;
+  background: var(--c-bg-2);
+  box-shadow: inset 0 0 0 1px var(--c-line);
+  color: var(--c-muted);
+  font-family: var(--font-title);
+  font-size: calc(11px * var(--text-scale));
+  line-height: 1.2;
+  cursor: pointer;
+}
+
+.customize-tab:hover {
+  color: var(--c-white);
+}
+
+.customize-tab--active {
+  background: var(--c-bg-2);
+  box-shadow:
+    inset 0 calc(var(--px) * -1) 0 0 var(--c-neon),
+    inset 0 0 0 1px var(--c-line);
+  color: var(--c-neon);
+}
+
+.customize__panel {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--px) * 3);
+}
+
+.customize__intro {
+  margin: 0;
+  color: var(--c-muted);
+  font-size: calc(22px * var(--text-scale));
+  line-height: 1.15;
+}
+
+/* ------------------------------------------------------------------ a choice: preview, name, mark */
+
+.choice-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, calc(var(--px) * 40)), 1fr));
+  gap: calc(var(--px) * 3);
+}
+
+.choice {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--px) * 2);
+  min-width: 0;
+  padding: calc(var(--px) * 2);
+  border: 0;
+  background: var(--c-bg-2);
+  box-shadow: 0 0 0 var(--px) var(--c-line);
+  color: var(--c-white);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.choice:hover {
+  box-shadow: 0 0 0 var(--px) var(--c-muted);
+}
+
+/* The one in use: a gold frame, and the words IN USE next to its name. */
+.choice--selected,
+.choice--selected:hover {
+  box-shadow: 0 0 0 var(--px) var(--c-gold);
+}
+
+.choice__preview {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(var(--px) * 16);
+  min-width: 0;
+}
+
+.choice__name {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--px) calc(var(--px) * 2);
+  font-family: var(--font-title);
+  font-size: calc(11px * var(--text-scale));
+  line-height: 1.3;
+}
+
+.choice--selected .choice__name {
+  color: var(--c-gold);
+}
+
+.choice__mark {
+  padding: var(--px) calc(var(--px) * 1.5);
+  background: var(--c-gold);
+  color: var(--c-on-gold);
+  font-size: calc(11px * var(--text-scale));
+  line-height: 1;
+}
+
+.choice__desc {
+  color: var(--c-muted);
+  font-size: calc(20px * var(--text-scale));
+  line-height: 1.1;
+}
+
+/* ------------------------------------------------------------------ the preview scene */
+/* A table in miniature. It sets its own colors, so it shows a theme or a set of colors whatever the page uses. */
+
+.scene {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--px) * 2);
+  width: 100%;
+  padding: calc(var(--px) * 2);
+  background: var(--c-bg);
+  color: var(--c-white);
+  pointer-events: none;
+}
+
+.scene__bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: calc(var(--px) * 2);
+  font-family: var(--font-title);
+  font-size: calc(11px * var(--text-scale));
+}
+
+.scene__title {
+  color: var(--c-neon);
+}
+
+.scene__chips {
+  color: var(--c-gold);
+}
+
+.scene__table {
+  --frame-color: var(--c-frame);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: calc(var(--px) * 3);
+  padding: calc(var(--px) * 2);
+  background: var(--c-felt);
+}
+
+.scene__table .playing-card {
+  --card-w: calc(var(--px) * 7);
+  --card-h: calc(var(--px) * 10);
+}
+
+.scene__hand {
+  display: flex;
+  gap: var(--px);
+}
+
+.scene__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: calc(var(--px) * 2);
+}
+
+.scene__muted {
+  color: var(--c-muted);
+  font-size: calc(16px * var(--text-scale));
+}
+
+.colors-preview {
+  max-width: calc(var(--px) * 60);
+}
+
+/* ------------------------------------------------------------------ custom colors */
+
+.presets {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, calc(var(--px) * 28)), 1fr));
+  gap: var(--px);
+}
+
+.preset {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  gap: calc(var(--px) * 2);
+  padding: calc(var(--px) * 2);
+  border: 0;
+  background: var(--c-bg-2);
+  box-shadow: inset 0 0 0 1px var(--c-line);
+  color: var(--c-white);
+  font-family: var(--font-title);
+  font-size: calc(11px * var(--text-scale));
+  line-height: 1.2;
+  text-align: left;
+  cursor: pointer;
+}
+
+.preset--active {
+  box-shadow: inset 0 0 0 var(--px) var(--c-gold);
+  color: var(--c-gold);
+}
+
+.preset__swatches {
+  display: flex;
+  flex: none;
+}
+
+.preset__swatch {
+  display: block;
+  width: calc(var(--px) * 3);
+  height: calc(var(--px) * 6);
+}
+
+.color-fields {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--px) * 3);
+}
+
+.color-field {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: calc(var(--px) * 2) calc(var(--px) * 3);
+}
+
+.color-field__text {
+  display: flex;
+  flex: 1 1 calc(var(--px) * 30);
+  flex-direction: column;
+  gap: var(--px);
+  min-width: 0;
+}
+
+.color-field__adjusted {
+  color: var(--c-gold);
+  font-family: var(--font-title);
+  font-size: calc(11px * var(--text-scale));
+  line-height: 1.4;
+}
+
+.color-field__controls {
+  display: flex;
+  flex: 1 1 auto;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: calc(var(--px) * 2);
+  min-width: 0;
+}
+
+.color-field__picker {
+  width: calc(var(--px) * 10);
+  height: calc(var(--px) * 9);
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
+.color-field__picker::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+.color-field__picker::-webkit-color-swatch {
+  border: var(--px) solid var(--c-white);
+}
+
+.color-field__hex {
+  flex: 1 1 calc(var(--px) * 21);
+  width: calc(var(--px) * 21);
+  min-width: 0;
+  padding: calc(var(--px) * 2);
+  border: 0;
+  background: var(--c-bg);
+  box-shadow: inset 0 0 0 var(--px) var(--c-muted);
+  color: var(--c-white);
+  font-family: var(--font-body);
+  font-size: calc(22px * var(--text-scale));
+  line-height: 1;
+}
+
+.color-field__hex[aria-invalid='true'] {
+  box-shadow: inset 0 0 0 var(--px) var(--c-red-text);
+}
+
+.color-field__clear {
+  min-width: calc(var(--px) * 15);
+  padding: calc(var(--px) * 2);
+  border: 0;
+  background: transparent;
+  box-shadow: inset 0 0 0 1px var(--c-line);
+  color: var(--c-muted);
+  font-family: var(--font-title);
+  font-size: calc(11px * var(--text-scale));
+  cursor: pointer;
+}
+
+.color-field__clear:disabled {
+  opacity: 0.55;
+  cursor: default;
+}

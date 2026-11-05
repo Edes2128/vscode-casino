@@ -1,4 +1,6 @@
-import { cueTones, masterGain, type Cue, type CueOptions, type Tone } from './cues';
+import { ALL_SOUND_CATEGORIES_ON, type SoundCategories, type SoundPackId } from '../../casino/appearance';
+import { categoryOf, masterGain, type Cue, type CueOptions, type Tone } from './cues';
+import { cueTonesFor } from './packs';
 
 // The few parts of the Web Audio API the casino uses. The real AudioContext fits them, and a test can
 // stand in with a fake that records what was scheduled.
@@ -53,6 +55,13 @@ export interface PlayOptions extends CueOptions {
   readonly delayMs?: number;
   /** Play even though sound is switched off. Only for the answer to switching it on. */
   readonly force?: boolean;
+  /** Play this pack's version of the cue instead of the saved pack, such as the one just picked, which is not saved yet. */
+  readonly pack?: SoundPackId;
+  /**
+   * Play even though the cue's category is switched off. Only for the answer to switching that category on,
+   * which is not saved yet. Sound being off still silences it: that is `force`.
+   */
+  readonly ignoreCategory?: boolean;
 }
 
 /** No cue is ever put off for longer than this. */
@@ -80,6 +89,8 @@ export class SoundEngine {
 
   #enabled = false;
   #volume = 0;
+  #pack: SoundPackId = 'classic';
+  #categories: SoundCategories = ALL_SOUND_CATEGORIES_ON;
   #context: AudioContextLike | undefined;
   #noise: unknown;
   #voices = 0;
@@ -92,16 +103,29 @@ export class SoundEngine {
     this.#createContext = createContext;
   }
 
-  /** Applies the player's settings. Takes effect from the next cue. */
-  configure(enabled: boolean, volume: number): void {
+  /**
+   * Applies the player's settings: sound on or off, the volume, which sound pack plays and which groups of
+   * sounds are on. Takes effect from the next cue. Does not make a sound, or an audio context, by itself.
+   */
+  configure(
+    enabled: boolean,
+    volume: number,
+    pack: SoundPackId = 'classic',
+    categories: SoundCategories = ALL_SOUND_CATEGORIES_ON,
+  ): void {
     this.#enabled = enabled;
     this.#volume = volume;
+    this.#pack = pack;
+    this.#categories = categories;
   }
 
   /** Plays `cue` if sound is on and audible. Returns whether anything was scheduled. Never throws. */
   play(cue: Cue, options: PlayOptions = {}): boolean {
     const level = masterGain(options.volume ?? this.#volume);
     if ((!this.#enabled && options.force !== true) || level === 0 || this.#broken) return false;
+    // A group of sounds that is switched off is silent. Anything that is not a cue belongs to no group, and is silent too.
+    const category = categoryOf(cue);
+    if (category === undefined || (!this.#categories[category] && options.ignoreCategory !== true)) return false;
 
     try {
       const context = this.#ensureContext();
@@ -114,7 +138,7 @@ export class SoundEngine {
       const delay = options.delayMs !== undefined && Number.isFinite(options.delayMs) ? options.delayMs / 1000 : 0;
       const start = context.currentTime + LEAD_SECONDS + Math.min(Math.max(delay, 0), MAX_DELAY_SECONDS);
       let scheduled = 0;
-      for (const tone of cueTones(cue, options)) {
+      for (const tone of cueTonesFor(options.pack ?? this.#pack, cue, options)) {
         if (this.#voices >= MAX_VOICES) break;
         this.#schedule(context, bus, tone, start);
         scheduled += 1;

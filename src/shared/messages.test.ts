@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { DEFAULT_SETTINGS } from '../casino/settings';
 import { createInitialSnapshot } from '../casino/snapshot';
 import { IDLE_VIEW } from '../game/blackjack/view';
 import { IDLE_ROULETTE_VIEW } from '../game/roulette/view';
@@ -104,19 +105,30 @@ describe('blackjack messages from the webview', () => {
 describe('roulette messages from the webview', () => {
   it('accepts a spin on each colour, wrapped in a message', () => {
     for (const color of ['red', 'black', 'green']) {
-      expect(parseWebviewMessage({ type: 'roulette', action: { kind: 'spin', color, bet: 100 } })).toEqual({
-        type: 'roulette',
-        action: { kind: 'spin', color, bet: 100 },
-      });
+      const action = { kind: 'spin', selection: { kind: 'color', color }, bet: 100 };
+      expect(parseWebviewMessage({ type: 'roulette', action })).toEqual({ type: 'roulette', action });
+    }
+  });
+
+  it('accepts a spin on any number from 0 to 36', () => {
+    for (const number of [0, 1, 17, 36]) {
+      const action = { kind: 'spin', selection: { kind: 'number', number }, bet: 100 };
+      expect(parseWebviewMessage({ type: 'roulette', action })).toEqual({ type: 'roulette', action });
     }
   });
 
   it('rejects any other kind of bet before it can reach the table', () => {
     for (const color of ['odd', 'even', 'high', 'dozen1', '17', 17]) {
-      expect(parseWebviewMessage({ type: 'roulette', action: { kind: 'spin', color, bet: 100 } }), String(color)).toBeUndefined();
+      const action = { kind: 'spin', selection: { kind: 'color', color }, bet: 100 };
+      expect(parseWebviewMessage({ type: 'roulette', action }), String(color)).toBeUndefined();
+    }
+    for (const number of [-1, 37, 1.5, '17', null]) {
+      const action = { kind: 'spin', selection: { kind: 'number', number }, bet: 100 };
+      expect(parseWebviewMessage({ type: 'roulette', action }), String(number)).toBeUndefined();
     }
     expect(parseWebviewMessage({ type: 'roulette' })).toBeUndefined();
-    expect(parseWebviewMessage({ type: 'roulette', action: { kind: 'spin', color: 'red', bet: '100' } })).toBeUndefined();
+    expect(parseWebviewMessage({ type: 'roulette', action: { kind: 'spin', selection: { kind: 'color', color: 'red' }, bet: '100' } })).toBeUndefined();
+    expect(parseWebviewMessage({ type: 'roulette', action: { kind: 'spin', color: 'red', bet: 100 } })).toBeUndefined();
     expect(parseWebviewMessage({ type: 'roulette', action: { kind: 'payout', amount: 1e9 } })).toBeUndefined();
   });
 
@@ -221,7 +233,7 @@ describe('settings messages from the webview', () => {
   });
 
   it('accepts a settingsShown report and rejects an incomplete one', () => {
-    const settings = { sound: true, volume: 40, animations: true, reducedMotion: false };
+    const settings = { ...DEFAULT_SETTINGS, volume: 40 };
     expect(parseWebviewMessage({ type: 'settingsShown', settings })).toEqual({ type: 'settingsShown', settings });
     expect(parseWebviewMessage({ type: 'settingsShown', settings: { sound: true } })).toBeUndefined();
     expect(parseWebviewMessage({ type: 'settingsShown', settings: { ...settings, volume: 500 } })).toBeUndefined();
@@ -263,7 +275,7 @@ describe('reset messages', () => {
 
 describe('settings messages from the host', () => {
   it('accepts valid settings and rejects invalid ones', () => {
-    const payload = { sound: false, volume: 0, animations: true, reducedMotion: true };
+    const payload = { ...DEFAULT_SETTINGS, sound: false, volume: 0, reducedMotion: true, textSize: 'large' };
     expect(parseHostMessage({ type: 'settings', payload })).toEqual({ type: 'settings', payload });
     expect(parseHostMessage({ type: 'settings', payload: { ...payload, volume: -1 } })).toBeUndefined();
     expect(parseHostMessage({ type: 'settings', payload: { sound: true } })).toBeUndefined();

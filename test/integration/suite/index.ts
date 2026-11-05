@@ -136,7 +136,10 @@ async function expectBothWheels(
   }
 }
 
-const spin = (color: string, bet: number) => ({ type: 'roulette', action: { kind: 'spin', color, bet } }) as const;
+const spin = (color: string, bet: number) =>
+  ({ type: 'roulette', action: { kind: 'spin', selection: { kind: 'color', color }, bet } }) as const;
+const spinNumber = (number: unknown, bet: number) =>
+  ({ type: 'roulette', action: { kind: 'spin', selection: { kind: 'number', number }, bet } }) as const;
 
 const deal = (bet: number) => ({ type: 'blackjack', action: { kind: 'deal', bet } }) as const;
 const move = (kind: 'hit' | 'stand' | 'double' | 'split' | 'newRound') => ({ type: 'blackjack', action: { kind } }) as const;
@@ -326,7 +329,7 @@ const rouletteTests: readonly Test[] = [
 
         const { last, spin: spinNumber } = api.roulette.view;
         assert.ok(last);
-        assert.equal(last.color, color);
+        assert.deepEqual(last.selection, { kind: 'color', color });
         assert.equal(last.won, last.pocket.color === color);
         const expectedPayout = last.won ? 10 * (color === 'green' ? 36 : 2) : 0;
         assert.equal(last.payout, expectedPayout, `${color} bet on ${last.detail}`);
@@ -358,22 +361,48 @@ const rouletteTests: readonly Test[] = [
     },
   ],
   [
-    'only colours can be bet on: other bets and bad amounts are refused, change nothing and never reach the wallet',
+    'a number can be bet on too: it pays 35 to 1 on a hit, and both real wheels land on the host-chosen pocket',
+    async () => {
+      const api = await getApi();
+      // Bet on the pocket the host will not necessarily pick; over several spins at least one number bet is settled each way.
+      for (const chosen of [0, 7, 17, 36]) {
+        const balance = api.store.snapshot.balance;
+        api.sendFromWebview('sidebar', spinNumber(chosen, 10));
+
+        const { last, spin: spinNumberNow } = api.roulette.view;
+        assert.ok(last);
+        assert.deepEqual(last.selection, { kind: 'number', number: chosen });
+        assert.equal(last.won, last.pocket.number === chosen, `bet ${chosen}, landed ${last.pocket.number}`);
+        const expectedPayout = last.won ? 10 * 36 : 0;
+        assert.equal(last.payout, expectedPayout);
+        assert.equal(api.store.snapshot.balance, balance - 10 + expectedPayout);
+
+        await expectBothWheels(api, { spin: spinNumberNow, phase: 'result', landedOn: last.pocket.number });
+      }
+    },
+  ],
+  [
+    'only a colour or a number can be bet on: other bets and bad amounts are refused, change nothing and never reach the wallet',
     async () => {
       const api = await getApi();
       const snapshot = api.store.snapshot;
       const table = api.roulette.view;
       const balance = snapshot.balance;
 
-      for (const action of [spin('red', 5), spin('red', balance + 1), spin('green', 12.5), spin('black', -10), spin('red', 0)]) {
+      for (const action of [spin('red', 5), spin('red', balance + 1), spin('green', 12.5), spin('black', -10), spin('red', 0), spinNumber(5, 5), spinNumber(5, balance + 1), spinNumber(5, 12.5)]) {
         api.sendFromWebview('sidebar', action);
       }
       // Anything that is not one of the three colours never gets as far as the table.
       for (const color of ['odd', 'even', 'high', 'low', 'dozen1', 'column2', '17', 17, '']) {
         api.sendFromWebview('sidebar', spin(color as string, 100));
       }
+      // Nor does a number that is not on the wheel.
+      for (const number of [-1, 37, 99, 1.5, '17', null, Number.NaN]) api.sendFromWebview('sidebar', spinNumber(number, 100));
+
       api.sendFromWebview('sidebar', { type: 'roulette', action: { kind: 'spin', numbers: [17], bet: 100 } });
-      api.sendFromWebview('sidebar', { type: 'roulette', action: { kind: 'spin', color: 'red' } });
+      api.sendFromWebview('sidebar', { type: 'roulette', action: { kind: 'spin', selection: { kind: 'dozen', dozen: 1 }, bet: 100 } });
+      api.sendFromWebview('sidebar', { type: 'roulette', action: { kind: 'spin', color: 'red', bet: 100 } });
+      api.sendFromWebview('sidebar', { type: 'roulette', action: { kind: 'spin', selection: { kind: 'color', color: 'red' } } });
       api.sendFromWebview('sidebar', { type: 'roulette', action: { kind: 'payout', amount: 1_000_000 } });
 
       assert.equal(api.store.snapshot, snapshot, 'nothing about the casino may change');
@@ -518,6 +547,64 @@ const settingsTests: readonly Test[] = [
       const before = api.settings.settings;
       api.sendFromWebview('sidebar', changeSettings({ sound: false }));
       assert.equal(api.settings.settings, before);
+    },
+  ],
+  [
+    'the look, the cards, the wheel, the sound pack and the colors are saved by the host and applied by both views',
+    async () => {
+      const api = await getApi();
+      const defaults = api.settings.settings;
+
+      api.sendFromWebview('sidebar', changeSettings({ theme: 'neon', cardDesign: 'medieval' }));
+      const first: Settings = { ...defaults, theme: 'neon', cardDesign: 'medieval' };
+      assert.deepEqual(api.settings.settings, first);
+      await expectBothViewsApply(api, first);
+
+      api.sendFromWebview('panel', changeSettings({ rouletteAnimation: 'explosion', soundPack: 'adventure' }));
+      api.sendFromWebview('panel', changeSettings({ soundCategories: { interface: true, chips: false, cards: true, roulette: true, results: true } }));
+      api.sendFromWebview('panel', changeSettings({ colors: { table: '#224466', accent: '#ff8800' } }));
+      const second: Settings = {
+        ...first,
+        rouletteAnimation: 'explosion',
+        soundPack: 'adventure',
+        soundCategories: { interface: true, chips: false, cards: true, roulette: true, results: true },
+        colors: { table: '#224466', accent: '#ff8800' },
+      };
+      assert.deepEqual(api.settings.settings, second);
+      await expectBothViewsApply(api, second);
+
+      // Back to the theme's own colors, and the default look: every choice can be undone.
+      api.sendFromWebview('sidebar', changeSettings({ colors: {}, theme: 'classic', cardDesign: 'classic', rouletteAnimation: 'classic', soundPack: 'classic' }));
+      assert.deepEqual(api.settings.settings.colors, {});
+      assert.equal(api.settings.settings.theme, 'classic');
+      await expectBothViewsApply(api, api.settings.settings);
+    },
+  ],
+  [
+    'unknown looks, half a set of sound categories and bad colors are ignored: nothing changes',
+    async () => {
+      const api = await getApi();
+      const before = api.settings.settings;
+
+      for (const patch of [
+        { theme: 'gold' },
+        { theme: 7 },
+        { cardDesign: 'fancy' },
+        { rouletteAnimation: 'fast' },
+        { soundPack: 'loud' },
+        { soundCategories: { chips: false } },
+        { soundCategories: { interface: true, chips: 'no', cards: true, roulette: true, results: true } },
+        { colors: { table: 'green' } },
+        { colors: { glow: '#ffffff' } },
+        { colors: { table: '#FFFFFF' } },
+        { theme: 'neon', soundPack: 'loud' },
+      ]) {
+        api.sendFromWebview('sidebar', changeSettings(patch));
+      }
+
+      assert.equal(api.settings.settings, before, 'invalid looks must change nothing');
+      await sleep(300);
+      await expectBothViewsApply(api, before);
     },
   ],
   [

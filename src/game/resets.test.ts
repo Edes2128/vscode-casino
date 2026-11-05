@@ -41,8 +41,8 @@ function setup(answer: boolean | 'throw' | 'wait' = true) {
   });
 
   const play = () => {
-    roulette.perform({ kind: 'spin', color: 'red', bet: 100 });
-    roulette.perform({ kind: 'spin', color: 'black', bet: 50 });
+    roulette.perform({ kind: 'spin', selection: { kind: 'color', color: 'red' }, bet: 100 });
+    roulette.perform({ kind: 'spin', selection: { kind: 'color', color: 'black' }, bet: 50 });
     blackjack.perform({ kind: 'deal', bet: 100 });
     blackjack.perform({ kind: 'stand' });
   };
@@ -145,7 +145,7 @@ describe('resetting everything', () => {
     const spins = t.roulette.view.spin;
     await t.coordinator.reset('all');
 
-    expect(t.roulette.perform({ kind: 'spin', color: 'red', bet: 10 })).toEqual({ ok: true });
+    expect(t.roulette.perform({ kind: 'spin', selection: { kind: 'color', color: 'red' }, bet: 10 })).toEqual({ ok: true });
     expect(t.roulette.view.spin).toBe(spins + 1);
     expect(t.blackjack.perform({ kind: 'deal', bet: 10 })).toEqual({ ok: true });
   });

@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { cueTones, masterGain } from './cues';
+import { ALL_SOUND_CATEGORIES_ON, SOUND_CATEGORIES, SOUND_PACK_IDS, type SoundCategories, type SoundCategory } from '../../casino/appearance';
+import { CUES, CUE_CATEGORY, cueTones, masterGain, MAX_CUE_SECONDS, type Cue } from './cues';
 import { MAX_VOICES, SoundEngine, type AudioContextLike } from './engine';
+import { cueTonesFor } from './packs';
 
 interface Recorded {
   oscillators: Array<{ type: string; start: number; stop: number; from: number | undefined }>;
@@ -285,5 +287,231 @@ describe('SoundEngine', () => {
     expect(engine.play('click')).toBe(true);
     engine.configure(false, 50);
     expect(engine.play('click')).toBe(false);
+  });
+});
+
+/** Every group on except `off`. */
+const allBut = (...off: SoundCategory[]): SoundCategories => ({ ...ALL_SOUND_CATEGORIES_ON, ...Object.fromEntries(off.map((category) => [category, false])) });
+const allOff = allBut(...SOUND_CATEGORIES);
+
+describe('sound packs', () => {
+  it('plays the Classic Casino unless told otherwise', () => {
+    const audio = fakeAudio();
+    const engine = new SoundEngine(audio.create);
+    engine.configure(true, 50);
+    engine.play('win');
+    expect(audio.log.oscillators.map((oscillator) => oscillator.from)).toEqual(cueTones('win').map((tone) => tone.from));
+  });
+
+  it.each(SOUND_PACK_IDS)('plays every cue of "%s" as that pack\'s tones', (pack) => {
+    for (const cue of CUES) {
+      const audio = fakeAudio();
+      const engine = new SoundEngine(audio.create);
+      engine.configure(true, 50, pack);
+      expect(engine.play(cue), cue).toBe(true);
+      const tones = cueTonesFor(pack, cue);
+      expect(audio.log.oscillators.map((oscillator) => oscillator.type), cue).toEqual(tones.filter((tone) => tone.wave !== 'noise').map((tone) => tone.wave));
+      expect(audio.log.oscillators.map((oscillator) => oscillator.from), cue).toEqual(tones.filter((tone) => tone.wave !== 'noise').map((tone) => tone.from));
+      expect(audio.log.noises, cue).toBe(tones.filter((tone) => tone.wave === 'noise').length);
+    }
+  });
+
+  it('switches from the next cue, with no restart, and keeps one audio context throughout', () => {
+    const audio = fakeAudio();
+    const engine = new SoundEngine(audio.create);
+    engine.configure(true, 50, 'arcade');
+    engine.play('click');
+    engine.configure(true, 50, 'minimal');
+    engine.play('click');
+    engine.configure(true, 50, 'cyber');
+    engine.play('click');
+
+    const types = audio.log.oscillators.map((oscillator) => oscillator.type);
+    const arcade = cueTonesFor('arcade', 'click').length;
+    const minimal = cueTonesFor('minimal', 'click').length;
+    expect(new Set(types.slice(0, arcade))).toEqual(new Set(['square']));
+    expect(new Set(types.slice(arcade, arcade + minimal))).toEqual(new Set(['sine']));
+    expect(new Set(types.slice(arcade + minimal))).toEqual(new Set(['sawtooth']));
+    expect(audio.log.created).toBe(1);
+  });
+
+  it('can play another pack for one cue, such as the one just picked and not saved yet', () => {
+    const audio = fakeAudio();
+    const engine = new SoundEngine(audio.create);
+    engine.configure(true, 50, 'classic');
+    engine.play('click', { pack: 'minimal' });
+    engine.play('click');
+    const minimal = cueTonesFor('minimal', 'click');
+    expect(audio.log.oscillators.map((oscillator) => oscillator.type)).toEqual([...minimal.map((tone) => tone.wave), 'square']);
+  });
+
+  it('plays the Classic Casino for a pack it does not know, rather than going quiet or failing', () => {
+    const audio = fakeAudio();
+    const engine = new SoundEngine(audio.create);
+    engine.configure(true, 50, 'nonsense' as never);
+    expect(engine.play('click')).toBe(true);
+    expect(engine.play('click', { pack: 'also nonsense' as never })).toBe(true);
+    expect(audio.log.oscillators.map((oscillator) => oscillator.from)).toEqual([880, 880]);
+  });
+
+  it('applies the volume to every pack', () => {
+    for (const pack of SOUND_PACK_IDS) {
+      const audio = fakeAudio();
+      const engine = new SoundEngine(audio.create);
+      engine.configure(true, 35, pack);
+      engine.play('win');
+      expect(audio.log.gainValues[0], pack).toBeCloseTo(masterGain(35), 9);
+      engine.play('win', { volume: 100 });
+      const second = audio.log.gainValues.findIndex((value, index) => index > 0 && Math.abs(value - masterGain(100)) < 1e-9);
+      expect(second, pack).toBeGreaterThan(0);
+    }
+  });
+
+  it('keeps every cue of every pack inside the length and the finite values the engine needs', () => {
+    for (const pack of SOUND_PACK_IDS) {
+      for (const cue of CUES) {
+        const audio = fakeAudio();
+        const engine = new SoundEngine(audio.create);
+        engine.configure(true, 100, pack);
+        engine.play(cue, { count: 8, durationMs: 1_000_000 });
+        for (const oscillator of audio.log.oscillators) {
+          expect(Number.isFinite(oscillator.start) && Number.isFinite(oscillator.stop), `${pack}/${cue}`).toBe(true);
+          expect(oscillator.stop, `${pack}/${cue}`).toBeGreaterThan(oscillator.start);
+          expect(oscillator.stop - 10, `${pack}/${cue}`).toBeLessThanOrEqual(MAX_CUE_SECONDS + 0.1);
+          expect(Number.isFinite(oscillator.from ?? Number.NaN), `${pack}/${cue}`).toBe(true);
+        }
+      }
+    }
+  });
+
+  it('never goes over the cap on voices, whatever the pack', () => {
+    for (const pack of SOUND_PACK_IDS) {
+      const audio = fakeAudio();
+      const engine = new SoundEngine(audio.create);
+      engine.configure(true, 50, pack);
+      for (let index = 0; index < 60; index += 1) {
+        engine.play('spin', { durationMs: 1_000_000 });
+        engine.play('bigWin');
+        engine.play('card', { count: 8 });
+      }
+      expect(audio.log.oscillators.length + audio.log.noises, pack).toBeLessThanOrEqual(MAX_VOICES);
+      // Once the sounds have ended there is room again.
+      for (const finish of audio.log.ended.splice(0)) finish();
+      expect(engine.play('win'), pack).toBe(true);
+    }
+  });
+});
+
+describe('groups of sounds', () => {
+  it.each(SOUND_CATEGORIES)('a switched-off "%s" silences its cues and no others', (category) => {
+    for (const cue of CUES) {
+      const audio = fakeAudio();
+      const engine = new SoundEngine(audio.create);
+      engine.configure(true, 50, 'classic', allBut(category));
+      const inGroup = CUE_CATEGORY[cue] === category;
+      expect(engine.play(cue), `${cue} while ${category} is off`).toBe(!inGroup);
+      expect(audio.log.created, cue).toBe(inGroup ? 0 : 1);
+      expect(engine.played, cue).toBe(inGroup ? 0 : 1);
+    }
+  });
+
+  it('with every group off, the whole casino is quiet and no audio context is made', () => {
+    const audio = fakeAudio();
+    const engine = new SoundEngine(audio.create);
+    engine.configure(true, 100, 'cyber', allOff);
+    for (const cue of CUES) expect(engine.play(cue)).toBe(false);
+    expect(audio.log.created).toBe(0);
+    expect(audio.log.oscillators).toHaveLength(0);
+  });
+
+  it('keeps playing the groups that are on, in every pack, while another is off', () => {
+    for (const pack of SOUND_PACK_IDS) {
+      const audio = fakeAudio();
+      const engine = new SoundEngine(audio.create);
+      engine.configure(true, 50, pack, allBut('cards'));
+      expect(engine.play('card', { count: 2 }), pack).toBe(false);
+      expect(engine.play('flip'), pack).toBe(false);
+      expect(engine.play('chip'), pack).toBe(true);
+      expect(engine.play('click'), pack).toBe(true);
+      expect(engine.play('win'), pack).toBe(true);
+      expect(engine.play('spin'), pack).toBe(true);
+    }
+  });
+
+  it('takes effect from the next cue: a group switched back on is heard again', () => {
+    const audio = fakeAudio();
+    const engine = new SoundEngine(audio.create);
+    engine.configure(true, 50, 'classic', allBut('chips'));
+    expect(engine.play('chip')).toBe(false);
+    engine.configure(true, 50, 'classic', ALL_SOUND_CATEGORIES_ON);
+    expect(engine.play('chip')).toBe(true);
+    engine.configure(true, 50, 'classic', allBut('chips'));
+    expect(engine.play('chip')).toBe(false);
+  });
+
+  it('plays a cue of a switched-off group only when asked to ignore it, as the answer to switching it on', () => {
+    const audio = fakeAudio();
+    const engine = new SoundEngine(audio.create);
+    engine.configure(true, 50, 'classic', allBut('chips'));
+    expect(engine.play('chip', { ignoreCategory: true })).toBe(true);
+    expect(engine.play('chip', { ignoreCategory: false })).toBe(false);
+  });
+
+  it('is still silenced by the master switch, and by volume 0, even when a group is to be ignored', () => {
+    const audio = fakeAudio();
+    const engine = new SoundEngine(audio.create);
+    engine.configure(false, 50, 'classic', allBut('chips'));
+    expect(engine.play('chip', { ignoreCategory: true })).toBe(false);
+    engine.configure(true, 0, 'classic', allBut('chips'));
+    expect(engine.play('chip', { ignoreCategory: true })).toBe(false);
+    expect(audio.log.created).toBe(0);
+  });
+
+  it('is silent with the master switch off whatever the groups say, and a forced cue still respects them', () => {
+    const audio = fakeAudio();
+    const engine = new SoundEngine(audio.create);
+    engine.configure(false, 100, 'arcade', ALL_SOUND_CATEGORIES_ON);
+    for (const cue of CUES) expect(engine.play(cue), cue).toBe(false);
+    expect(audio.log.created).toBe(0);
+
+    // `force` answers the switch being turned on: it makes the click, but not a click that the interface group forbids.
+    expect(engine.play('click', { force: true })).toBe(true);
+    engine.configure(false, 100, 'arcade', allBut('interface'));
+    expect(engine.play('click', { force: true })).toBe(false);
+  });
+
+  it('does not know a cue that is not one, and says nothing for it', () => {
+    const audio = fakeAudio();
+    const engine = new SoundEngine(audio.create);
+    engine.configure(true, 50);
+    expect(engine.play('explosion' as Cue)).toBe(false);
+    expect(audio.log.created).toBe(0);
+    // It did not break the engine for the cues that are real.
+    expect(engine.play('click')).toBe(true);
+  });
+});
+
+describe('no sound before the player acts', () => {
+  it('creates no audio context when settings are applied, switched or repeated, for any pack or group', () => {
+    const audio = fakeAudio();
+    const engine = new SoundEngine(audio.create);
+    engine.configure(false, 0);
+    for (const pack of SOUND_PACK_IDS) {
+      engine.configure(true, 80, pack, ALL_SOUND_CATEGORIES_ON);
+      engine.configure(true, 80, pack, allOff);
+      engine.configure(false, 100, pack, allBut('results'));
+    }
+    expect(audio.log.created).toBe(0);
+    expect(engine.played).toBe(0);
+  });
+
+  it('makes the context only when a cue is first played, which only a button press or a game event does', () => {
+    const audio = fakeAudio();
+    const engine = new SoundEngine(audio.create);
+    engine.configure(true, 80, 'adventure', ALL_SOUND_CATEGORIES_ON);
+    expect(audio.log.created).toBe(0);
+    engine.play('nav');
+    expect(audio.log.created).toBe(1);
+    expect(engine.played).toBe(1);
   });
 });

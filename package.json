@@ -2,7 +2,7 @@
   "name": "vscode-casino",
   "displayName": "VS Code Casino",
   "description": "A retro pixel-art casino hidden in your editor. Play Blackjack and Roulette with virtual chips. No real money, ever.",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "sponsor": {
     "url": "https://buymeacoffee.com/5x2bfo6t5c"

@@ -63,9 +63,9 @@ describe('VolumeSlider', () => {
 
 describe('the navigation bar', () => {
   it('has a settings tab, last, and one button per screen', () => {
-    expect(NAV_ITEMS.map((item) => item.page)).toEqual(['home', 'blackjack', 'roulette', 'statistics', 'settings']);
+    expect(NAV_ITEMS.map((item) => item.page)).toEqual(['home', 'blackjack', 'roulette', 'statistics', 'customize', 'settings']);
     const html = renderToStaticMarkup(<NavBar current="settings" onNavigate={noop} />);
-    expect(count(html, 'nav-bar__item"')).toBe(5);
+    expect(count(html, 'nav-bar__item"')).toBe(6);
     expect(html).toMatch(/aria-current="page"[^>]*>(?:(?!<button).)*SETTINGS/s);
   });
 });
@@ -90,7 +90,7 @@ describe('the settings screen', () => {
 
   it('shows each setting as it is saved', () => {
     const html = renderToStaticMarkup(
-      <Settings {...baseProps} settings={{ sound: false, volume: 85, animations: false, reducedMotion: true }} />,
+      <Settings {...baseProps} settings={{ ...DEFAULT_SETTINGS, sound: false, volume: 85, animations: false, reducedMotion: true }} />,
     );
     expect(html).toContain('aria-label="Sound effects"');
     expect(html).toMatch(/aria-checked="false"[^>]*aria-label="Sound effects"/);
@@ -121,9 +121,18 @@ describe('the settings screen', () => {
     expect(html).not.toMatch(/<button[^>]*aria-label="Reduced motion"[^>]*data-sound/);
   });
 
+  it('lets the player choose the text size, and shows the one in use', () => {
+    const html = renderToStaticMarkup(<Settings {...baseProps} settings={{ ...DEFAULT_SETTINGS, textSize: 'large' }} />);
+    expect(html).toContain('>TEXT SIZE</h2>');
+    expect(html).toContain('aria-label="Text size"');
+    for (const label of ['NORMAL', 'LARGE', 'EXTRA LARGE']) expect(html).toContain(`>${label}</button>`);
+    expect(html).toMatch(/aria-pressed="true"[^>]*>LARGE</);
+    expect(html).toMatch(/aria-pressed="false"[^>]*>NORMAL</);
+  });
+
   it('offers the three resets, each saying what it touches, and promises a confirmation', () => {
     const html = renderToStaticMarkup(<Settings {...baseProps} />);
-    for (const label of ['RESET BALANCE', 'RESET STATISTICS', 'RESET ALL']) expect(html).toContain(label);
+    for (const label of ['RESET BALANCE', 'RESET STATS', 'RESET ALL']) expect(html).toContain(label);
     expect(html).toContain('EVERY RESET ASKS YOU TO CONFIRM FIRST');
     expect(html).toContain('Back to 1,000 chips. Statistics are kept.');
     expect(html).toContain('Settings are kept.');
@@ -153,7 +162,7 @@ describe('the settings screen', () => {
     const html = renderToStaticMarkup(<Settings {...baseProps} version="1.2.3" />);
     expect(html).toContain('VERSION 1.2.3');
     expect(html).toContain('VIRTUAL CHIPS ONLY. NO REAL MONEY. EVER.');
-    expect(html).toContain('SUPPORT ME');
+    expect(html).toContain('Enjoying the casino? Buy me a coffee!');
     expect(renderToStaticMarkup(<Settings {...baseProps} version={undefined} />)).toContain('VERSION ?');
   });
 });

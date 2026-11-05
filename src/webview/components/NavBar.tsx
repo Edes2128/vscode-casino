@@ -16,6 +16,7 @@ export function NavBar({ current, onNavigate }: NavBarProps) {
           key={item.page}
           type="button"
           className="nav-bar__item"
+          data-sound="nav"
           title={item.label}
           {...(item.page === current ? { 'aria-current': 'page' as const } : {})}
           onClick={() => onNavigate(item.page)}

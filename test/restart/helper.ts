@@ -8,6 +8,7 @@ import * as assert from 'node:assert/strict';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import * as vscode from 'vscode';
+import { DEFAULT_SETTINGS } from '../../src/casino/settings';
 import type { CasinoStore } from '../../src/casino/store';
 import type { GameType } from '../../src/casino/types';
 import type { CasinoTestApi } from '../../src/extension/extension';
@@ -21,6 +22,21 @@ function playRound(store: CasinoStore, game: GameType, bet: number, payout: numb
   return payout - bet;
 }
 
+/** Every kind of setting, changed from its default: the restart must bring all of them back. */
+const CHOSEN_SETTINGS = {
+  sound: false,
+  volume: 35,
+  animations: false,
+  reducedMotion: true,
+  textSize: 'large',
+  theme: 'royal',
+  cardDesign: 'medieval',
+  rouletteAnimation: 'slow',
+  soundPack: 'cyber',
+  soundCategories: { interface: true, chips: false, cards: true, roulette: false, results: true },
+  colors: { table: '#224466', chip: '#ffcc00' },
+} as const;
+
 async function writePhase({ store, settings }: CasinoTestApi): Promise<void> {
   assert.deepEqual(store.startup, { source: 'fresh', forfeitedRounds: 0 }, 'expected a brand-new profile');
   assert.equal(store.snapshot.balance, 1_000);
@@ -32,7 +48,7 @@ async function writePhase({ store, settings }: CasinoTestApi): Promise<void> {
   assert.equal(store.snapshot.balance, 935);
 
   // Settings are saved on their own, and must survive too.
-  settings.update({ sound: false, volume: 35, animations: false, reducedMotion: true });
+  settings.update(CHOSEN_SETTINGS);
   await Promise.all([store.flush(), settings.flush()]);
 }
 
@@ -41,8 +57,8 @@ async function readPhase(api: CasinoTestApi): Promise<void> {
 
   assert.deepEqual(
     settings.settings,
-    { sound: false, volume: 35, animations: false, reducedMotion: true },
-    'the settings must survive the restart',
+    { ...DEFAULT_SETTINGS, ...CHOSEN_SETTINGS },
+    'the settings, including the theme, card design, wheel animation, sound pack, sound categories and colors, must survive the restart',
   );
   assert.deepEqual(store.startup, { source: 'saved', forfeitedRounds: 1 }, 'the saved casino was not loaded');
   assert.equal(store.snapshot.balance, 935, 'the balance must survive the restart');
