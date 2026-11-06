@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import { ROULETTE_ANIMATION_IDS, type RouletteAnimationId } from '../../casino/appearance';
+import { ROULETTE_ANIMATION_IDS, type RouletteAnimationId } from '../../state/appearance';
 import { POCKET_COUNT, POCKETS, WHEEL_ORDER, pocketIndexOfNumber } from '../../game/roulette/wheel';
 import { ROULETTE_ANIMATIONS, rouletteAnimation } from '../customization/rouletteAnimations';
 import { resolveAppearance } from '../customization/appearance';
-import { THEME_IDS } from '../../casino/appearance';
+import { THEME_IDS } from '../../state/appearance';
 import {
   CALM_PAUSE_MS,
   POCKET_ANGLE,

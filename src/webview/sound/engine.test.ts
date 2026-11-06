@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { ALL_SOUND_CATEGORIES_ON, SOUND_CATEGORIES, SOUND_PACK_IDS, type SoundCategories, type SoundCategory } from '../../casino/appearance';
+import { ALL_SOUND_CATEGORIES_ON, SOUND_CATEGORIES, SOUND_PACK_IDS, type SoundCategories, type SoundCategory } from '../../state/appearance';
 import { CUES, CUE_CATEGORY, cueTones, masterGain, MAX_CUE_SECONDS, type Cue } from './cues';
 import { MAX_VOICES, SoundEngine, type AudioContextLike } from './engine';
 import { cueTonesFor } from './packs';
@@ -275,7 +275,7 @@ describe('SoundEngine', () => {
     expect(engine.play('click')).toBe(false);
     expect(engine.play('click', { force: true })).toBe(true);
     expect(engine.play('click', { force: false })).toBe(false);
-    // Forcing never makes the casino louder than the volume allows: volume 0 stays silent.
+    // Forcing never makes Lucky Break louder than the volume allows: volume 0 stays silent.
     engine.configure(false, 0);
     expect(engine.play('click', { force: true })).toBe(false);
   });
@@ -295,7 +295,7 @@ const allBut = (...off: SoundCategory[]): SoundCategories => ({ ...ALL_SOUND_CAT
 const allOff = allBut(...SOUND_CATEGORIES);
 
 describe('sound packs', () => {
-  it('plays the Classic Casino unless told otherwise', () => {
+  it('plays the Classic Lounge unless told otherwise', () => {
     const audio = fakeAudio();
     const engine = new SoundEngine(audio.create);
     engine.configure(true, 50);
@@ -345,7 +345,7 @@ describe('sound packs', () => {
     expect(audio.log.oscillators.map((oscillator) => oscillator.type)).toEqual([...minimal.map((tone) => tone.wave), 'square']);
   });
 
-  it('plays the Classic Casino for a pack it does not know, rather than going quiet or failing', () => {
+  it('plays the Classic Lounge for a pack it does not know, rather than going quiet or failing', () => {
     const audio = fakeAudio();
     const engine = new SoundEngine(audio.create);
     engine.configure(true, 50, 'nonsense' as never);
@@ -415,7 +415,7 @@ describe('groups of sounds', () => {
     }
   });
 
-  it('with every group off, the whole casino is quiet and no audio context is made', () => {
+  it('with every group off, the whole game is quiet and no audio context is made', () => {
     const audio = fakeAudio();
     const engine = new SoundEngine(audio.create);
     engine.configure(true, 100, 'cyber', allOff);

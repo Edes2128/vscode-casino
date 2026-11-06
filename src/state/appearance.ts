@@ -1,5 +1,5 @@
 /**
- * What the player can choose about how the casino looks and sounds: the ids and how to check them.
+ * What the player can choose about how Lucky Break looks and sounds: the ids and how to check them.
  *
  * Only ids live here, so the extension host can save and validate a choice without knowing anything
  * about drawing. What each id looks like is in `src/webview/customization`. Every option is free: no

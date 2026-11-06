@@ -1,8 +1,8 @@
 /**
- * Sample casino data for design work. Only reachable through the Vite dev server with `?demo`
+ * Sample game data for design work. Only reachable through the Vite dev server with `?demo`
  * or `?gallery`; the production build contains none of it.
  */
-import type { CasinoSnapshot, GameStats, HistoryEntry } from '../../casino/types';
+import type { LuckyBreakSnapshot, GameStats, HistoryEntry } from '../../state/types';
 
 const at = (hour: number, minute: number): number => new Date(2026, 10, 4, hour, minute).getTime();
 
@@ -26,7 +26,7 @@ const stats = (partial: Partial<GameStats>): GameStats => ({
   ...partial,
 });
 
-export const sampleSnapshot: CasinoSnapshot = {
+export const sampleSnapshot: LuckyBreakSnapshot = {
   balance: 1_725,
   stats: {
     overall: stats({ gamesPlayed: 12, wins: 6, losses: 5, pushes: 1, biggestWin: 350, biggestLoss: 100, totalWagered: 1_835 }),

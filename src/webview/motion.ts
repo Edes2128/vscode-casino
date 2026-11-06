@@ -1,8 +1,8 @@
 import { createContext, useContext, useSyncExternalStore } from 'react';
-import type { Settings } from '../casino/settings';
+import type { Settings } from '../state/settings';
 
 /**
- * How much the casino moves.
+ * How much Lucky Break moves.
  *
  * - `full`: everything. Cards fly, the wheel spins, the screen shakes on a loss, sparks float by.
  * - `calm`: nothing moves and nothing flashes or floats, but a result still arrives step by step: the

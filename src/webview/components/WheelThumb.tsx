@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef } from 'react';
-import type { RouletteAnimationId } from '../../casino/appearance';
+import type { RouletteAnimationId } from '../../state/appearance';
 import { WHEEL_PIXELS, renderWheel, thumbnailState, wheelColoursFor } from '../art/rouletteWheel';
 import { useAppearance } from '../customization/AppearanceContext';
 import { rouletteAnimation } from '../customization/rouletteAnimations';

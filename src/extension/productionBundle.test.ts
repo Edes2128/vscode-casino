@@ -28,7 +28,7 @@ async function bundle(devTools: boolean): Promise<string> {
 const DEV_ONLY = [
   'node:http',
   'process.env',
-  'CASINO_',
+  'LUCKY_BREAK_',
   'localhost',
   '127.0.0.1',
   'unsafe-inline',
@@ -60,7 +60,7 @@ describe('the packaged extension', () => {
 
   it('really does contain that tooling when it is switched on, so the checks above are not empty', async () => {
     const code = await bundle(true);
-    for (const needle of ['node:http', 'process.env', 'CASINO_DEV_SERVER_URL', 'unsafe-inline', 'sendFromWebview']) {
+    for (const needle of ['node:http', 'process.env', 'LUCKY_BREAK_DEV_SERVER_URL', 'unsafe-inline', 'sendFromWebview']) {
       expect(code, needle).toContain(needle);
     }
   });

@@ -6,14 +6,14 @@
  * The melodies are original. What gives a pack its character is the waveform, the register and the
  * rhythm, so each one is built from its own palette:
  *
- * - Classic Casino: the casino's own sounds, exactly as they have always been (`cues.ts`).
+ * - Classic Lounge: Lucky Break's own sounds, exactly as they have always been (`cues.ts`).
  * - Retro Arcade: chiptune. Square and triangle blips, quick arpeggios, pitch slides, no noise.
  * - Pixel Adventure: bright and major. Triangle and sine like a music box or a harp, a fanfare for a win.
  * - Neon Cyber: sawtooth pairs a hair out of tune, long sweeps, zaps and bursts of static.
  * - Minimal Sounds: tiny, soft sine ticks. Nothing busy.
  */
 
-import { isSoundPackId, type SoundPackId } from '../../casino/appearance';
+import { isSoundPackId, type SoundPackId } from '../../state/appearance';
 import {
   CARD_GAP_SECONDS,
   cardCount,
@@ -122,7 +122,7 @@ const fixed =
   () =>
     tones;
 
-/** Cards landing one after the other, each made by `one(at)`. They keep the casino's own pace: the cards move to it. */
+/** Cards landing one after the other, each made by `one(at)`. They keep Lucky Break's own pace: the cards move to it. */
 const dealt =
   (one: (at: number) => readonly Tone[]): CueRecipe =>
   (options) =>
@@ -139,9 +139,9 @@ const rattle =
     return make(seconds, spinTickTimes(seconds));
   };
 
-// ---------------------------------------------------------------- Classic Casino
+// ---------------------------------------------------------------- Classic Lounge
 
-/** The casino's own sounds. They are defined in `cues.ts`, and never change. */
+/** Lucky Break's own sounds. They are defined in `cues.ts`, and never change. */
 const CLASSIC: SoundPack = {
   click: (options) => cueTones('click', options),
   chip: (options) => cueTones('chip', options),
@@ -314,7 +314,7 @@ export const SOUND_PACKS: Readonly<Record<SoundPackId, SoundPack>> = {
 
 /**
  * The tones of `cue` in `pack`. Always at least one, never longer than `MAX_CUE_SECONDS`, never odd values.
- * A pack that is not one of ours (a saved setting from some other version) sounds like the Classic Casino.
+ * A pack that is not one of ours (a saved setting from some other version) sounds like the Classic Lounge.
  */
 export function cueTonesFor(pack: SoundPackId, cue: Cue, options: CueOptions = {}): readonly Tone[] {
   const sounds = isSoundPackId(pack) ? SOUND_PACKS[pack] : CLASSIC;

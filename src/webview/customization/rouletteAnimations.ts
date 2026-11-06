@@ -1,4 +1,4 @@
-import { ROULETTE_ANIMATION_IDS, type RouletteAnimationId } from '../../casino/appearance';
+import { ROULETTE_ANIMATION_IDS, type RouletteAnimationId } from '../../state/appearance';
 
 /**
  * The five ways the roulette wheel can spin. A style is only a row of numbers: how long the spin takes, how
@@ -6,7 +6,7 @@ import { ROULETTE_ANIMATION_IDS, type RouletteAnimationId } from '../../casino/a
  * top (a glowing trail, a burst of pixels). The wheel's own maths (`art/rouletteWheel.ts`) reads these numbers
  * and nothing else about a style.
  *
- * A style is cosmetic. Where the ball stops is worked out from the pocket the casino drew, never from a style:
+ * A style is cosmetic. Where the ball stops is worked out from the pocket Lucky Break drew, never from a style:
  * every style ends with that exact pocket under the pointer.
  */
 

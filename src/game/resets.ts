@@ -1,4 +1,4 @@
-import type { CasinoStore } from '../casino/store';
+import type { LuckyBreakStore } from '../state/store';
 import type { ResetOutcome, ResetScope } from './resetScope';
 
 export { isResetOutcome, isResetScope, RESET_OUTCOMES, RESET_SCOPES } from './resetScope';
@@ -10,7 +10,7 @@ export interface Clearable {
 }
 
 export interface ResetDependencies {
-  readonly store: CasinoStore;
+  readonly store: LuckyBreakStore;
   readonly tables: readonly Clearable[];
   /** Asks the player. Must resolve `true` only for an explicit yes. The extension shows a modal dialog. */
   readonly confirm: (scope: ResetScope) => PromiseLike<boolean>;

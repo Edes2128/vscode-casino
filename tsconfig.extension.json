@@ -7,7 +7,7 @@
   "include": [
     "src/extension",
     "src/game",
-    "src/casino",
+    "src/state",
     "src/shared",
     "test",
     "vite.config.mts",

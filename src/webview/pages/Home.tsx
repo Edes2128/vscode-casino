@@ -1,7 +1,7 @@
-import type { CasinoSnapshot } from '../../casino/types';
+import type { LuckyBreakSnapshot } from '../../state/types';
 import { BalanceDisplay } from '../components/BalanceDisplay';
 import { BlackjackArt } from '../components/BlackjackArt';
-import { CasinoLogo } from '../components/CasinoLogo';
+import { LuckyBreakLogo } from '../components/LuckyBreakLogo';
 import { GameCard } from '../components/GameCard';
 import { GameHistory } from '../components/GameHistory';
 import { PixelCard } from '../components/PixelCard';
@@ -10,17 +10,17 @@ import { StatTile } from '../components/StatTile';
 import type { Page } from '../navigation';
 
 interface HomeProps {
-  readonly snapshot: CasinoSnapshot;
+  readonly snapshot: LuckyBreakSnapshot;
   readonly onNavigate: (page: Page) => void;
 }
 
-/** The casino lobby: logo, chips, the two games and the latest rounds. */
+/** Lucky Break lobby: logo, chips, the two games and the latest rounds. */
 export function Home({ snapshot, onNavigate }: HomeProps) {
   const { overall } = snapshot.stats;
 
   return (
     <>
-      <CasinoLogo />
+      <LuckyBreakLogo />
 
       <PixelCard title="YOUR CHIPS" tone="gold">
         <BalanceDisplay balance={snapshot.balance} size="lg" />

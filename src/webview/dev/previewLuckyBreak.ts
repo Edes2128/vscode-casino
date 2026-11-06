@@ -11,10 +11,10 @@
  * Settings and resets are real too. The confirmation that VS Code shows as a modal dialog is a
  * browser `confirm()` here.
  */
-import { createFreshState, STATE_KEY, type PersistedState } from '../../casino/persistence';
-import { SettingsStore } from '../../casino/settings';
-import { CasinoStore } from '../../casino/store';
-import { MemoryStorage } from '../../casino/testing';
+import { createFreshState, STATE_KEY, type PersistedState } from '../../state/persistence';
+import { SettingsStore } from '../../state/settings';
+import { LuckyBreakStore } from '../../state/store';
+import { MemoryStorage } from '../../state/testing';
 import { BlackjackTable } from '../../game/blackjack/table';
 import { cards } from '../../game/blackjack/testing';
 import { resetPrompt } from '../../game/resetPrompt';
@@ -24,15 +24,15 @@ import { POCKET_COUNT, pocketIndexOfNumber } from '../../game/roulette/wheel';
 import type { HostToWebviewMessage, ViewKind, WebviewToHostMessage } from '../../shared/messages';
 import { sampleSnapshot } from './sampleSnapshot';
 
-export interface PreviewCasino {
+export interface PreviewLuckyBreak {
   handle(message: WebviewToHostMessage): void;
 }
 
-export function createPreviewCasino(
+export function createPreviewLuckyBreak(
   emit: (message: HostToWebviewMessage) => void,
   query: URLSearchParams,
   viewKind: ViewKind,
-): PreviewCasino {
+): PreviewLuckyBreak {
   const storage = new MemoryStorage();
   if (query.has('demo')) {
     const demo: PersistedState = {
@@ -44,7 +44,7 @@ export function createPreviewCasino(
     storage.seed(STATE_KEY, demo);
   }
 
-  const store = new CasinoStore(storage);
+  const store = new LuckyBreakStore(storage);
   const deck = query.get('deck');
   const table = new BlackjackTable(store, deck === null ? {} : { deck: () => cards(deck) });
 

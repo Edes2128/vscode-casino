@@ -1,4 +1,4 @@
-import type { ColorSlot, CustomColors, ThemeId } from '../../casino/appearance';
+import type { ColorSlot, CustomColors, ThemeId } from '../../state/appearance';
 import {
   darken,
   ensureContrast,

@@ -1,6 +1,6 @@
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
-import { DEFAULT_SETTINGS } from '../../casino/settings';
+import { DEFAULT_SETTINGS } from '../../state/settings';
 import { IDLE_VIEW } from '../../game/blackjack/view';
 import { IDLE_ROULETTE_VIEW } from '../../game/roulette/view';
 import { NAV_ITEMS } from '../navigation';
@@ -152,7 +152,7 @@ describe('the settings screen', () => {
     expect(html).toContain('YOUR SYSTEM ASKS FOR REDUCED MOTION');
   });
 
-  it('says in words what the casino is doing with motion', () => {
+  it('says in words what Lucky Break is doing with motion', () => {
     expect(renderToStaticMarkup(<Settings {...baseProps} motion="full" />)).toContain('FULL ANIMATION');
     expect(renderToStaticMarkup(<Settings {...baseProps} motion="calm" />)).toContain('CALM: STEP BY STEP, NO MOVEMENT');
     expect(renderToStaticMarkup(<Settings {...baseProps} motion="off" />)).toContain('ANIMATION OFF: RESULTS AT ONCE');
@@ -162,7 +162,7 @@ describe('the settings screen', () => {
     const html = renderToStaticMarkup(<Settings {...baseProps} version="1.2.3" />);
     expect(html).toContain('VERSION 1.2.3');
     expect(html).toContain('VIRTUAL CHIPS ONLY. NO REAL MONEY. EVER.');
-    expect(html).toContain('Enjoying the casino? Buy me a coffee!');
+    expect(html).toContain('Enjoying Lucky Break? Buy me a coffee!');
     expect(renderToStaticMarkup(<Settings {...baseProps} version={undefined} />)).toContain('VERSION ?');
   });
 });

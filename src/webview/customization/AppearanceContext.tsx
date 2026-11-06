@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useMemo, type ReactNode } from 'react';
-import type { CardDesignId, RouletteAnimationId, SoundPackId } from '../../casino/appearance';
-import { DEFAULT_SETTINGS, type Settings } from '../../casino/settings';
+import type { CardDesignId, RouletteAnimationId, SoundPackId } from '../../state/appearance';
+import { DEFAULT_SETTINGS, type Settings } from '../../state/settings';
 import { appearanceAttributes, resolveAppearance, type ResolvedAppearance } from './appearance';
 
 /**

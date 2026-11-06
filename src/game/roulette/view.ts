@@ -1,4 +1,4 @@
-import { isCount, isRecord, MAX_DETAIL_LENGTH } from '../../casino/snapshot';
+import { isCount, isRecord, MAX_DETAIL_LENGTH } from '../../state/snapshot';
 import { parseSelection, type Pocket, type RouletteSelection } from './types';
 import { colorOfNumber, POCKET_COUNT } from './wheel';
 

@@ -1,4 +1,4 @@
-import type { ChipValue } from '../../casino/chips';
+import type { ChipValue } from '../../state/chips';
 import { CHIP_PALETTES, CHIP_ROWS_LARGE, CHIP_ROWS_SMALL, tintChip } from '../art/chip';
 import { useAppearance } from '../customization/AppearanceContext';
 import { cx } from '../cx';
@@ -15,7 +15,7 @@ interface PixelChipProps {
   readonly onSelect?: (value: ChipValue) => void;
 }
 
-/** A casino chip in the colour of its denomination. The small size has no printed value. */
+/** A chip in the colour of its denomination. The small size has no printed value. */
 export function PixelChip({ value, size = 'md', selected = false, disabled = false, onSelect }: PixelChipProps) {
   const tint = useAppearance().resolved.tokens.chip;
   const className = cx('px-chip', `px-chip--${size}`, `px-chip--v${value}`, selected && 'px-chip--selected');

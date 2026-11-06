@@ -1,7 +1,7 @@
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
-import { SOUND_CATEGORIES, SOUND_PACK_IDS, type SoundCategory } from '../../../casino/appearance';
-import { DEFAULT_SETTINGS, type Settings } from '../../../casino/settings';
+import { SOUND_CATEGORIES, SOUND_PACK_IDS, type SoundCategory } from '../../../state/appearance';
+import { DEFAULT_SETTINGS, type Settings } from '../../../state/settings';
 import { MotionContext, type MotionLevel } from '../../motion';
 import { SAMPLE_STEPS } from '../../sound/sample';
 import { SOUND_CATEGORY_INFO, SOUND_PACK_CATALOG } from '../soundPacks';
@@ -37,7 +37,7 @@ describe('the sound pack picker', () => {
     expect(markup).toContain('role="radiogroup"');
     expect(markup).toContain('aria-label="Sound pack"');
     expect(tagsWithRole(markup, 'radio')).toHaveLength(5);
-    const names = ['CLASSIC CASINO', 'RETRO ARCADE', 'PIXEL ADVENTURE', 'NEON CYBER', 'MINIMAL SOUNDS'];
+    const names = ['CLASSIC LOUNGE', 'RETRO ARCADE', 'PIXEL ADVENTURE', 'NEON CYBER', 'MINIMAL SOUNDS'];
     const positions = names.map((name) => markup.indexOf(name));
     expect(positions.every((position) => position >= 0)).toBe(true);
     expect([...positions].sort((a, b) => a - b)).toEqual(positions);

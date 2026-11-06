@@ -1,6 +1,6 @@
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
-import { createInitialSnapshot } from '../../casino/snapshot';
+import { createInitialSnapshot } from '../../state/snapshot';
 import { sampleHistory, sampleSnapshot } from '../dev/sampleSnapshot';
 import { Statistics } from '../pages/Statistics';
 import { BalanceDisplay } from './BalanceDisplay';
@@ -162,11 +162,11 @@ describe('ResultBar', () => {
 });
 
 describe('Statistics screen', () => {
-  it('shows every required statistic for the whole casino', () => {
+  it('shows every required statistic for the whole game', () => {
     const html = renderToStaticMarkup(<Statistics snapshot={sampleSnapshot} />);
     for (const expected of [
       'STATISTICS',
-      'WHOLE CASINO',
+      'WHOLE GAME',
       'CURRENT BALANCE',
       '1,725',
       'GAMES PLAYED',
@@ -186,7 +186,7 @@ describe('Statistics screen', () => {
     }
   });
 
-  it('offers the whole casino, Blackjack and Roulette, starting on the whole casino', () => {
+  it('offers the whole game, Blackjack and Roulette, starting on the whole game', () => {
     const html = renderToStaticMarkup(<Statistics snapshot={sampleSnapshot} />);
     expect(html).toMatch(/aria-pressed="true"[^>]*>ALL</);
     expect(html).toContain('>BLACKJACK<');
@@ -203,7 +203,7 @@ describe('Statistics screen', () => {
     expect(html).toContain('<time');
   });
 
-  it('is honest about a brand-new casino: zeros, an empty bar and an empty history', () => {
+  it('is honest about a brand-new game: zeros, an empty bar and an empty history', () => {
     const html = renderToStaticMarkup(<Statistics snapshot={createInitialSnapshot()} />);
     expect(html).toContain('1,000');
     expect(html).toContain('0.0%');

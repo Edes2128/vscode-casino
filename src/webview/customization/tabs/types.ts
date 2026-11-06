@@ -1,4 +1,4 @@
-import type { Settings, SettingsPatch } from '../../../casino/settings';
+import type { Settings, SettingsPatch } from '../../../state/settings';
 
 /** What every tab of the Customize screen is given. A tab changes settings only through `onChange`. */
 export interface CustomizeTabProps {

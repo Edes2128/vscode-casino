@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { CHIP_VALUES } from '../casino/chips';
+import { CHIP_VALUES } from '../state/chips';
 import { addChip, betProblem, betProblemText, parseBetInput, rejectionText } from './betting';
 
 describe('addChip', () => {

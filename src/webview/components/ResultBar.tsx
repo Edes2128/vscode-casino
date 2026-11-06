@@ -1,5 +1,5 @@
-import type { GameStats } from '../../casino/types';
-import { proportionBlocks } from '../../casino/statistics';
+import type { GameStats } from '../../state/types';
+import { proportionBlocks } from '../../state/statistics';
 import { pluralise } from '../format';
 
 /** Number of pixel blocks in the bar. */

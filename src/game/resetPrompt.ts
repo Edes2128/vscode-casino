@@ -1,4 +1,4 @@
-import { STARTING_BALANCE } from '../casino/snapshot';
+import { STARTING_BALANCE } from '../state/snapshot';
 import type { ResetScope } from './resetScope';
 
 export interface ResetPrompt {
@@ -29,7 +29,7 @@ export function resetPrompt(scope: ResetScope): ResetPrompt {
       };
     case 'all':
       return {
-        message: 'Reset the whole casino?',
+        message: 'Reset everything in Lucky Break?',
         detail: `Your balance goes back to ${chips} chips, and your statistics and game history are cleared. Your sound and animation settings are kept. This cannot be undone.`,
         confirmLabel: 'Reset Everything',
       };

@@ -1,7 +1,7 @@
 import { renderToStaticMarkup } from 'react-dom/server';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { SOUND_CATEGORIES, SOUND_PACK_IDS, type SoundCategory } from '../../../casino/appearance';
-import { DEFAULT_SETTINGS, type Settings, type SettingsPatch } from '../../../casino/settings';
+import { SOUND_CATEGORIES, SOUND_PACK_IDS, type SoundCategory } from '../../../state/appearance';
+import { DEFAULT_SETTINGS, type Settings, type SettingsPatch } from '../../../state/settings';
 import { CUE_CATEGORY } from '../../sound/cues';
 import { CATEGORY_SAMPLES, SAMPLE_STEPS } from '../../sound/sample';
 import { SoundsTab } from './SoundsTab';
@@ -67,7 +67,7 @@ const labelOf = (category: SoundCategory): string => `${category[0]?.toUpperCase
 describe('picking a sound pack', () => {
   it.each(SOUND_PACK_IDS)('saves "%s" and answers with that pack\'s own click, before it is even saved', (id) => {
     const { onChange } = mount(settings({ soundPack: id === 'classic' ? 'minimal' : 'classic' }));
-    const card = captured.choices.find((entry) => entry.label === ({ classic: 'CLASSIC CASINO', arcade: 'RETRO ARCADE', adventure: 'PIXEL ADVENTURE', cyber: 'NEON CYBER', minimal: 'MINIMAL SOUNDS' })[id]);
+    const card = captured.choices.find((entry) => entry.label === ({ classic: 'CLASSIC LOUNGE', arcade: 'RETRO ARCADE', adventure: 'PIXEL ADVENTURE', cyber: 'NEON CYBER', minimal: 'MINIMAL SOUNDS' })[id]);
     expect(card).toBeDefined();
     card?.onSelect();
     expect(onChange).toHaveBeenCalledExactlyOnceWith({ soundPack: id });

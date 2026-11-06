@@ -6,14 +6,14 @@ it is free: no tiers, no unlocks, no limits. Buy Me a Coffee is an optional tip 
 
 ## Phase 1: what was inspected (architecture summary)
 
-The casino is **host-authoritative**. Nothing a player can click decides a result.
+Lucky Break is **host-authoritative**. Nothing a player can click decides a result.
 
 ```
  webview (React + Vite)                      extension host (Node)
  ┌──────────────────────────┐   messages    ┌─────────────────────────────────────────┐
  │ pages / components / CSS │ ───────────▶  │ WebviewHub: validates every message     │
  │ sound (Web Audio)        │ ◀───────────  │ BlackjackTable / RouletteTable (secrets)│
- └──────────────────────────┘  typed guards │ CasinoStore (wallet, stats, history)    │
+ └──────────────────────────┘  typed guards │ LuckyBreakStore (wallet, stats, history)    │
                                             │ SettingsStore (preferences)             │
                                             │ ResetCoordinator (confirmed resets)     │
                                             └─────────────────────────────────────────┘
@@ -23,8 +23,8 @@ The casino is **host-authoritative**. Nothing a player can click decides a resul
 | Layer | Where | Notes |
 | --- | --- | --- |
 | Pure game rules | `src/game/blackjack/engine.ts`, `src/game/roulette/engine.ts` | Injectable RNG, no I/O. Fuzzed against an independent reference (`referenceRules.ts`). |
-| Tables | `src/game/*/table.ts` | Own the deck / the wheel's choice, pay through `CasinoStore` exactly once. |
-| Wallet and records | `src/casino/*` | `CasinoStore` (key `casino.state`) and `SettingsStore` (key `casino.settings`), both through a coalescing `WriteQueue`. |
+| Tables | `src/game/*/table.ts` | Own the deck / the wheel's choice, pay through `LuckyBreakStore` exactly once. |
+| Wallet and records | `src/state/*` | `LuckyBreakStore` (key `luckyBreak.state`) and `SettingsStore` (key `luckyBreak.settings`), both through a coalescing `WriteQueue`. |
 | Protocol | `src/shared/messages.ts` | Every message in both directions has a runtime guard. A bad message is dropped. |
 | Webview shell | `src/webview/App.tsx` | Pages: home, blackjack, roulette, statistics, settings (and customize). One host connection. |
 | Sound | `src/webview/sound/*` | Synthesized Web Audio cues. Nothing plays before the player's first click. |
@@ -59,9 +59,9 @@ Status: `[x]` done and verified, `[~]` in progress, `[ ]` not started.
 - [x] Architecture summary (above).
 - [x] Persistence, navigation, sound, motion and theming entry points identified.
 
-### Phase 2: Casino themes (8)
+### Phase 2: Themes (8)
 
-- [x] Classic Casino, Neon Arcade, Retro 8-Bit, Midnight Casino, Blood Casino, Cyber Casino, Forest Casino, Royal Casino (`src/webview/customization/themes.ts`: one table of colors per theme)
+- [x] Classic Felt, Neon Arcade, Retro 8-Bit, Midnight Felt, Crimson Felt, Cyber Felt, Forest Felt, Royal Felt (`src/webview/customization/themes.ts`: one table of colors per theme)
 - [x] Applied through CSS custom properties on the page root, so home, Blackjack, Roulette, buttons, panels, chips and the Home table art all follow; per-theme backdrop pattern, glow and frame metal in `themes.css`
 - [x] Selection screen (Style tab) with a live miniature of each theme and an IN USE marker
 - [x] Persisted (`settings.theme`), switches without a restart (verified in the browser)
@@ -70,7 +70,7 @@ Status: `[x]` done and verified, `[~]` in progress, `[ ]` not started.
 
 ### Phase 3: Playing card designs (6)
 
-- [x] Classic Pixel, Retro 8-Bit, Neon, Medieval Fantasy, Minimal Pixel, Dark Casino (`customization/cardDesigns.ts`, `styles/cards.css`; Classic is the original card, byte for byte)
+- [x] Classic Pixel, Retro 8-Bit, Neon, Medieval Fantasy, Minimal Pixel, Dark Deck (`customization/cardDesigns.ts`, `styles/cards.css`; Classic is the original card, byte for byte)
 - [x] All 52 cards in every design plus a back per design, readable values (ink on face >= 4.5 to 1 in every design, tested), deal and flip animations unchanged and still switched off by calm / off motion
 - [x] Choice grid with a miniature hand per design, a preview section for the design in use, persisted, verified with a real K+Q split in the browser
 
@@ -83,7 +83,7 @@ Status: `[x]` done and verified, `[~]` in progress, `[ ]` not started.
 
 ### Phase 5: Sound packs (5)
 
-- [x] Classic Casino, Retro Arcade, Pixel Adventure, Neon Cyber, Minimal Sounds (`sound/packs.ts`; Classic is tone-for-tone the old sound)
+- [x] Classic Lounge, Retro Arcade, Pixel Adventure, Neon Cyber, Minimal Sounds (`sound/packs.ts`; Classic is tone-for-tone the old sound)
 - [x] Click, chip, deal, flip, win, big win, loss, push, spin and a new navigation sound
 - [x] Master toggle, volume, five category switches, PLAY SAMPLE, no autoplay (no audio context before the first click, tested)
 - [x] Local only: synthesized with Web Audio; a source scan test forbids fetch, XHR, audio files and external URLs
@@ -97,7 +97,7 @@ Status: `[x]` done and verified, `[~]` in progress, `[ ]` not started.
 
 ### Phase 7: Buy Me a Coffee
 
-- [x] Pixel coffee button with "Enjoying the casino? Buy me a coffee!" on Home and in the About card of Settings (About is a card inside Settings), opening the page in the browser through `vscode.env.openExternal`
+- [x] Pixel coffee button with "Enjoying Lucky Break? Buy me a coffee!" on Home and in the About card of Settings (About is a card inside Settings), opening the page in the browser through `vscode.env.openExternal`
 - [x] One constant for the address (`src/shared/support.ts`), quiet and in the theme's gold, never a pop-up, never next to a game's controls (removed from Statistics)
 
 ### Phase 8: Persistence and testing
@@ -115,7 +115,7 @@ Status: `[x]` done and verified, `[~]` in progress, `[ ]` not started.
 
 ## Decisions worth knowing
 
-* **Sounds are synthesized, not audio files.** The casino has always made its sounds with the Web
+* **Sounds are synthesized, not audio files.** Lucky Break has always made its sounds with the Web
   Audio API (small tone patches), so packs are more patches. That keeps everything local with no
   files to license and nothing to download, and fits the content security policy.
 * **The coffee address is already real** (`https://buymeacoffee.com/5x2bfo6t5c`, in

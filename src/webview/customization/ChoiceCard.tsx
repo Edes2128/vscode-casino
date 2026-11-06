@@ -44,7 +44,7 @@ export function ChoiceCard({ selected, label, description, onSelect, children }:
 }
 
 interface ChoiceGridProps {
-  /** Accessible name of the set, such as "Casino theme". */
+  /** Accessible name of the set, such as "Theme". */
   readonly label: string;
   readonly children: ReactNode;
 }

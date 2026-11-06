@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import type { Settings, SettingsPatch } from '../../casino/settings';
+import type { Settings, SettingsPatch } from '../../state/settings';
 import { cx } from '../cx';
 import { AnimationsTab } from '../customization/tabs/AnimationsTab';
 import { CardsTab } from '../customization/tabs/CardsTab';
@@ -35,7 +35,7 @@ export const CUSTOMIZE_TABS: readonly TabDefinition[] = [
 let lastTab: CustomizeTabId = 'themes';
 
 /**
- * The Customize screen: casino themes, playing cards, roulette animations, sound packs and custom colors. A choice
+ * The Customize screen: themes, playing cards, roulette animations, sound packs and custom colors. A choice
  * is saved and applied at once, with no restart, and every option is free.
  */
 export function Customize({ settings, onChange }: CustomizeProps) {

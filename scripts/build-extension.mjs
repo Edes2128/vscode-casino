@@ -78,10 +78,10 @@ if (withTests) {
     'out/restart-helper/package.json',
     JSON.stringify(
       {
-        name: 'casino-restart-helper',
-        displayName: 'Casino restart-test helper',
+        name: 'lb-restart-helper',
+        displayName: 'Lucky Break restart-test helper',
         version: '0.0.0',
-        publisher: 'vscode-casino-dev',
+        publisher: 'lucky-break-dev',
         private: true,
         engines: { vscode: '^1.90.0' },
         main: './index.js',

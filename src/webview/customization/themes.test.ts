@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { COLOR_SLOTS, THEME_IDS, type ColorSlot, type CustomColors } from '../../casino/appearance';
+import { COLOR_SLOTS, THEME_IDS, type ColorSlot, type CustomColors } from '../../state/appearance';
 import { contrastOfHex, MIN_TEXT_CONTRAST } from '../color';
 import { appearanceAttributes, resolveAppearance } from './appearance';
 import { DEFAULT_THEME, themeOf, THEMES } from './themes';
@@ -12,14 +12,14 @@ describe('the themes', () => {
   it('are the eight of the brief, one per id, in order', () => {
     expect(THEMES.map((theme) => theme.id)).toEqual([...THEME_IDS]);
     expect(THEMES.map((theme) => theme.name)).toEqual([
-      'Classic Casino',
+      'Classic Felt',
       'Neon Arcade',
       'Retro 8-Bit',
-      'Midnight Casino',
-      'Blood Casino',
-      'Cyber Casino',
-      'Forest Casino',
-      'Royal Casino',
+      'Midnight Felt',
+      'Crimson Felt',
+      'Cyber Felt',
+      'Forest Felt',
+      'Royal Felt',
     ]);
   });
 

@@ -43,16 +43,16 @@ export interface OpenRound {
   readonly startedAt: number;
 }
 
-export interface CasinoStats {
+export interface LuckyBreakStats {
   readonly overall: GameStats;
   readonly blackjack: GameStats;
   readonly roulette: GameStats;
 }
 
-/** Everything the webview needs to draw the casino. The host owns it; the webview never edits it. */
-export interface CasinoSnapshot {
+/** Everything the webview needs to draw Lucky Break. The host owns it; the webview never edits it. */
+export interface LuckyBreakSnapshot {
   readonly balance: number;
-  readonly stats: CasinoStats;
+  readonly stats: LuckyBreakStats;
   /** Most recent round first. */
   readonly history: readonly HistoryEntry[];
 }

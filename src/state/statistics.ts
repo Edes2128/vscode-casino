@@ -18,7 +18,7 @@ export function recordRound(stats: GameStats, stake: number, net: number): GameS
   };
 }
 
-/** The overall casino numbers are always derived from the per-game ones, never stored twice. */
+/** The overall numbers are always derived from the per-game ones, never stored twice. */
 export function combineStats(...parts: readonly GameStats[]): GameStats {
   return parts.reduce<GameStats>(
     (total, part) => ({

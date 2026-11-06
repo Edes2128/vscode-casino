@@ -1,7 +1,7 @@
-import type { CasinoPage } from '../shared/messages';
+import type { LuckyBreakPage } from '../shared/messages';
 import { CARDS_ICON, CUSTOMIZE_ICON, HOME_ICON, SETTINGS_ICON, STATS_ICON, WHEEL_ICON } from './art/sprites';
 
-export type Page = CasinoPage;
+export type Page = LuckyBreakPage;
 
 export interface NavItem {
   readonly page: Page;

@@ -4,9 +4,9 @@ import type { Logger } from './logger';
 import type { WebviewHub } from './WebviewHub';
 import { getWebviewOptions, renderWebviewHtml } from './webviewHtml';
 
-/** The casino in the activity-bar sidebar. */
-export class CasinoViewProvider implements vscode.WebviewViewProvider {
-  static readonly viewType = 'casino.sidebar';
+/** Lucky Break in the activity-bar sidebar. */
+export class LuckyBreakViewProvider implements vscode.WebviewViewProvider {
+  static readonly viewType = 'luckyBreak.sidebar';
 
   constructor(
     private readonly context: vscode.ExtensionContext,

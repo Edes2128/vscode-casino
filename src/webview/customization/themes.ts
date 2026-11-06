@@ -1,4 +1,4 @@
-import type { ThemeId } from '../../casino/appearance';
+import type { ThemeId } from '../../state/appearance';
 
 /**
  * Every color a theme sets. A theme is nothing but this table, so a new one is a new row, and the screens that
@@ -60,7 +60,7 @@ export interface ThemeDefinition {
 export const THEMES: readonly ThemeDefinition[] = [
   {
     id: 'classic',
-    name: 'Classic Casino',
+    name: 'Classic Felt',
     blurb: 'Green felt, gold, a dark room.',
     pattern: 'grid',
     glow: false,
@@ -134,7 +134,7 @@ export const THEMES: readonly ThemeDefinition[] = [
   },
   {
     id: 'midnight',
-    name: 'Midnight Casino',
+    name: 'Midnight Felt',
     blurb: 'Navy felt, silver trim, quiet light.',
     pattern: 'stars',
     glow: false,
@@ -159,7 +159,7 @@ export const THEMES: readonly ThemeDefinition[] = [
   },
   {
     id: 'blood',
-    name: 'Blood Casino',
+    name: 'Crimson Felt',
     blurb: 'Burgundy felt and old brass.',
     pattern: 'diagonal',
     glow: false,
@@ -184,7 +184,7 @@ export const THEMES: readonly ThemeDefinition[] = [
   },
   {
     id: 'cyber',
-    name: 'Cyber Casino',
+    name: 'Cyber Felt',
     blurb: 'Yellow signs, teal glass, black streets.',
     pattern: 'bars',
     glow: true,
@@ -209,7 +209,7 @@ export const THEMES: readonly ThemeDefinition[] = [
   },
   {
     id: 'forest',
-    name: 'Forest Casino',
+    name: 'Forest Felt',
     blurb: 'Deep moss, amber lamps, dark wood.',
     pattern: 'dots',
     glow: false,
@@ -234,7 +234,7 @@ export const THEMES: readonly ThemeDefinition[] = [
   },
   {
     id: 'royal',
-    name: 'Royal Casino',
+    name: 'Royal Felt',
     blurb: 'Purple velvet and a lot of gold.',
     pattern: 'diagonal',
     glow: false,

@@ -1,5 +1,5 @@
 /**
- * Measures what the casino costs VS Code while it just sits there.
+ * Measures what Lucky Break costs VS Code while it just sits there.
  *
  *   npm run perf:idle
  *
@@ -23,9 +23,9 @@ import { AMBIENT_TICK_MS } from '../../src/webview/ambientTiming';
 
 const INSTALLED_VSCODE_MACOS = '/Applications/Visual Studio Code.app/Contents/MacOS/Code';
 const READY_TIMEOUT_MS = 120_000;
-const STARTUP_SETTLE_SECONDS = Number(process.env['CASINO_IDLE_STARTUP'] ?? 30);
+const STARTUP_SETTLE_SECONDS = Number(process.env['LUCKY_BREAK_IDLE_STARTUP'] ?? 30);
 /** Each phase is measured in this many short slices, and the median is reported: VS Code does its own background work in bursts, and one long average would swallow a burst whole. */
-const SLICE_SECONDS = Number(process.env['CASINO_IDLE_SLICE'] ?? 4);
+const SLICE_SECONDS = Number(process.env['LUCKY_BREAK_IDLE_SLICE'] ?? 4);
 
 /**
  * Awake samples must end before the decorations rest (15 s), counting the settling time before them and
@@ -36,7 +36,7 @@ const AWAKE_SLICE_SECONDS = 3;
 const AWAKE_SETTLE_SECONDS = 1;
 const STILL_SLICES = 6;
 const STILL_SETTLE_SECONDS = 4;
-/** A resting casino is measured once it has certainly rested. */
+/** A resting game is measured once it has certainly rested. */
 const RESTING_SLICES = 6;
 const RESTING_SETTLE_SECONDS = 19;
 
@@ -50,8 +50,8 @@ const DEBUG_PORT = 9341;
 
 /**
  * `awake`: the player just did something, so the decorations tick, and the sample must be short enough to
- * finish before they rest. `resting`: wait for them to rest, then measure what an idle casino costs.
- * `still`: decorations are switched off or the casino is hidden.
+ * finish before they rest. `resting`: wait for them to rest, then measure what an idle game costs.
+ * `still`: decorations are switched off or Lucky Break is hidden.
  */
 type Kind = 'awake' | 'resting' | 'still';
 
@@ -61,24 +61,24 @@ interface Phase {
   readonly command?: {
     readonly settings?: Record<string, unknown>;
     readonly page?: string;
-    readonly show?: 'casino' | 'explorer';
+    readonly show?: 'luckyBreak' | 'explorer';
   };
 }
 
-const CASINO_PHASES: readonly Phase[] = [
-  { name: 'Home, awake', kind: 'awake', command: { settings: { animations: true, reducedMotion: false }, page: 'home', show: 'casino' } },
+const LUCKY_BREAK_PHASES: readonly Phase[] = [
+  { name: 'Home, awake', kind: 'awake', command: { settings: { animations: true, reducedMotion: false }, page: 'home', show: 'luckyBreak' } },
   { name: 'Home, animations off', kind: 'still', command: { settings: { animations: false } } },
   { name: 'Home, awake (again)', kind: 'awake', command: { settings: { animations: true }, page: 'blackjack' } },
   { name: 'Home, reduced motion', kind: 'still', command: { settings: { reducedMotion: true }, page: 'home' } },
   { name: 'Blackjack, awake', kind: 'awake', command: { settings: { reducedMotion: false }, page: 'blackjack' } },
   { name: 'Settings page, awake', kind: 'awake', command: { page: 'settings' } },
   { name: 'Home, left alone (resting)', kind: 'resting', command: { page: 'home' } },
-  { name: 'Home, casino hidden', kind: 'still', command: { show: 'explorer' } },
+  { name: 'Home, hidden', kind: 'still', command: { show: 'explorer' } },
 ];
 
-/** `CASINO_IDLE_PHASES=quick`: only what is needed to compare two builds of the decorations. */
+/** `LUCKY_BREAK_IDLE_PHASES=quick`: only what is needed to compare two builds of the decorations. */
 const QUICK_PHASES: readonly Phase[] = [
-  { name: 'Home, awake', kind: 'awake', command: { settings: { animations: true, reducedMotion: false }, page: 'home', show: 'casino' } },
+  { name: 'Home, awake', kind: 'awake', command: { settings: { animations: true, reducedMotion: false }, page: 'home', show: 'luckyBreak' } },
   { name: 'Home, animations off', kind: 'still', command: { settings: { animations: false } } },
   { name: 'Home, awake (again)', kind: 'awake', command: { settings: { animations: true }, page: 'blackjack' } },
   { name: 'Home, left alone (resting)', kind: 'resting', command: { page: 'home' } },
@@ -176,7 +176,7 @@ interface Session {
   stop(): Promise<void>;
 }
 
-async function launch(projectRoot: string, executable: string, casino: boolean): Promise<Session> {
+async function launch(projectRoot: string, executable: string, luckyBreak: boolean): Promise<Session> {
   const sandbox = path.join(projectRoot, '.vscode-test');
   const userData = path.join(sandbox, 'pf');
   const extensions = path.join(sandbox, 'px');
@@ -205,15 +205,15 @@ async function launch(projectRoot: string, executable: string, casino: boolean):
     '--skip-release-notes',
     '--disable-updates',
   ];
-  if (casino) {
+  if (luckyBreak) {
     args.push(`--extensionDevelopmentPath=${projectRoot}`, `--extensionDevelopmentPath=${path.join(projectRoot, 'out', 'restart-helper')}`);
     Object.assign(env, {
-      CASINO_EXPOSE_TEST_API: '1',
-      CASINO_RESTART_PHASE: 'idle',
-      CASINO_RESTART_RESULT: resultPath,
-      CASINO_IDLE_PAGE: 'home',
-      CASINO_IDLE_SETTINGS: '{}',
-      CASINO_IDLE_CONTROL: control,
+      LUCKY_BREAK_EXPOSE_TEST_API: '1',
+      LUCKY_BREAK_RESTART_PHASE: 'idle',
+      LUCKY_BREAK_RESTART_RESULT: resultPath,
+      LUCKY_BREAK_IDLE_PAGE: 'home',
+      LUCKY_BREAK_IDLE_SETTINGS: '{}',
+      LUCKY_BREAK_IDLE_CONTROL: control,
     });
   }
 
@@ -221,10 +221,10 @@ async function launch(projectRoot: string, executable: string, casino: boolean):
   const root = child.pid;
   if (root === undefined) throw new Error('VS Code did not start');
 
-  if (casino) {
+  if (luckyBreak) {
     const deadline = Date.now() + READY_TIMEOUT_MS;
     while (!fs.existsSync(resultPath)) {
-      if (Date.now() > deadline) throw new Error('the casino never got ready');
+      if (Date.now() > deadline) throw new Error('Lucky Break never got ready');
       await sleep(250);
     }
     const outcome = JSON.parse(fs.readFileSync(resultPath, 'utf8')) as { ok: boolean; detail: string };
@@ -257,7 +257,7 @@ async function command(session: Session, phase: Phase, id: string): Promise<void
   fs.writeFileSync(session.control, JSON.stringify({ id, ...phase.command }));
   const deadline = Date.now() + 20_000;
   while (!fs.existsSync(`${session.control}.ack`) || fs.readFileSync(`${session.control}.ack`, 'utf8') !== id) {
-    if (Date.now() > deadline) throw new Error(`the casino did not acknowledge "${phase.name}"`);
+    if (Date.now() > deadline) throw new Error(`Lucky Break did not acknowledge "${phase.name}"`);
     await sleep(200);
   }
 }
@@ -272,7 +272,7 @@ interface Result {
   readonly name: string;
   /** The slowest and fastest slice, to show how steady the median is. */
   readonly cpuRange: readonly [number, number];
-  /** The casino's own report of its decorations' clock before and after the sample. Ticks moving proves they are alive. */
+  /** Lucky Break's own report of its decorations' clock before and after the sample. Ticks moving proves they are alive. */
   readonly clock?: readonly [Ambient | undefined, Ambient | undefined] | undefined;
   readonly cpuPercent: number;
   readonly rssMb: number;
@@ -280,7 +280,7 @@ interface Result {
   readonly fpsAfter: number | undefined;
 }
 
-/** What the casino's page last told the host about its clock, written by the helper extension. No debugger is attached. */
+/** What Lucky Break's page last told the host about its clock, written by the helper extension. No debugger is attached. */
 function readClock(session: Session): Ambient | undefined {
   try {
     const value = JSON.parse(fs.readFileSync(`${session.control}.status`, 'utf8')) as Ambient | null;
@@ -362,7 +362,7 @@ async function sampleRendering(session: Session, phase: Phase): Promise<Result> 
   let result = await sample(session, phase.name, slices, sliceSeconds, true);
   for (let attempt = 1; attempt < 7 && !isValid(result, phase); attempt += 1) {
     console.log(`    (${phase.name}: not usable (${isRendering(result) ? 'the clock did not behave as this phase needs' : 'the window was not rendering'}); measuring again)`);
-    // Wake the casino again for an awake phase; a resting phase has to wait for the rest all over again.
+    // Wake Lucky Break again for an awake phase; a resting phase has to wait for the rest all over again.
     if (phase.kind !== 'still') await command(session, { ...phase, command: { page: phase.kind === 'awake' ? 'settings' : 'home' } }, `retry-${attempt}-a`);
     if (phase.kind !== 'still') await command(session, { ...phase, command: { page: 'home' } }, `retry-${attempt}-b`);
     await sleep(plan(phase.kind).settle * 1000);
@@ -396,8 +396,8 @@ async function main(): Promise<void> {
     throw new Error('The helper is not built. Run `npm run perf:idle`, not this file directly.');
   }
 
-  // CASINO_IDLE_DIAG=1: watch the casino's clock over time, and through animations off and on again.
-  if (process.env['CASINO_IDLE_DIAG'] === '1') {
+  // LUCKY_BREAK_IDLE_DIAG=1: watch Lucky Break's clock over time, and through animations off and on again.
+  if (process.env['LUCKY_BREAK_IDLE_DIAG'] === '1') {
     const session = await launch(projectRoot, executable, true);
     try {
       const seen: Array<{ at: number; ticks: number; running: boolean }> = [];
@@ -437,7 +437,7 @@ async function main(): Promise<void> {
   console.log(`CPU of the whole VS Code process tree, % of one core, median of ${SLICE_SECONDS}s slices per phase, with the slowest and fastest slice in brackets (throwaway profile)`);
   console.log('Each session is ONE running window; its phases are comparable with each other.\n');
 
-  const baselines = process.env['CASINO_IDLE_BASELINES'] !== '0' && process.env['CASINO_IDLE_PHASES'] !== 'quick';
+  const baselines = process.env['LUCKY_BREAK_IDLE_BASELINES'] !== '0' && process.env['LUCKY_BREAK_IDLE_PHASES'] !== 'quick';
 
   if (baselines) {
     console.log('Session 1: VS Code alone');
@@ -449,17 +449,17 @@ async function main(): Promise<void> {
     }
   }
 
-  console.log('\nSession 2: the casino, one window, switched between settings');
-  const casino = await launch(projectRoot, executable, true);
+  console.log('\nSession 2: Lucky Break, one window, switched between settings');
+  const luckyBreak = await launch(projectRoot, executable, true);
   try {
-    const phases = process.env['CASINO_IDLE_PHASES'] === 'quick' ? QUICK_PHASES : CASINO_PHASES;
+    const phases = process.env['LUCKY_BREAK_IDLE_PHASES'] === 'quick' ? QUICK_PHASES : LUCKY_BREAK_PHASES;
     for (const [index, phase] of phases.entries()) {
-      await command(casino, phase, `phase-${index}`);
+      await command(luckyBreak, phase, `phase-${index}`);
       await sleep(plan(phase.kind).settle * 1000);
-      show(await sampleRendering(casino, phase));
+      show(await sampleRendering(luckyBreak, phase));
     }
   } finally {
-    await casino.stop();
+    await luckyBreak.stop();
   }
 
   if (baselines) {

@@ -37,7 +37,7 @@ async function main(): Promise<void> {
   // If this process was started from an Electron app, the flag would make VS Code behave like plain Node.
   delete process.env['ELECTRON_RUN_AS_NODE'];
 
-  const extensionTestsEnv: Record<string, string> = { CASINO_EXPECT_ASSET_MODE: 'prod' };
+  const extensionTestsEnv: Record<string, string> = { LUCKY_BREAK_EXPECT_ASSET_MODE: 'prod' };
   let viteServer: ChildProcess | undefined;
 
   try {
@@ -46,11 +46,11 @@ async function main(): Promise<void> {
       viteServer = spawn(
         process.execPath,
         [path.join(projectRoot, 'node_modules', 'vite', 'bin', 'vite.js'), '--port', String(DEV_SERVER_PORT), '--strictPort'],
-        { cwd: projectRoot, stdio: 'ignore', env: { ...process.env, CASINO_DEV_SERVER_URL: serverUrl } },
+        { cwd: projectRoot, stdio: 'ignore', env: { ...process.env, LUCKY_BREAK_DEV_SERVER_URL: serverUrl } },
       );
       await waitForServer(serverUrl, viteServer);
-      extensionTestsEnv['CASINO_DEV_SERVER_URL'] = serverUrl;
-      extensionTestsEnv['CASINO_EXPECT_ASSET_MODE'] = 'dev';
+      extensionTestsEnv['LUCKY_BREAK_DEV_SERVER_URL'] = serverUrl;
+      extensionTestsEnv['LUCKY_BREAK_EXPECT_ASSET_MODE'] = 'dev';
     }
 
     await runTests({

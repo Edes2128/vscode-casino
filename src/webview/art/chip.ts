@@ -1,9 +1,9 @@
-import type { ChipValue } from '../../casino/chips';
+import type { ChipValue } from '../../state/chips';
 import { darken, parseHex } from '../color';
 import type { Palette } from './pixelRuns';
 
 /**
- * Casino chip, drawn procedurally so any diameter stays clean.
+ * Chip, drawn procedurally so any diameter stays clean.
  *   o outline   a edge colour   b edge stripe   d inner ring   c face
  */
 export function chipRows(diameter: number, detailed: boolean): string[] {

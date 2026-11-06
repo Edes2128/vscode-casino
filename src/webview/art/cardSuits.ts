@@ -1,4 +1,4 @@
-import type { CardDesignId } from '../../casino/appearance';
+import type { CardDesignId } from '../../state/appearance';
 import type { Suit } from '../../game/blackjack/types';
 import type { Palette } from './pixelRuns';
 import { SUIT_GLYPHS, SUIT_PALETTE } from './suits';
@@ -43,7 +43,7 @@ const lit = (rows: readonly string[]): readonly string[] => {
 };
 
 /**
- * Dark Casino: the classic suit with a gold edge along its lower right, one cell deep, like gold leaf on a
+ * Dark Deck: the classic suit with a gold edge along its lower right, one cell deep, like gold leaf on a
  * pressed card. The suit itself stays whole, so its shape reads as clearly as the classic one.
  */
 const gilded = (rows: readonly string[]): readonly string[] => {

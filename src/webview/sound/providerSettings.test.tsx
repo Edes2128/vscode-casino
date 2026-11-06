@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { DEFAULT_SETTINGS, type Settings } from '../../casino/settings';
+import { DEFAULT_SETTINGS, type Settings } from '../../state/settings';
 import { CUES } from './cues';
 import { SoundEngine, type AudioContextLike } from './engine';
 import { ButtonSounds, SoundProvider, configureEngine, cueForButton, cueForClick, useSound, type Play } from './SoundProvider';

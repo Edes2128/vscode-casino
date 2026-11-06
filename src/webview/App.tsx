@@ -1,16 +1,16 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { DEFAULT_SETTINGS, type SettingsPatch } from '../casino/settings';
-import type { CasinoSnapshot } from '../casino/types';
+import { DEFAULT_SETTINGS, type SettingsPatch } from '../state/settings';
+import type { LuckyBreakSnapshot } from '../state/types';
 import type { BlackjackAction } from '../game/blackjack/view';
 import type { ResetScope } from '../game/resetScope';
 import type { RouletteAction } from '../game/roulette/view';
-import { CasinoHeader } from './components/CasinoHeader';
+import { LuckyBreakHeader } from './components/LuckyBreakHeader';
 import { AppearanceProvider, useApplyAppearance, useAppearanceValue } from './customization/AppearanceContext';
 import { NavBar } from './components/NavBar';
 import { PixelParticles } from './components/PixelParticles';
 import { SupportButton } from './components/SupportButton';
 import type { HostConnection } from './host';
-import { useCasinoHost } from './hooks/useCasinoHost';
+import { useLuckyBreakHost } from './hooks/useLuckyBreakHost';
 import { useAmbientClock, type AmbientState } from './hooks/useAmbientClock';
 import { useHostNavigation } from './hooks/useHostNavigation';
 import { useRenderReport } from './hooks/useRenderReport';
@@ -38,7 +38,7 @@ const MAX_HOLD_MS = 20_000;
 const SHOWS_SUPPORT: readonly Page[] = ['home'];
 
 export function App({ host }: AppProps) {
-  const { init, snapshot, blackjack, roulette, rejection, settings, resetResult } = useCasinoHost(host);
+  const { init, snapshot, blackjack, roulette, rejection, settings, resetResult } = useLuckyBreakHost(host);
   const [page, setPage] = useState<Page>('home');
   const [heldBalance, setHeldBalance] = useState<number>();
 
@@ -84,7 +84,7 @@ export function App({ host }: AppProps) {
 
   const shownBalance = heldBalance ?? snapshot?.balance;
 
-  const renderPage = (current: Page, state: CasinoSnapshot) => {
+  const renderPage = (current: Page, state: LuckyBreakSnapshot) => {
     switch (current) {
       case 'home':
         return <Home snapshot={state} onNavigate={setPage} />;
@@ -139,18 +139,18 @@ export function App({ host }: AppProps) {
       <MotionContext.Provider value={motion}>
       <SoundProvider settings={settings}>
       <ButtonSounds />
-      <div ref={appRef} className="casino-app" data-view={init?.viewKind} data-motion={motion} data-text={effectiveSettings.textSize}>
+      <div ref={appRef} className="lb-app" data-view={init?.viewKind} data-motion={motion} data-text={effectiveSettings.textSize}>
         {motion === 'full' && <PixelParticles />}
-        <div className="casino-top">
-          <CasinoHeader balance={shownBalance} />
+        <div className="lb-top">
+          <LuckyBreakHeader balance={shownBalance} />
           <NavBar current={page} onNavigate={setPage} />
         </div>
-        <main className="casino-main">
+        <main className="lb-main">
           <div className="page" key={page}>
             {snapshot === undefined ? <Connecting /> : renderPage(page, snapshot)}
           </div>
         </main>
-        <footer className="casino-footer">
+        <footer className="lb-footer">
           {SHOWS_SUPPORT.includes(page) && <SupportButton onClick={openSupport} />}
           <p>VIRTUAL CHIPS ONLY. NO REAL MONEY. EVER.</p>
         </footer>

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { MIN_BET } from '../../casino/chips';
+import { MIN_BET } from '../../state/chips';
 import { IDLE_VIEW, type BlackjackAction, type BlackjackView } from '../../game/blackjack/view';
 import { betProblem, rejectionText } from '../betting';
 import { resultKind } from '../blackjackText';

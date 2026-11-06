@@ -1,4 +1,4 @@
-import type { RoundError } from '../casino/store';
+import type { RoundError } from '../state/store';
 
 /** Why a game table refused an action. Nothing changed. */
 export type TableError =

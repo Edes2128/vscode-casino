@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { COLOR_SLOTS, type ColorSlot, type CustomColors } from '../../../casino/appearance';
+import { COLOR_SLOTS, type ColorSlot, type CustomColors } from '../../../state/appearance';
 import { PixelButton } from '../../components/PixelButton';
 import { cx } from '../../cx';
 import { resolveAppearance } from '../appearance';

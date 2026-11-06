@@ -1,7 +1,7 @@
 // Generates the pixel-art SVG icons in media/ from ASCII bitmaps ('#' = pixel).
-//   media/casino.svg      activity-bar icon (VS Code masks it, so only the shape matters)
-//   media/casino-tab.svg  editor-tab icon for the panel, in casino gold
-//   media/icon.png        128x128 Marketplace icon: the die on the casino felt, drawn pixel by pixel
+//   media/lucky-break.svg      activity-bar icon (VS Code masks it, so only the shape matters)
+//   media/lucky-break-tab.svg  editor-tab icon for the panel, in gold
+//   media/icon.png        128x128 Marketplace icon: the die on Lucky Break felt, drawn pixel by pixel
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { deflateSync } from 'node:zlib';
 
@@ -40,8 +40,8 @@ function toSvg(bitmap, fill) {
 }
 
 mkdirSync('media', { recursive: true });
-writeFileSync('media/casino.svg', toSvg(DIE, '#C5C5C5'));
-writeFileSync('media/casino-tab.svg', toSvg(DIE, '#F5C451'));
+writeFileSync('media/lucky-break.svg', toSvg(DIE, '#C5C5C5'));
+writeFileSync('media/lucky-break-tab.svg', toSvg(DIE, '#F5C451'));
 
 // ---------------------------------------------------------------- Marketplace icon (PNG)
 
@@ -69,7 +69,7 @@ function drawIcon() {
   };
 
   rect(0, 0, ICON_SIZE, ICON_SIZE, PALETTE.felt);
-  // A gold frame, notched at the corners like every panel in the casino.
+  // A gold frame, notched at the corners like every panel in Lucky Break.
   const frame = 8;
   rect(frame + 8, frame, ICON_SIZE - 2 * (frame + 8), 8, PALETTE.gold);
   rect(frame + 8, ICON_SIZE - frame - 8, ICON_SIZE - 2 * (frame + 8), 8, PALETTE.gold);
@@ -138,4 +138,4 @@ function toPng(rgb) {
 }
 
 writeFileSync('media/icon.png', toPng(drawIcon()));
-console.log('Wrote media/casino.svg, media/casino-tab.svg and media/icon.png');
+console.log('Wrote media/lucky-break.svg, media/lucky-break-tab.svg and media/icon.png');

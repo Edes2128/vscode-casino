@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useMemo, type ReactNode } from 'react';
-import type { Settings } from '../../casino/settings';
+import type { Settings } from '../../state/settings';
 import { CUES, type Cue } from './cues';
 import { SoundEngine, type AudioContextLike, type PlayOptions } from './engine';
 

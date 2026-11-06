@@ -40,7 +40,7 @@ export interface Settings {
   readonly reducedMotion: boolean;
   /** The size of all text. */
   readonly textSize: TextSize;
-  /** The casino's look: palette, frames, buttons. */
+  /** Lucky Break's look: palette, frames, buttons. */
   readonly theme: ThemeId;
   /** How the playing cards are drawn. */
   readonly cardDesign: CardDesignId;
@@ -183,8 +183,8 @@ export function sanitizeSettings(raw: unknown): Settings {
 
 // ---------------------------------------------------------------- the store
 
-/** Saved under its own key, apart from the casino state. */
-export const SETTINGS_KEY = 'casino.settings';
+/** Saved under its own key, apart from Lucky Break state. */
+export const SETTINGS_KEY = 'luckyBreak.settings';
 
 /** Bump when the saved shape changes, and teach `sanitizeSettings` to read the old version. */
 export const SETTINGS_VERSION = 2;
@@ -197,7 +197,7 @@ const sameSettings = (a: Settings, b: Settings): boolean =>
   });
 
 export interface SettingsStoreOptions {
-  /** Called when saving fails or a change listener throws. The casino keeps running either way. */
+  /** Called when saving fails or a change listener throws. Lucky Break keeps running either way. */
   readonly onError?: (message: string, error: unknown) => void;
 }
 

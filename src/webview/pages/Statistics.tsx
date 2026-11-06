@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { winPercentage } from '../../casino/statistics';
-import type { CasinoSnapshot, GameStats, GameType } from '../../casino/types';
+import { winPercentage } from '../../state/statistics';
+import type { LuckyBreakSnapshot, GameStats, GameType } from '../../state/types';
 import { BalanceDisplay } from '../components/BalanceDisplay';
 import { GameHistory } from '../components/GameHistory';
 import { PixelCard } from '../components/PixelCard';
@@ -17,13 +17,13 @@ const SCOPES = [
 ] as const satisfies ReadonlyArray<{ value: Scope; label: string }>;
 
 const SCOPE_TITLES: Readonly<Record<Scope, string>> = {
-  overall: 'WHOLE CASINO',
+  overall: 'WHOLE GAME',
   blackjack: 'BLACKJACK',
   roulette: 'ROULETTE',
 };
 
 interface StatisticsProps {
-  readonly snapshot: CasinoSnapshot;
+  readonly snapshot: LuckyBreakSnapshot;
 }
 
 interface Row {
@@ -45,7 +45,7 @@ function toRows(stats: GameStats): readonly Row[] {
   ];
 }
 
-/** Statistics for the whole casino or for one game, with the matching round-by-round history. */
+/** Statistics for the whole game or for one game, with the matching round-by-round history. */
 export function Statistics({ snapshot }: StatisticsProps) {
   const [scope, setScope] = useState<Scope>('overall');
 

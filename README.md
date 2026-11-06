@@ -1,6 +1,6 @@
-# VS Code Casino
+# Lucky Break
 
-A retro pixel-art casino hidden in your editor. Play **Blackjack** and **Roulette** between builds.
+Take a lucky break between builds. Two retro pixel-art games hidden in your editor: **Blackjack** and **Roulette**.
 
 > **Virtual chips only. No real money, ever.** There are no payments, no purchases, no accounts and no
 > way to win or lose anything but pretend chips.
@@ -10,28 +10,28 @@ A retro pixel-art casino hidden in your editor. Play **Blackjack** and **Roulett
 - **Blackjack** against the dealer, with every move you'd expect: hit, stand, double down and split.
 - **Roulette** on a European wheel. Bet on a colour, or pick any of the 37 numbers, and watch the ball settle.
 - **One wallet** for both games. You start with **1,000 chips**; it is kept between sessions.
-- **Statistics and history** for the whole casino and for each game: wins, losses, pushes, win rate,
+- **Statistics and history** for the whole game and for each game: wins, losses, pushes, win rate,
   biggest win and loss, chips wagered, and your latest rounds.
-- **Sidebar or editor tab.** Open the casino in the Activity Bar, or in a larger editor tab. Both always
+- **Sidebar or editor tab.** Open Lucky Break in the Activity Bar, or in a larger editor tab. Both always
   show the same wallet, tables and settings, so you can use either (or both at once).
-- **Make it yours, all free:** 8 casino themes, 6 playing-card designs, 5 roulette wheel animations, 5 sound
+- **Make it yours, all free:** 8 themes, 6 playing-card designs, 5 roulette wheel animations, 5 sound
   packs and your own colors, from the **Style** tab. Changes apply at once and are remembered.
 - **Retro sound effects** made on the fly, with an on/off switch, a volume slider and a switch for each kind of
-  sound. Nothing plays when you open the casino; sounds only follow something you did.
+  sound. Nothing plays when you open Lucky Break; sounds only follow something you did.
 - **Settings for comfort:** a text size setting (normal, large, extra large), animations off, or reduced motion
   (it also follows your system's own setting).
 
 ## Getting started
 
-1. Click the **Casino** icon (a die) in the Activity Bar.
+1. Click the **Lucky Break** icon (a die) in the Activity Bar.
 2. Pick **Blackjack** or **Roulette**, choose your chips, and play.
 
 Commands (Command Palette, <kbd>Cmd/Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd>):
 
 | Command | What it does |
 | --- | --- |
-| **Casino: Open Sidebar** | Shows the casino in the Activity Bar. |
-| **Casino: Open in Editor** | Opens the casino in an editor tab (a second call reuses the same tab). |
+| **Lucky Break: Open Sidebar** | Shows Lucky Break in the Activity Bar. |
+| **Lucky Break: Open in Editor** | Opens Lucky Break in an editor tab (a second call reuses the same tab). |
 
 ## The games
 
@@ -59,20 +59,20 @@ Commands (Command Palette, <kbd>Cmd/Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd>):
 
 ## Style
 
-Open the **Style** tab (the palette) to make the casino yours. Everything on it is free and nothing is
+Open the **Style** tab (the palette) to make Lucky Break yours. Everything on it is free and nothing is
 locked. A choice is saved and applied at once, with no restart.
 
 | Tab | What you can change |
 | --- | --- |
-| Themes | 8 looks: Classic Casino, Neon Arcade, Retro 8-Bit, Midnight Casino, Blood Casino, Cyber Casino, Forest Casino and Royal Casino. Each is shown as a small table before you choose it. |
-| Cards | 6 playing-card designs: Classic Pixel, Retro 8-Bit, Neon, Medieval Fantasy, Minimal Pixel and Dark Casino, with all 52 cards and a back for each. |
-| Wheel | 5 roulette animations: Classic, Arcade, Neon, Pixel Explosion and Slow Motion. **Try it** runs one on a sample wheel. In every style the ball stops on the number the casino chose. |
-| Sounds | 5 sound packs (Classic Casino, Retro Arcade, Pixel Adventure, Neon Cyber, Minimal Sounds), a switch for each kind of sound (interface, chips, cards, roulette, results), the master switch and the volume. **Play sample** plays the pack you picked. All sounds are made on the spot, so nothing is downloaded. |
+| Themes | 8 looks: Classic Felt, Neon Arcade, Retro 8-Bit, Midnight Felt, Crimson Felt, Cyber Felt, Forest Felt and Royal Felt. Each is shown as a small table before you choose it. |
+| Cards | 6 playing-card designs: Classic Pixel, Retro 8-Bit, Neon, Medieval Fantasy, Minimal Pixel and Dark Deck, with all 52 cards and a back for each. |
+| Wheel | 5 roulette animations: Classic, Arcade, Neon, Pixel Explosion and Slow Motion. **Try it** runs one on a sample wheel. In every style the ball stops on the number Lucky Break chose. |
+| Sounds | 5 sound packs (Classic Lounge, Retro Arcade, Pixel Adventure, Neon Cyber, Minimal Sounds), a switch for each kind of sound (interface, chips, cards, roulette, results), the master switch and the volume. **Play sample** plays the pack you picked. All sounds are made on the spot, so nothing is downloaded. |
 | Colors | Your own table, background, accent, main button, text and chip colors, six ready-made sets, a live preview and a reset to the theme's colors. Text always stays easy to read: a color that would make it hard to read is nudged, and the screen says so. |
 
 ## Settings
 
-Open the **Settings** tab (the gear) inside the casino.
+Open the **Settings** tab (the gear) inside Lucky Break.
 
 | Setting | Effect |
 | --- | --- |
@@ -80,7 +80,7 @@ Open the **Settings** tab (the gear) inside the casino.
 | Volume | 0 to 100. Slide it to hear the new level. **Test sound** plays a short sample. |
 | Animations | Dealing, the dealer's reveal and the wheel. Off shows every result at once. |
 | Reduced motion | Nothing moves, flashes or floats. Results still arrive one step at a time. Also on when your system asks for reduced motion. |
-| Text size | Normal, large or extra large. Makes every letter in the casino bigger. |
+| Text size | Normal, large or extra large. Makes every letter in Lucky Break bigger. |
 | Reset balance | Back to 1,000 chips. Statistics and history are kept. |
 | Reset statistics | Clears statistics and history. Your chips are kept. |
 | Reset all | Balance, statistics and history. Your settings are kept. |
@@ -91,12 +91,12 @@ can reset the balance.
 
 ## Easy on your computer
 
-The casino is meant to be left open in the sidebar while you work.
+Lucky Break is meant to be left open in the sidebar while you work.
 
 - Its background decorations (the floating embers, the blinking neon sign, the lobby pictures) are drawn
-  five times a second while you use the casino, and they **stop completely** about 15 seconds after you
+  five times a second while you use Lucky Break, and they **stop completely** about 15 seconds after you
   stop touching it. Moving the mouse over it, pressing a key or opening another screen wakes them again.
-- When you are not looking, the casino uses about as much processor time as VS Code does on its own.
+- When you are not looking, Lucky Break uses about as much processor time as VS Code does on its own.
   Switching **Animations** off, or **Reduced motion** on, removes the decorations altogether.
 - The wheel and the cards still animate when you play, because that is the game.
 
@@ -104,11 +104,11 @@ The casino is meant to be left open in the sidebar while you work.
 
 - Everything is stored **locally**, in VS Code's own extension storage on this machine. It is not
   synced, uploaded or shared.
-- The extension makes **no network requests** and collects **no telemetry**. The casino's pages are not
+- The extension makes **no network requests** and collects **no telemetry**. Lucky Break's pages are not
   allowed to load anything from the internet.
-- The one thing that can leave your machine is the optional **Support me** button, which asks VS Code to
-  open a support page in your browser (VS Code may ask you to confirm first). It does not give you any
-  in-game chips: the casino is virtual chips only.
+- The one thing that can leave your machine is the optional tip button on the Home screen, which asks VS Code
+  to open a page in your browser (VS Code may ask you to confirm first). It does not give you any
+  in-game chips: Lucky Break is virtual chips only.
 - The game logic and the wallet run in the extension itself, not in the page you see, so the page cannot
   change your balance or peek at the dealer's hidden card.
 
@@ -118,7 +118,7 @@ The casino is meant to be left open in the sidebar while you work.
   last wins. Play in one window at a time.
 - A round of blackjack you leave unfinished when you close VS Code counts as lost; the bet was already
   taken from your chips.
-- The editor tab is not reopened when VS Code restarts. Use **Casino: Open in Editor** again.
+- The editor tab is not reopened when VS Code restarts. Use **Lucky Break: Open in Editor** again.
 
 ## Requirements
 
@@ -126,9 +126,9 @@ VS Code 1.90 or newer. No other software is needed. The extension uses only VS C
 
 ## Support
 
-If you enjoy the casino you can leave an optional tip with the **Buy me a coffee** button on the Home screen
-and in the About card of Settings. It opens the Buy Me a Coffee page in your browser. It is entirely optional:
-every theme, card design, animation, sound pack and color is free, nothing is locked, and a tip gives no chips.
+If you enjoy Lucky Break you can leave an optional tip with the button on the Home screen and in the About card
+of Settings. It opens a page in your browser. It is entirely optional: every theme, card design, animation,
+sound pack and color is free, nothing is locked, and a tip gives no chips.
 
 ## Licence
 

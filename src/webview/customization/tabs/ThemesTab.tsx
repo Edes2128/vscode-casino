@@ -5,13 +5,13 @@ import { resolveAppearance } from '../appearance';
 import { ScenePreview } from '../ScenePreview';
 import type { CustomizeTabProps } from './types';
 
-/** The eight casino themes, each shown as a small table in its own colors. */
+/** The eight themes, each shown as a small table in its own colors. */
 export function ThemesTab({ settings, onChange }: CustomizeTabProps) {
   const { resolved } = useAppearance();
   return (
     <>
-      <p className="customize__intro">PICK A LOOK. IT CHANGES THE WHOLE CASINO AT ONCE: HOME, BLACKJACK, ROULETTE, BUTTONS, CARDS AND CHIPS.</p>
-      <ChoiceGrid label="Casino theme">
+      <p className="customize__intro">PICK A LOOK. IT CHANGES THE WHOLE GAME AT ONCE: HOME, BLACKJACK, ROULETTE, BUTTONS, CARDS AND CHIPS.</p>
+      <ChoiceGrid label="Theme">
         {THEMES.map((theme) => (
           <ChoiceCard
             key={theme.id}

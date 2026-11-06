@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
-import type { Settings as CasinoSettings, SettingsPatch, TextSize } from '../../casino/settings';
+import type { Settings as LuckyBreakSettings, SettingsPatch, TextSize } from '../../state/settings';
 import type { ResetOutcome, ResetScope } from '../../game/resetScope';
 import { PixelButton } from '../components/PixelButton';
 import { PixelCard } from '../components/PixelCard';
@@ -18,10 +18,10 @@ export interface ResetResult {
 }
 
 interface SettingsProps {
-  readonly settings: CasinoSettings;
+  readonly settings: LuckyBreakSettings;
   /** The extension version, from the host. */
   readonly version: string | undefined;
-  /** What the casino is actually doing, after the system's own motion preference is taken into account. */
+  /** What Lucky Break is actually doing, after the system's own motion preference is taken into account. */
   readonly motion: MotionLevel;
   /** The operating system asks for reduced motion. */
   readonly systemReducedMotion: boolean;
@@ -134,7 +134,7 @@ export function Settings({
       )}
 
       <PixelCard title="TEXT SIZE">
-        <SettingRow label="SIZE" hint="Makes every letter in the casino bigger. Try it: the whole screen changes.">
+        <SettingRow label="SIZE" hint="Makes every letter in Lucky Break bigger. Try it: the whole screen changes.">
           <SegmentedControl
             label="Text size"
             options={TEXT_SIZE_OPTIONS}
@@ -189,7 +189,7 @@ export function Settings({
       </PixelCard>
 
       <PixelCard title="ABOUT">
-        <p className="about__name">VS CODE CASINO</p>
+        <p className="about__name">LUCKY BREAK</p>
         <p className="about__version">VERSION {version ?? '?'}</p>
         <p className="setting-note">RETRO PIXEL-ART BLACKJACK AND ROULETTE. VIRTUAL CHIPS ONLY. NO REAL MONEY. EVER.</p>
         <SupportButton onClick={onSupport} />

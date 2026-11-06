@@ -6,7 +6,7 @@ export { AMBIENT_TICK_MS, REPORT_EVERY_TICKS, REST_AFTER_MS, ambientSeconds } fr
 export interface AmbientState {
   /** The clock is ticking right now. */
   readonly running: boolean;
-  /** The clock is stopped because the player has not touched the casino for a while, and starts again when they do. */
+  /** The clock is stopped because the player has not touched Lucky Break for a while, and starts again when they do. */
   readonly resting: boolean;
   readonly ticks: number;
 }
@@ -20,7 +20,7 @@ const ACTIVITY_EVENTS = ['pointermove', 'pointerdown', 'keydown', 'wheel', 'touc
  * - While `running` is false (the loops are not wanted at all) no timer exists.
  * - The clock ticks only while the page is visible and the player has done something in the last
  *   REST_AFTER_MS. Past that it stops, which stops the page from presenting frames altogether: a
- *   casino left open in the sidebar while you work costs nothing. Any activity starts it again, and
+ *   Lucky Break left open in the sidebar while you work costs nothing. Any activity starts it again, and
  *   so does a change of `activityKey` (a new screen).
  * - `report` hears when the clock starts, stops, rests, and every few seconds while it ticks.
  */

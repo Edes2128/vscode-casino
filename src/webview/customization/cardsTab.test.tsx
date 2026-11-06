@@ -1,8 +1,8 @@
 import { isValidElement, type ReactElement, type ReactNode } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it, vi } from 'vitest';
-import { CARD_DESIGN_IDS, type CardDesignId } from '../../casino/appearance';
-import { DEFAULT_SETTINGS, type Settings, type SettingsPatch } from '../../casino/settings';
+import { CARD_DESIGN_IDS, type CardDesignId } from '../../state/appearance';
+import { DEFAULT_SETTINGS, type Settings, type SettingsPatch } from '../../state/settings';
 import { CUSTOMIZE_TABS } from '../pages/Customize';
 import { AppearanceProvider, DEFAULT_APPEARANCE } from './AppearanceContext';
 import { ChoiceCard, ChoiceGrid } from './ChoiceCard';
@@ -58,7 +58,7 @@ describe('the cards tab', () => {
     expect(count(html, 'role="radiogroup"')).toBe(1);
     expect(html).toContain('aria-label="Playing card design"');
     const labels = choicesOf('classic', () => undefined).map((choice) => choice.label);
-    expect(labels).toEqual(['CLASSIC PIXEL', 'RETRO 8-BIT', 'NEON', 'MEDIEVAL FANTASY', 'MINIMAL PIXEL', 'DARK CASINO']);
+    expect(labels).toEqual(['CLASSIC PIXEL', 'RETRO 8-BIT', 'NEON', 'MEDIEVAL FANTASY', 'MINIMAL PIXEL', 'DARK DECK']);
   });
 
   it.each(CARD_DESIGN_IDS)('marks exactly one choice, the one in use, when the design is %s', (current) => {

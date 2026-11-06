@@ -7,10 +7,10 @@ interface NavBarProps {
   readonly onNavigate: (page: Page) => void;
 }
 
-/** Icon tabs. Labels collapse to tooltips when the sidebar is very narrow (see casino.css). */
+/** Icon tabs. Labels collapse to tooltips when the sidebar is very narrow (see lucky-break.css). */
 export function NavBar({ current, onNavigate }: NavBarProps) {
   return (
-    <nav className="nav-bar" aria-label="Casino">
+    <nav className="nav-bar" aria-label="Lucky Break">
       {NAV_ITEMS.map((item) => (
         <button
           key={item.page}

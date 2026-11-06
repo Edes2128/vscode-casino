@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { SOUND_CATEGORIES, SOUND_PACK_IDS } from '../../casino/appearance';
+import { SOUND_CATEGORIES, SOUND_PACK_IDS } from '../../state/appearance';
 import { SOUND_CATEGORY_INFO, SOUND_PACK_CATALOG, soundPackInfo } from './soundPacks';
 
 describe('the sound pack catalog', () => {
   it('names the five packs, in the order of the ids, each once', () => {
     expect(SOUND_PACK_CATALOG.map((pack) => pack.id)).toEqual([...SOUND_PACK_IDS]);
-    expect(SOUND_PACK_CATALOG.map((pack) => pack.name)).toEqual(['Classic Casino', 'Retro Arcade', 'Pixel Adventure', 'Neon Cyber', 'Minimal Sounds']);
+    expect(SOUND_PACK_CATALOG.map((pack) => pack.name)).toEqual(['Classic Lounge', 'Retro Arcade', 'Pixel Adventure', 'Neon Cyber', 'Minimal Sounds']);
   });
 
   it('gives every pack one short line about how it sounds', () => {

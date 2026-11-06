@@ -4,8 +4,8 @@ import { defineConfig } from 'vite';
 
 const fromRoot = (path: string): string => fileURLToPath(new URL(path, import.meta.url));
 
-/** Must match CASINO_DEV_SERVER_URL on the extension side (see .vscode/launch.json). */
-const devServerOrigin = process.env['CASINO_DEV_SERVER_URL'] ?? 'http://localhost:5173';
+/** Must match LUCKY_BREAK_DEV_SERVER_URL on the extension side (see .vscode/launch.json). */
+const devServerOrigin = process.env['LUCKY_BREAK_DEV_SERVER_URL'] ?? 'http://localhost:5173';
 
 /**
  * The webview is built with fixed (unhashed) entry names so the extension host can

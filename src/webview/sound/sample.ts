@@ -1,4 +1,4 @@
-import type { SoundCategory, SoundPackId } from '../../casino/appearance';
+import type { SoundCategory, SoundPackId } from '../../state/appearance';
 import type { Cue, CueOptions } from './cues';
 import type { PlayOptions } from './engine';
 

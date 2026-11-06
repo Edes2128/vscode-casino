@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
-import { CARD_DESIGN_IDS, type CardDesignId } from '../../casino/appearance';
+import { CARD_DESIGN_IDS, type CardDesignId } from '../../state/appearance';
 import { deal, SPLIT, tableView } from '../../game/blackjack/testViews';
 import { RANKS, SUITS, type Card, type Rank } from '../../game/blackjack/types';
 import { CARD_GLYPHS } from '../art/cardSuits';

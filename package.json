@@ -1,22 +1,19 @@
 {
-  "name": "vscode-casino",
-  "displayName": "VS Code Casino",
-  "description": "A retro pixel-art casino hidden in your editor. Play Blackjack and Roulette with virtual chips. No real money, ever.",
-  "version": "0.2.0",
+  "name": "lucky-break",
+  "displayName": "Lucky Break",
+  "description": "Take a lucky break between builds: retro pixel-art Blackjack and Roulette with virtual chips, right in your editor. No real money, ever.",
+  "version": "0.2.1",
   "private": true,
-  "sponsor": {
-    "url": "https://buymeacoffee.com/5x2bfo6t5c"
-  },
   "publisher": "thesulce",
   "license": "SEE LICENSE IN LICENSE",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Edes2128/vscode-casino.git"
+    "url": "https://github.com/Edes2128/vscode-lucky-break.git"
   },
   "bugs": {
-    "url": "https://github.com/Edes2128/vscode-casino/issues"
+    "url": "https://github.com/Edes2128/vscode-lucky-break/issues"
   },
-  "homepage": "https://github.com/Edes2128/vscode-casino#readme",
+  "homepage": "https://github.com/Edes2128/vscode-lucky-break#readme",
   "icon": "media/icon.png",
   "galleryBanner": {
     "color": "#101216",
@@ -31,7 +28,8 @@
   ],
   "keywords": [
     "game",
-    "pixel art"
+    "pixel art",
+    "cards"
   ],
   "capabilities": {
     "untrustedWorkspaces": {
@@ -49,40 +47,40 @@
     "viewsContainers": {
       "activitybar": [
         {
-          "id": "casino",
-          "title": "Casino",
-          "icon": "media/casino.svg"
+          "id": "luckyBreak",
+          "title": "Lucky Break",
+          "icon": "media/lucky-break.svg"
         }
       ]
     },
     "views": {
-      "casino": [
+      "luckyBreak": [
         {
           "type": "webview",
-          "id": "casino.sidebar",
-          "name": "Casino",
-          "icon": "media/casino.svg"
+          "id": "luckyBreak.sidebar",
+          "name": "Lucky Break",
+          "icon": "media/lucky-break.svg"
         }
       ]
     },
     "commands": [
       {
-        "command": "casino.showSidebar",
+        "command": "luckyBreak.showSidebar",
         "title": "Open Sidebar",
-        "category": "Casino"
+        "category": "Lucky Break"
       },
       {
-        "command": "casino.openPanel",
+        "command": "luckyBreak.openPanel",
         "title": "Open in Editor",
-        "category": "Casino",
+        "category": "Lucky Break",
         "icon": "$(link-external)"
       }
     ],
     "menus": {
       "view/title": [
         {
-          "command": "casino.openPanel",
-          "when": "view == casino.sidebar",
+          "command": "luckyBreak.openPanel",
+          "when": "view == luckyBreak.sidebar",
           "group": "navigation"
         }
       ]

@@ -41,7 +41,7 @@ const settle = async (promise: PromiseLike<void> | Promise<void>): Promise<void>
 };
 
 describe('loadState', () => {
-  it('starts a fresh casino when nothing is saved', () => {
+  it('starts a fresh game when nothing is saved', () => {
     const { state, source } = loadState(new MemoryStorage());
     expect(source).toBe('fresh');
     expect(state).toEqual(createFreshState());

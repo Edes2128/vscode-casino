@@ -5,7 +5,7 @@
  */
 export const AMBIENT_TICK_MS = 200;
 
-/** The decorations stand still after this long without the player touching the casino. */
+/** The decorations stand still after this long without the player touching Lucky Break. */
 export const REST_AFTER_MS = 15_000;
 
 /** The clock tells the host how it is doing this often (in ticks), so the host can see it is alive. */

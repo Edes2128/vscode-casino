@@ -1,6 +1,6 @@
 import type {
-  CasinoSnapshot,
-  CasinoStats,
+  LuckyBreakSnapshot,
+  LuckyBreakStats,
   GameOutcome,
   GameStats,
   GameType,
@@ -25,15 +25,15 @@ export const EMPTY_GAME_STATS: GameStats = {
   totalWagered: 0,
 };
 
-export const EMPTY_CASINO_STATS: CasinoStats = {
+export const EMPTY_LUCKY_BREAK_STATS: LuckyBreakStats = {
   overall: EMPTY_GAME_STATS,
   blackjack: EMPTY_GAME_STATS,
   roulette: EMPTY_GAME_STATS,
 };
 
-/** A brand-new casino: the starting balance, no games played. */
-export function createInitialSnapshot(): CasinoSnapshot {
-  return { balance: STARTING_BALANCE, stats: EMPTY_CASINO_STATS, history: [] };
+/** A brand-new game: the starting balance, no games played. */
+export function createInitialSnapshot(): LuckyBreakSnapshot {
+  return { balance: STARTING_BALANCE, stats: EMPTY_LUCKY_BREAK_STATS, history: [] };
 }
 
 // ---------------------------------------------------------------- runtime guard
@@ -82,7 +82,7 @@ export function isHistoryEntry(value: unknown): value is HistoryEntry {
 }
 
 /** Structural check for a snapshot received over the messaging channel. */
-export function isCasinoSnapshot(value: unknown): value is CasinoSnapshot {
+export function isLuckyBreakSnapshot(value: unknown): value is LuckyBreakSnapshot {
   if (!isRecord(value) || !isCount(value['balance'])) return false;
 
   const { stats, history } = value;

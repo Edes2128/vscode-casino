@@ -1,4 +1,4 @@
-import type { HistoryEntry } from '../../casino/types';
+import type { HistoryEntry } from '../../state/types';
 import { ICON_PALETTE, CARDS_ICON, WHEEL_ICON } from '../art/sprites';
 import { cx } from '../cx';
 import { formatChips, formatPayout, formatTimestamp, GAME_LABELS, OUTCOME_LABELS } from '../format';

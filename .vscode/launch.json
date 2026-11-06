@@ -7,16 +7,16 @@
       "request": "launch",
       "args": ["--extensionDevelopmentPath=${workspaceFolder}"],
       "outFiles": ["${workspaceFolder}/dist/**/*.js"],
-      "preLaunchTask": "casino: build"
+      "preLaunchTask": "lucky-break: build"
     },
     {
       "name": "Run Extension (Vite HMR)",
       "type": "extensionHost",
       "request": "launch",
       "args": ["--extensionDevelopmentPath=${workspaceFolder}"],
-      "env": { "CASINO_DEV_SERVER_URL": "http://localhost:5173" },
+      "env": { "LUCKY_BREAK_DEV_SERVER_URL": "http://localhost:5173" },
       "outFiles": ["${workspaceFolder}/dist/**/*.js"],
-      "preLaunchTask": "casino: dev"
+      "preLaunchTask": "lucky-break: dev"
     }
   ]
 }

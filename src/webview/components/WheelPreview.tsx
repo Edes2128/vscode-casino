@@ -1,5 +1,5 @@
 import { useCallback, useReducer } from 'react';
-import type { RouletteAnimationId } from '../../casino/appearance';
+import type { RouletteAnimationId } from '../../state/appearance';
 import type { Pocket } from '../../game/roulette/types';
 import { POCKET_COUNT, colorOfNumber } from '../../game/roulette/wheel';
 import { rouletteAnimation, spinSeconds } from '../customization/rouletteAnimations';

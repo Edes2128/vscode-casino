@@ -2,7 +2,7 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { CARD_DESIGN_IDS } from '../../casino/appearance';
+import { CARD_DESIGN_IDS } from '../../state/appearance';
 import { contrastOfHex, MIN_TEXT_CONTRAST } from '../color';
 import { CARD_DESIGNS, DEFAULT_CARD_DESIGN, cardDesignOf } from './cardDesigns';
 
@@ -30,7 +30,7 @@ function inksOf(id: string): Record<string, string> {
 describe('the card designs', () => {
   it('are the six of the brief, one per id, in order', () => {
     expect(CARD_DESIGNS.map((design) => design.id)).toEqual([...CARD_DESIGN_IDS]);
-    expect(CARD_DESIGNS.map((design) => design.name)).toEqual(['Classic Pixel', 'Retro 8-Bit', 'Neon', 'Medieval Fantasy', 'Minimal Pixel', 'Dark Casino']);
+    expect(CARD_DESIGNS.map((design) => design.name)).toEqual(['Classic Pixel', 'Retro 8-Bit', 'Neon', 'Medieval Fantasy', 'Minimal Pixel', 'Dark Deck']);
   });
 
   it('make the classic one the default, as the settings do', () => {
@@ -131,7 +131,7 @@ describe('cards.css', () => {
         if (!selector.includes('.playing-card')) continue;
         const inPreview = selector.startsWith('.card-preview') || selector.startsWith('.card-showcase');
         expect(inPreview || selector.includes("[data-design='"), `card rule without a design: ${selector}`).toBe(true);
-        expect(selector, selector).not.toMatch(/data-cards|data-theme|\.casino-app|:root/);
+        expect(selector, selector).not.toMatch(/data-cards|data-theme|\.lb-app|:root/);
       }
     }
   });

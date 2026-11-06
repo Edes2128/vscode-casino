@@ -257,7 +257,7 @@ describe('SettingsStore', () => {
     expect(storage.writes.at(-1)?.value).toMatchObject({ volume: 20 });
   });
 
-  it('is independent of the casino state key', () => {
-    expect(SETTINGS_KEY).not.toBe('casino.state');
+  it('is independent of Lucky Break state key', () => {
+    expect(SETTINGS_KEY).not.toBe('luckyBreak.state');
   });
 });

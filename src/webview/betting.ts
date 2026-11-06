@@ -1,4 +1,4 @@
-import { MIN_BET, type ChipValue } from '../casino/chips';
+import { MIN_BET, type ChipValue } from '../state/chips';
 
 /** Most digits a typed bet may have. Keeps the number comfortably inside the safe integer range. */
 const MAX_BET_DIGITS = 9;

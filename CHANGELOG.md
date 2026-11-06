@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.2.1
+
+- **New name: Lucky Break.** The Activity Bar icon, the editor tab, the output channel and the commands
+  (**Lucky Break: Open Sidebar**, **Lucky Break: Open in Editor**) all use the new name. The themes and designs
+  that carried the old name are now Classic Felt, Midnight Felt, Crimson Felt, Cyber Felt, Forest Felt, Royal
+  Felt, Dark Deck and the Classic Lounge sound pack. Nothing else changes: the games, the rules and every
+  option are the same, and everything is still free.
+- The tip button now reads "Enjoying Lucky Break? Buy me a coffee!".
+
 ## 0.2.0
 
 - **Blackjack split fixed:** any two cards of the same value can be split (a king and a queen, a ten and a
@@ -10,8 +19,8 @@
   DEAL, HIT, STAND, DOUBLE and SPLIT buttons of Blackjack are pinned the same way.
 - **Easier to read:** brighter secondary text, larger type, rank and suit printed in the corners of every card
   so overlapping cards stay readable, and a new **Text size** setting (normal, large, extra large).
-- **Customize screen (the Style tab), all free:** 8 casino themes, 6 playing-card designs, 5 roulette
-  animations (the ball always stops on the number the casino chose), 5 sound packs with a switch for each
+- **Customize screen (the Style tab), all free:** 8 themes, 6 playing-card designs, 5 roulette
+  animations (the ball always stops on the number Lucky Break chose), 5 sound packs with a switch for each
   kind of sound, and custom colors with presets, a color picker, a live preview and a reset. Text stays readable
   whatever colors are picked.
 - **Buy me a coffee:** an optional, quiet button on the Home screen and in the About card of Settings.
@@ -26,6 +35,6 @@ First release.
 - Roulette: European single-zero wheel, bets on colour only. Red and black pay 1:1, green pays 35:1.
 - One shared wallet of virtual chips (1,000 to start), kept between sessions, with statistics and
   game history.
-- Pixel-art interface in the sidebar and in an editor tab, always showing the same casino.
+- Pixel-art interface in the sidebar and in an editor tab, always showing the same game.
 - Settings: sound effects and volume, animations, reduced motion, and resets for the balance, the
   statistics or everything, each after a confirmation.

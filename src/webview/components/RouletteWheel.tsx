@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import type { RouletteAnimationId } from '../../casino/appearance';
+import type { RouletteAnimationId } from '../../state/appearance';
 import { ARROW_DOWN, ICON_PALETTE } from '../art/sprites';
 import {
   WHEEL_PIXELS,

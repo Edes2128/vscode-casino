@@ -2,18 +2,18 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "casino: build",
+      "label": "lucky-break: build",
       "type": "npm",
       "script": "build",
       "group": "build",
       "problemMatcher": []
     },
     {
-      "label": "casino: watch extension",
+      "label": "lucky-break: watch extension",
       "type": "npm",
       "script": "dev:extension",
       "isBackground": true,
-      "presentation": { "reveal": "never", "group": "casino-dev" },
+      "presentation": { "reveal": "never", "group": "lb-dev" },
       "problemMatcher": {
         "owner": "esbuild",
         "pattern": {
@@ -28,11 +28,11 @@
       }
     },
     {
-      "label": "casino: vite dev server",
+      "label": "lucky-break: vite dev server",
       "type": "npm",
       "script": "dev:webview",
       "isBackground": true,
-      "presentation": { "reveal": "never", "group": "casino-dev" },
+      "presentation": { "reveal": "never", "group": "lb-dev" },
       "problemMatcher": {
         "owner": "vite",
         "pattern": { "regexp": "^$" },
@@ -44,8 +44,8 @@
       }
     },
     {
-      "label": "casino: dev",
-      "dependsOn": ["casino: watch extension", "casino: vite dev server"],
+      "label": "lucky-break: dev",
+      "dependsOn": ["lucky-break: watch extension", "lucky-break: vite dev server"],
       "dependsOrder": "parallel",
       "problemMatcher": []
     }

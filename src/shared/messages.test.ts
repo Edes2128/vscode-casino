@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { DEFAULT_SETTINGS } from '../casino/settings';
-import { createInitialSnapshot } from '../casino/snapshot';
+import { DEFAULT_SETTINGS } from '../state/settings';
+import { createInitialSnapshot } from '../state/snapshot';
 import { IDLE_VIEW } from '../game/blackjack/view';
 import { IDLE_ROULETTE_VIEW } from '../game/roulette/view';
 import { parseHostMessage, parseWebviewMessage } from './messages';

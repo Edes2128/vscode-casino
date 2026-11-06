@@ -1,4 +1,4 @@
-import type { ColorSlot, CustomColors } from '../../casino/appearance';
+import type { ColorSlot, CustomColors } from '../../state/appearance';
 
 export interface ColorPreset {
   readonly id: string;

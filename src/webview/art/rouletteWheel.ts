@@ -1,4 +1,4 @@
-import type { RouletteAnimationId } from '../../casino/appearance';
+import type { RouletteAnimationId } from '../../state/appearance';
 import { POCKET_COUNT, POCKETS, WHEEL_ORDER } from '../../game/roulette/wheel';
 import { parseHex } from '../color';
 import { rouletteAnimation, type BallSettle, type RouletteAnimationStyle, type WheelEffect } from '../customization/rouletteAnimations';

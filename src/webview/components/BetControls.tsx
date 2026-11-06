@@ -1,4 +1,4 @@
-import { CHIP_VALUES, type ChipValue } from '../../casino/chips';
+import { CHIP_VALUES, type ChipValue } from '../../state/chips';
 import { addChip, betProblem, betProblemText, parseBetInput } from '../betting';
 import { cx } from '../cx';
 import { formatChips } from '../format';

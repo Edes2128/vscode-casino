@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
-import type { Settings, SettingsPatch } from '../casino/settings';
-import type { CasinoSnapshot } from '../casino/types';
+import type { Settings, SettingsPatch } from '../state/settings';
+import type { LuckyBreakSnapshot } from '../state/types';
 import type { ResetOutcome, ResetScope } from '../game/resetScope';
 import type { TableResult } from '../game/tableResult';
 import type { BlackjackAction, BlackjackView, TablePhase } from '../game/blackjack/view';
@@ -14,9 +14,9 @@ import {
 } from '../shared/messages';
 import type { Logger } from './logger';
 
-/** What the hub needs from the rest of the casino. Everything authoritative stays on the host side. */
+/** What the hub needs from the rest of Lucky Break. Everything authoritative stays on the host side. */
 export interface HubServices {
-  snapshot(): CasinoSnapshot;
+  snapshot(): LuckyBreakSnapshot;
   blackjackView(): BlackjackView;
   blackjack(action: BlackjackAction): TableResult;
   rouletteView(): RouletteView;
@@ -37,7 +37,7 @@ export interface WebviewDiagnostics {
   fontsLoaded: boolean | undefined;
   /** The webview has the Web Audio API, so the sound effects can play. */
   audioAvailable: boolean | undefined;
-  /** The casino state the webview most recently reported drawing. */
+  /** Lucky Break state the webview most recently reported drawing. */
   lastShown: { readonly balance: number; readonly gamesPlayed: number } | undefined;
   /** The blackjack table the webview most recently reported drawing. */
   lastBlackjack:
@@ -63,11 +63,11 @@ interface Attachment {
 }
 
 /**
- * Central switchboard for every casino webview (sidebar and editor panel).
+ * Central switchboard for every Lucky Break webview (sidebar and editor panel).
  *
  * The extension host owns all state. Webviews only send intents; the hub validates each
  * message, hands game actions to the table, answers and can broadcast host state to every
- * attached webview so the sidebar and the panel always show the same casino.
+ * attached webview so the sidebar and the panel always show the same game.
  */
 export class WebviewHub {
   private readonly attachments = new Set<Attachment>();

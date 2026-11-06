@@ -31,7 +31,7 @@ const sections = SHIPPED.map(([name, where]) => {
 const header = [
   '# Third-party notices',
   '',
-  'VS Code Casino includes the following open-source components. Their licences are reproduced in full below.',
+  'Lucky Break includes the following open-source components. Their licences are reproduced in full below.',
   'The extension has no other runtime dependencies: everything else in it is original.',
   '',
 ].join('\n');

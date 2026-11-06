@@ -37,9 +37,9 @@ describe('the stylesheet of the wheel effects', () => {
   });
 
   it('hides the burst in calm and off, but leaves the frozen one on a thumbnail alone', () => {
-    expect(css).toContain(".casino-app[data-motion='calm'] .wheel-burst:not(.wheel-burst--still)");
-    expect(css).toContain(".casino-app[data-motion='off'] .wheel-burst:not(.wheel-burst--still)");
-    expect(bodyOf(".casino-app[data-motion='calm'] .wheel-burst:not(.wheel-burst--still)")).toContain('display: none');
+    expect(css).toContain(".lb-app[data-motion='calm'] .wheel-burst:not(.wheel-burst--still)");
+    expect(css).toContain(".lb-app[data-motion='off'] .wheel-burst:not(.wheel-burst--still)");
+    expect(bodyOf(".lb-app[data-motion='calm'] .wheel-burst:not(.wheel-burst--still)")).toContain('display: none');
     expect(bodyOf('.wheel-burst--still .wheel-burst__dot')).toContain('animation: none');
   });
 

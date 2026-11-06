@@ -2,11 +2,11 @@
  * The sound effects, as plain data: a list of simple tones per cue, in the spirit of an 8-bit
  * console. Nothing here touches the audio system, so the shapes can be checked in a unit test.
  *
- * This file is the Classic Casino sound pack. The other packs, and the way a pack is picked, are in
+ * This file is the Classic Lounge sound pack. The other packs, and the way a pack is picked, are in
  * `packs.ts`; they build on the cue vocabulary and the helpers exported here.
  */
 
-import type { SoundCategory } from '../../casino/appearance';
+import type { SoundCategory } from '../../state/appearance';
 
 export type Wave = 'square' | 'triangle' | 'sawtooth' | 'sine' | 'noise';
 

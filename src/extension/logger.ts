@@ -1,8 +1,8 @@
 import * as vscode from 'vscode';
 
-/** Thin wrapper around the "Casino" output channel. */
+/** Thin wrapper around the "Lucky Break" output channel. */
 export class Logger implements vscode.Disposable {
-  private readonly channel = vscode.window.createOutputChannel('Casino', { log: true });
+  private readonly channel = vscode.window.createOutputChannel('Lucky Break', { log: true });
 
   info(message: string): void {
     this.channel.info(message);

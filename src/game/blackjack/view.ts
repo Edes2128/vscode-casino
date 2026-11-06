@@ -1,5 +1,5 @@
-import { isCount, isRecord, MAX_DETAIL_LENGTH } from '../../casino/snapshot';
-import type { GameOutcome } from '../../casino/types';
+import { isCount, isRecord, MAX_DETAIL_LENGTH } from '../../state/snapshot';
+import type { GameOutcome } from '../../state/types';
 import { MAX_HANDS, RANKS, SUITS, type Actions, type Card, type HandOutcome } from './types';
 
 /** The table as the webview is allowed to see it. The hole card and the deck are never in here. */

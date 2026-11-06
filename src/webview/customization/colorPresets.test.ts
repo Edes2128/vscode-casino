@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { COLOR_SLOTS, isCustomColors } from '../../casino/appearance';
+import { COLOR_SLOTS, isCustomColors } from '../../state/appearance';
 import { contrastOfHex, MIN_TEXT_CONTRAST } from '../color';
 import { resolveAppearance } from './appearance';
 import { COLOR_PRESETS, COLOR_SLOT_INFO, normalizeHex } from './colorPresets';

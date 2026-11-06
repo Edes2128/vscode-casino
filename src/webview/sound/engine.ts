@@ -1,8 +1,8 @@
-import { ALL_SOUND_CATEGORIES_ON, type SoundCategories, type SoundPackId } from '../../casino/appearance';
+import { ALL_SOUND_CATEGORIES_ON, type SoundCategories, type SoundPackId } from '../../state/appearance';
 import { categoryOf, masterGain, type Cue, type CueOptions, type Tone } from './cues';
 import { cueTonesFor } from './packs';
 
-// The few parts of the Web Audio API the casino uses. The real AudioContext fits them, and a test can
+// The few parts of the Web Audio API Lucky Break uses. The real AudioContext fits them, and a test can
 // stand in with a fake that records what was scheduled.
 
 export interface AudioParamLike {
@@ -148,7 +148,7 @@ export class SoundEngine {
       this.played += 1;
       return true;
     } catch {
-      // No audio device, or the browser refuses: the casino is silent, and carries on.
+      // No audio device, or the browser refuses: Lucky Break is silent, and carries on.
       this.#broken = true;
       return false;
     }

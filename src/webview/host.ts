@@ -1,5 +1,5 @@
-import { createInitialSnapshot } from '../casino/snapshot';
-import type { PreviewCasino } from './dev/previewCasino';
+import { createInitialSnapshot } from '../state/snapshot';
+import type { PreviewLuckyBreak } from './dev/previewLuckyBreak';
 import {
   parseHostMessage,
   type HostToWebviewMessage,
@@ -55,8 +55,8 @@ function connectToVsCode(): HostConnection {
  * developed and inspected without launching VS Code. Never used inside VS Code, where
  * `acquireVsCodeApi` always exists. Add `?view=panel` to preview the wide layout.
  *
- * With the dev server it runs the real casino (see dev/previewCasino.ts) so games are playable. In
- * a production build, which has none of that, it only answers with a fresh, static casino.
+ * With the dev server it runs the real game (see dev/previewLuckyBreak.ts) so games are playable. In
+ * a production build, which has none of that, it only answers with a fresh, static game.
  */
 function createBrowserPreview(): HostConnection {
   const listeners = new Set<HostListener>();
@@ -67,16 +67,16 @@ function createBrowserPreview(): HostConnection {
     for (const listener of listeners) listener(message);
   };
 
-  let casino: Promise<PreviewCasino> | undefined;
+  let luckyBreak: Promise<PreviewLuckyBreak> | undefined;
 
   return {
     isVsCode: false,
     post: (message) => {
       if (import.meta.env.DEV) {
-        casino ??= import('./dev/previewCasino').then(({ createPreviewCasino }) =>
-          createPreviewCasino(emit, query, viewKind),
+        luckyBreak ??= import('./dev/previewLuckyBreak').then(({ createPreviewLuckyBreak }) =>
+          createPreviewLuckyBreak(emit, query, viewKind),
         );
-        void casino.then((preview) => preview.handle(message));
+        void luckyBreak.then((preview) => preview.handle(message));
         return;
       }
 

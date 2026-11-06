@@ -3,7 +3,7 @@
  * Dev server only (`npm run dev:webview`, then open `/?gallery`); never part of the production bundle.
  */
 import { useState } from 'react';
-import { CHIP_VALUES, type ChipValue } from '../../casino/chips';
+import { CHIP_VALUES, type ChipValue } from '../../state/chips';
 import { backCardRows, CARD_PALETTE, CARDS_ICON, COIN, DIE, DIE_SIX, faceCardRows, HOME_ICON, ICON_PALETTE, SPARKLE, WHEEL_ICON } from '../art/sprites';
 import { BalanceDisplay } from '../components/BalanceDisplay';
 import { BlackjackArt } from '../components/BlackjackArt';

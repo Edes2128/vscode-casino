@@ -1,4 +1,4 @@
-import type { SoundCategory, SoundPackId } from '../../casino/appearance';
+import type { SoundCategory, SoundPackId } from '../../state/appearance';
 
 /** What the player reads about a sound pack. The sounds themselves are in `sound/packs.ts`. */
 export interface SoundPackInfo {
@@ -10,7 +10,7 @@ export interface SoundPackInfo {
 
 /** The five packs, in the order the Customize screen lists them. Every one is free. */
 export const SOUND_PACK_CATALOG: readonly SoundPackInfo[] = [
-  { id: 'classic', name: 'Classic Casino', blurb: "The casino's own clicks, chips and jingles." },
+  { id: 'classic', name: 'Classic Lounge', blurb: "Lucky Break's own clicks, chips and jingles." },
   { id: 'arcade', name: 'Retro Arcade', blurb: 'Chiptune blips and quick arpeggios.' },
   { id: 'adventure', name: 'Pixel Adventure', blurb: 'Bright bells and a little fanfare.' },
   { id: 'cyber', name: 'Neon Cyber', blurb: 'Detuned synth zaps and long sweeps.' },

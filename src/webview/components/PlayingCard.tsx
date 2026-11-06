@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import type { CardDesignId } from '../../casino/appearance';
+import type { CardDesignId } from '../../state/appearance';
 import type { Card, Rank } from '../../game/blackjack/types';
 import { glyphsOf, type CardGlyphs } from '../art/cardSuits';
 import { isRedSuit } from '../art/suits';

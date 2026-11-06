@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { createFreshState, STATE_KEY } from '../../casino/persistence';
-import { CasinoStore } from '../../casino/store';
-import { MemoryStorage } from '../../casino/testing';
+import { createFreshState, STATE_KEY } from '../../state/persistence';
+import { LuckyBreakStore } from '../../state/store';
+import { MemoryStorage } from '../../state/testing';
 import { seededRng } from '../rng';
 import { ReferenceRound, shuffled, text } from './referenceRules';
 import { BlackjackTable } from './table';
@@ -28,7 +28,7 @@ describe('the table and wallet against the independent reference', () => {
       const balance = bet + 5 * Math.floor(random() * ((bet * 3) / 5 + 1)); // the bet, up to four times the bet
       const storage = new MemoryStorage();
       storage.seed(STATE_KEY, { ...createFreshState(), balance });
-      const store = new CasinoStore(storage, { newId: () => `r${(counter += 1)}` });
+      const store = new LuckyBreakStore(storage, { newId: () => `r${(counter += 1)}` });
       const table = new BlackjackTable(store, { deck: () => deck });
       if (balance === bet) seen.allIn += 1;
       deck = shuffled(random);

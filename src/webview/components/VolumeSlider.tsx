@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { MAX_VOLUME, MIN_VOLUME } from '../../casino/settings';
+import { MAX_VOLUME, MIN_VOLUME } from '../../state/settings';
 import { cssVars } from '../cssVars';
 import { volumeText } from '../settingsText';
 

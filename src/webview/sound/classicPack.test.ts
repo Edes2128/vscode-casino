@@ -3,8 +3,8 @@ import { CUES, cueTones, type Cue, type CueOptions, type Tone } from './cues';
 import { cueTonesFor, SOUND_PACKS } from './packs';
 
 /**
- * A frozen copy of the casino's sounds as they were before there were sound packs, written out here on purpose and
- * not imported: the Classic Casino pack must keep sounding exactly like this, whatever happens to `cues.ts`.
+ * A frozen copy of Lucky Break's sounds as they were before there were sound packs, written out here on purpose and
+ * not imported: the Classic Lounge pack must keep sounding exactly like this, whatever happens to `cues.ts`.
  */
 const C5 = 523.25;
 const D4 = 293.66;
@@ -105,8 +105,8 @@ const OPTIONS: readonly CueOptions[] = [
 
 const LEGACY_CUES = CUES.filter((cue): cue is Exclude<Cue, 'nav'> => cue !== 'nav');
 
-describe('the Classic Casino pack', () => {
-  it('is the casino\'s own sounds, tone for tone, for every cue and every kind of request', () => {
+describe('the Classic Lounge pack', () => {
+  it('is Lucky Break\'s own sounds, tone for tone, for every cue and every kind of request', () => {
     for (const cue of LEGACY_CUES) {
       for (const options of OPTIONS) {
         expect(cueTonesFor('classic', cue, options), `${cue} ${JSON.stringify(options)}`).toEqual(legacyCueTones(cue, options));
@@ -126,7 +126,7 @@ describe('the Classic Casino pack', () => {
     }
   });
 
-  it('is built from `cueTones` itself, so there is one Classic Casino, not two', () => {
+  it('is built from `cueTones` itself, so there is one Classic Lounge, not two', () => {
     for (const cue of CUES) expect(SOUND_PACKS.classic[cue]({ count: 3, durationMs: 2_000 })).toEqual(cueTones(cue, { count: 3, durationMs: 2_000 }));
   });
 });

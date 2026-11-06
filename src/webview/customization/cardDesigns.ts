@@ -1,4 +1,4 @@
-import type { CardDesignId } from '../../casino/appearance';
+import type { CardDesignId } from '../../state/appearance';
 
 /**
  * What a card design is made of, as data: the colors that matter for reading a card. A card is a physical object,
@@ -85,7 +85,7 @@ export const CARD_DESIGNS: readonly CardDesign[] = [
   },
   {
     id: 'dark',
-    name: 'Dark Casino',
+    name: 'Dark Deck',
     blurb: 'Black cards, gold leaf, a red diamond.',
     face: '#17171c',
     ink: '#e9e2d0',

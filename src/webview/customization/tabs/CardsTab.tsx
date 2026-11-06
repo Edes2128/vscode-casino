@@ -1,4 +1,4 @@
-import type { CardDesignId } from '../../../casino/appearance';
+import type { CardDesignId } from '../../../state/appearance';
 import type { Card } from '../../../game/blackjack/types';
 import { PlayingCard } from '../../components/PlayingCard';
 import { CARD_DESIGNS, cardDesignOf } from '../cardDesigns';

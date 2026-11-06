@@ -8,7 +8,7 @@
   "include": [
     "src/webview",
     "src/shared",
-    "src/casino",
+    "src/state",
     "src/game"
   ]
 }

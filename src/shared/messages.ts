@@ -6,9 +6,9 @@
  * through `parseWebviewMessage` instead of casting.
  */
 
-import { isCasinoSnapshot, isCount } from '../casino/snapshot';
-import type { CasinoSnapshot, GameType } from '../casino/types';
-import { isSettings, parseSettingsPatch, type Settings, type SettingsPatch } from '../casino/settings';
+import { isLuckyBreakSnapshot, isCount } from '../state/snapshot';
+import type { LuckyBreakSnapshot, GameType } from '../state/types';
+import { isSettings, parseSettingsPatch, type Settings, type SettingsPatch } from '../state/settings';
 import { isResetOutcome, isResetScope, type ResetOutcome, type ResetScope } from '../game/resetScope';
 import { isRouletteView, parseRouletteAction, type RouletteAction, type RouletteView } from '../game/roulette/view';
 import type { TableError } from '../game/tableResult';
@@ -23,8 +23,8 @@ import {
 /** Which VS Code surface a webview is rendered in. */
 export type ViewKind = 'sidebar' | 'panel';
 
-/** The screens of the casino. */
-export type CasinoPage = 'home' | 'blackjack' | 'roulette' | 'statistics' | 'customize' | 'settings';
+/** The screens of Lucky Break. */
+export type LuckyBreakPage = 'home' | 'blackjack' | 'roulette' | 'statistics' | 'customize' | 'settings';
 
 /** Where the webview bundle was loaded from. */
 export type AssetMode = 'dev' | 'prod';
@@ -59,7 +59,7 @@ export type WebviewToHostMessage =
   | { readonly type: 'reset'; readonly scope: ResetScope }
   /**
    * The decorations' clock: whether it is running (ticking), whether it is resting (stopped because the
-   * player has not touched the casino for a while), and how many times it has ticked. A running clock
+   * player has not touched Lucky Break for a while), and how many times it has ticked. A running clock
    * that keeps ticking proves the animations are alive; a stopped one proves they are still. Sent when
    * it starts, stops or rests, and every few seconds while it runs, never more often.
    */
@@ -90,7 +90,7 @@ export type WebviewToHostMessage =
       readonly dealerCards: number;
     }
   /**
-   * The webview drew this casino state. Lets the host confirm that every open view has caught up
+   * The webview drew this game state. Lets the host confirm that every open view has caught up
    * after a change, which is also how the integration tests check that the views stay in sync.
    */
   | { readonly type: 'snapshotShown'; readonly balance: number; readonly gamesPlayed: number }
@@ -104,14 +104,14 @@ export type WebviewToHostMessage =
 export type HostToWebviewMessage =
   /** Static facts about this webview, sent once in answer to `ready`. */
   | { readonly type: 'init'; readonly payload: InitPayload }
-  /** The current casino state. Sent after `init` and again whenever the host's state changes. */
-  | { readonly type: 'state'; readonly payload: CasinoSnapshot }
+  /** The current game state. Sent after `init` and again whenever the host's state changes. */
+  | { readonly type: 'state'; readonly payload: LuckyBreakSnapshot }
   /** The player's settings. Sent after `init` and again whenever they change. */
   | { readonly type: 'settings'; readonly payload: Settings }
   /** How a reset request ended. Sent only to the view that asked. */
   | { readonly type: 'resetResult'; readonly scope: ResetScope; readonly outcome: ResetOutcome }
   /** Switch this webview to another screen. */
-  | { readonly type: 'navigate'; readonly page: CasinoPage }
+  | { readonly type: 'navigate'; readonly page: LuckyBreakPage }
   /** The roulette table as it is now. */
   | { readonly type: 'roulette'; readonly view: RouletteView }
   /** The blackjack table as it is now. Never contains the hole card or the deck. */
@@ -217,7 +217,7 @@ export function parseHostMessage(raw: unknown): HostToWebviewMessage | undefined
     case 'init':
       return parseInit(payload);
     case 'state':
-      return isCasinoSnapshot(payload) ? { type: 'state', payload } : undefined;
+      return isLuckyBreakSnapshot(payload) ? { type: 'state', payload } : undefined;
     case 'blackjack': {
       const view = raw['view'];
       return isBlackjackView(view) ? { type: 'blackjack', view } : undefined;
@@ -229,8 +229,8 @@ export function parseHostMessage(raw: unknown): HostToWebviewMessage | undefined
         ? { type: 'resetResult', scope: raw['scope'], outcome: raw['outcome'] }
         : undefined;
     case 'navigate':
-      return CASINO_PAGES.includes(raw['page'] as CasinoPage)
-        ? { type: 'navigate', page: raw['page'] as CasinoPage }
+      return LUCKY_BREAK_PAGES.includes(raw['page'] as LuckyBreakPage)
+        ? { type: 'navigate', page: raw['page'] as LuckyBreakPage }
         : undefined;
     case 'roulette': {
       const view = raw['view'];
@@ -245,7 +245,7 @@ export function parseHostMessage(raw: unknown): HostToWebviewMessage | undefined
   }
 }
 
-const CASINO_PAGES: readonly CasinoPage[] = ['home', 'blackjack', 'roulette', 'statistics', 'customize', 'settings'];
+const LUCKY_BREAK_PAGES: readonly LuckyBreakPage[] = ['home', 'blackjack', 'roulette', 'statistics', 'customize', 'settings'];
 
 const TABLE_ERRORS: readonly unknown[] = [
   'invalid-amount',

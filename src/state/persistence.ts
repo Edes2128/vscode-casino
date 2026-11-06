@@ -11,15 +11,15 @@ import {
 import type { GameStats, HistoryEntry, OpenRound } from './types';
 
 /** Everything lives under one key, so each save is a single atomic write. */
-export const STATE_KEY = 'casino.state';
+export const STATE_KEY = 'luckyBreak.state';
 
 /** Where unreadable saved data is copied before it is replaced, so nothing is destroyed silently. */
-export const BACKUP_KEY = 'casino.state.backup';
+export const BACKUP_KEY = 'luckyBreak.state.backup';
 
 /** Bump when the saved shape changes, and teach `loadState` to migrate the old version. */
 export const STATE_VERSION = 1;
 
-/** The part of VS Code's `Memento` (`globalState`) the casino needs. Tests use an in-memory fake. */
+/** The part of VS Code's `Memento` (`globalState`) Lucky Break needs. Tests use an in-memory fake. */
 export interface KeyValueStorage {
   get(key: string): unknown;
   update(key: string, value: unknown): PromiseLike<void>;
@@ -85,7 +85,7 @@ export interface LoadResult {
 }
 
 /**
- * Reads the saved state. Anything missing or invalid yields a fresh casino instead of a crash;
+ * Reads the saved state. Anything missing or invalid yields a fresh game instead of a crash;
  * invalid data is first copied to `BACKUP_KEY` so a bug here can never silently eat a balance.
  */
 export function loadState(storage: KeyValueStorage): LoadResult {
@@ -93,7 +93,7 @@ export function loadState(storage: KeyValueStorage): LoadResult {
   if (raw === undefined) return { state: createFreshState(), source: 'fresh' };
   if (isPersistedState(raw)) return { state: raw, source: 'saved' };
 
-  // Best effort: a failed backup must not stop the casino from starting.
+  // Best effort: a failed backup must not stop Lucky Break from starting.
   Promise.resolve(storage.update(BACKUP_KEY, raw)).catch(() => undefined);
   return { state: createFreshState(), source: 'corrupt' };
 }

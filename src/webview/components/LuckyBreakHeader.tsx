@@ -2,17 +2,17 @@ import { DIE } from '../art/sprites';
 import { BalanceDisplay } from './BalanceDisplay';
 import { PixelSprite } from './PixelSprite';
 
-interface CasinoHeaderProps {
+interface LuckyBreakHeaderProps {
   readonly balance: number | undefined;
 }
 
 /** Slim brand bar that stays on every screen, with the live balance. */
-export function CasinoHeader({ balance }: CasinoHeaderProps) {
+export function LuckyBreakHeader({ balance }: LuckyBreakHeaderProps) {
   return (
-    <header className="casino-header">
-      <div className="casino-header__brand">
-        <PixelSprite rows={DIE.rows} palette={DIE.palette} className="casino-header__die" />
-        <span className="casino-header__name">CASINO</span>
+    <header className="lb-header">
+      <div className="lb-header__brand">
+        <PixelSprite rows={DIE.rows} palette={DIE.palette} className="lb-header__die" />
+        <span className="lb-header__name">LUCKY BREAK</span>
       </div>
       <BalanceDisplay balance={balance} />
     </header>

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { SOUND_CATEGORIES, SOUND_PACK_IDS, type SoundPackId } from '../../casino/appearance';
+import { SOUND_CATEGORIES, SOUND_PACK_IDS, type SoundPackId } from '../../state/appearance';
 import { CARD_GAP_SECONDS, CUES, CUE_CATEGORY, MAX_CUE_SECONDS, SPIN_TAIL_SECONDS, categoryOf, type Cue, type CueOptions, type Tone } from './cues';
 import { MAX_VOICES } from './engine';
 import { cueTonesFor, hz, SOUND_PACKS } from './packs';
@@ -170,7 +170,7 @@ describe('the packs next to each other', () => {
 });
 
 describe('what gives each pack its character', () => {
-  it('Classic Casino keeps its square waves, its noise and its low saw for a loss', () => {
+  it('Classic Lounge keeps its square waves, its noise and its low saw for a loss', () => {
     const waves = wavesOf('classic');
     expect(waves.has('square') && waves.has('noise') && waves.has('sawtooth') && waves.has('triangle')).toBe(true);
   });

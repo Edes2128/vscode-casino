@@ -17,7 +17,7 @@ interface ScenePreviewProps {
 }
 
 /**
- * A small table drawn in the given colors with the casino's own parts: the header, the felt, two cards, a chip
+ * A small table drawn in the given colors with Lucky Break's own parts: the header, the felt, two cards, a chip
  * and a button. It is what a theme, or a set of colors, looks like, shown at once, with nothing to explain.
  */
 export function ScenePreview({ resolved, title }: ScenePreviewProps) {
@@ -26,7 +26,7 @@ export function ScenePreview({ resolved, title }: ScenePreviewProps) {
     <AppearanceProvider value={{ ...current, resolved }}>
       <span className="scene" style={cssVars(resolved.vars)} aria-hidden={title === undefined ? true : undefined} {...(title === undefined ? {} : { role: 'img', 'aria-label': title })}>
         <span className="scene__bar">
-          <span className="scene__title">CASINO</span>
+          <span className="scene__title">LUCKY BREAK</span>
           <span className="scene__chips">1,000</span>
         </span>
         <span className="scene__table px-frame">

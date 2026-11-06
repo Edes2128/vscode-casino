@@ -1,22 +1,22 @@
 import * as vscode from 'vscode';
-import { SettingsStore } from '../casino/settings';
-import { CasinoStore } from '../casino/store';
+import { SettingsStore } from '../state/settings';
+import { LuckyBreakStore } from '../state/store';
 import { BlackjackTable } from '../game/blackjack/table';
 import { resetPrompt } from '../game/resetPrompt';
 import { ResetCoordinator, type ResetScope } from '../game/resets';
 import { RouletteTable } from '../game/roulette/table';
-import type { CasinoPage, ViewKind } from '../shared/messages';
+import type { LuckyBreakPage, ViewKind } from '../shared/messages';
 import { SUPPORT_URL } from '../shared/support';
-import { CasinoPanel } from './CasinoPanel';
-import { CasinoViewProvider } from './CasinoViewProvider';
+import { LuckyBreakPanel } from './LuckyBreakPanel';
+import { LuckyBreakViewProvider } from './LuckyBreakViewProvider';
 import { Logger } from './logger';
 import { WebviewHub, type WebviewDiagnostics } from './WebviewHub';
 
-/** Only returned from `activate` in test mode, so integration tests can inspect the casino. */
-export interface CasinoTestApi {
+/** Only returned from `activate` in test mode, so integration tests can inspect Lucky Break. */
+export interface LuckyBreakTestApi {
   getDiagnostics(kind: ViewKind): WebviewDiagnostics | undefined;
   /** The real store the webviews are fed from. Tests drive it exactly as the games will. */
-  readonly store: CasinoStore;
+  readonly store: LuckyBreakStore;
   /** The real blackjack table. */
   readonly table: BlackjackTable;
   /** The real roulette table. */
@@ -31,20 +31,20 @@ export interface CasinoTestApi {
   /** Sends a raw message into the hub as if the latest webview of that kind had posted it. */
   sendFromWebview(kind: ViewKind, message: unknown): void;
   /** Switches the latest webview of that kind to another screen. */
-  navigate(kind: ViewKind, page: CasinoPage): void;
+  navigate(kind: ViewKind, page: LuckyBreakPage): void;
 }
 
 /** Everything that saves itself and must be written out before VS Code closes. */
 let activeStores: ReadonlyArray<{ flush(): Promise<void> }> = [];
 
-export function activate(context: vscode.ExtensionContext): CasinoTestApi | undefined {
+export function activate(context: vscode.ExtensionContext): LuckyBreakTestApi | undefined {
   const started = performance.now();
   const logger = new Logger();
   const version = readVersion(context);
 
   // The wallet, statistics and history live here, in the extension host, and are saved to
   // globalState. The webviews only ever see read-only snapshots of it.
-  const store = new CasinoStore(context.globalState, {
+  const store = new LuckyBreakStore(context.globalState, {
     onError: (message, error) => logger.error(message, error),
   });
   const settings = new SettingsStore(context.globalState, {
@@ -89,7 +89,7 @@ export function activate(context: vscode.ExtensionContext): CasinoTestApi | unde
       });
     },
   });
-  const sidebar = new CasinoViewProvider(context, hub, logger);
+  const sidebar = new LuckyBreakViewProvider(context, hub, logger);
 
   context.subscriptions.push(
     logger,
@@ -98,19 +98,19 @@ export function activate(context: vscode.ExtensionContext): CasinoTestApi | unde
     { dispose: table.onDidChange((view) => hub.broadcast({ type: 'blackjack', view })) },
     { dispose: roulette.onDidChange((view) => hub.broadcast({ type: 'roulette', view })) },
     { dispose: settings.onDidChange((payload) => hub.broadcast({ type: 'settings', payload })) },
-    vscode.window.registerWebviewViewProvider(CasinoViewProvider.viewType, sidebar, {
+    vscode.window.registerWebviewViewProvider(LuckyBreakViewProvider.viewType, sidebar, {
       // Keep the page alive when the sidebar is hidden so an animation or a round in progress survives.
       webviewOptions: { retainContextWhenHidden: true },
     }),
-    vscode.commands.registerCommand('casino.showSidebar', () =>
-      vscode.commands.executeCommand(`${CasinoViewProvider.viewType}.focus`),
+    vscode.commands.registerCommand('luckyBreak.showSidebar', () =>
+      vscode.commands.executeCommand(`${LuckyBreakViewProvider.viewType}.focus`),
     ),
-    vscode.commands.registerCommand('casino.openPanel', () =>
-      CasinoPanel.createOrShow(context, hub, logger),
+    vscode.commands.registerCommand('luckyBreak.openPanel', () =>
+      LuckyBreakPanel.createOrShow(context, hub, logger),
     ),
   );
 
-  logger.info(`Casino ${version} activated in ${Math.round(performance.now() - started)} ms`);
+  logger.info(`Lucky Break ${version} activated in ${Math.round(performance.now() - started)} ms`);
 
   return __DEV_TOOLS__ && exposesTestApi(context)
     ? {
@@ -131,7 +131,7 @@ export function activate(context: vscode.ExtensionContext): CasinoTestApi | unde
 /**
  * The test API hands out the real store, so it must never exist for an installed extension. In the
  * packaged extension this code is not even compiled in (`__DEV_TOOLS__` is false there). In other
- * builds it is only available in test mode, or when running from source with CASINO_EXPOSE_TEST_API=1
+ * builds it is only available in test mode, or when running from source with LUCKY_BREAK_EXPOSE_TEST_API=1
  * (used by the restart test, which cannot run in test mode: see test/restart/runRestart.ts).
  */
 function exposesTestApi(context: vscode.ExtensionContext): boolean {
@@ -139,7 +139,7 @@ function exposesTestApi(context: vscode.ExtensionContext): boolean {
     case vscode.ExtensionMode.Test:
       return true;
     case vscode.ExtensionMode.Development:
-      return process.env['CASINO_EXPOSE_TEST_API'] === '1';
+      return process.env['LUCKY_BREAK_EXPOSE_TEST_API'] === '1';
     default:
       return false;
   }
@@ -158,12 +158,12 @@ async function askInDialog(scope: ResetScope): Promise<boolean> {
   return answer === confirmLabel;
 }
 
-function logStartup(logger: Logger, store: CasinoStore): void {
+function logStartup(logger: Logger, store: LuckyBreakStore): void {
   const { source, forfeitedRounds } = store.startup;
-  logger.info(`Casino data: ${source}, balance ${store.snapshot.balance} chips`);
+  logger.info(`Lucky Break data: ${source}, balance ${store.snapshot.balance} chips`);
 
   if (source === 'corrupt') {
-    logger.warn('The saved casino data could not be read. A fresh casino was started; the old data is kept under "casino.state.backup".');
+    logger.warn('The saved data could not be read. A fresh game was started; the old data is kept under "luckyBreak.state.backup".');
   }
   if (forfeitedRounds > 0) {
     logger.warn(`${forfeitedRounds} round(s) were still open when VS Code last closed and were recorded as lost.`);

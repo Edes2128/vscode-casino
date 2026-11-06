@@ -1,19 +1,19 @@
 import { describe, expect, it } from 'vitest';
-import { STARTING_BALANCE } from '../casino/snapshot';
-import { CasinoStore } from '../casino/store';
-import { MemoryStorage } from '../casino/testing';
+import { STARTING_BALANCE } from '../state/snapshot';
+import { LuckyBreakStore } from '../state/store';
+import { MemoryStorage } from '../state/testing';
 import { BlackjackTable } from './blackjack/table';
 import { cards } from './blackjack/testing';
 import { ResetCoordinator, type ResetScope } from './resets';
 import { RouletteTable } from './roulette/table';
 import { POCKET_COUNT, pocketIndexOfNumber } from './roulette/wheel';
 
-/** A casino with a few results in it, and a confirmation the test controls. */
+/** A game with a few results in it, and a confirmation the test controls. */
 function setup(answer: boolean | 'throw' | 'wait' = true) {
   const storage = new MemoryStorage();
   let counter = 0;
   const errors: string[] = [];
-  const store = new CasinoStore(storage, { newId: () => `r${(counter += 1)}`, onError: (m) => errors.push(m) });
+  const store = new LuckyBreakStore(storage, { newId: () => `r${(counter += 1)}`, onError: (m) => errors.push(m) });
   const landing = [32, 0, 17];
   let next = 0;
   const roulette = new RouletteTable(store, {
@@ -126,7 +126,7 @@ describe('resetting the statistics', () => {
 });
 
 describe('resetting everything', () => {
-  it('makes a brand-new casino of the chips, the statistics, the history and the tables', async () => {
+  it('makes a brand-new game of the chips, the statistics, the history and the tables', async () => {
     const t = setup();
     t.play();
 

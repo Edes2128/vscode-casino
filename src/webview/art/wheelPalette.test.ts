@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { THEME_IDS } from '../../casino/appearance';
+import { THEME_IDS } from '../../state/appearance';
 import { resolveAppearance } from '../customization/appearance';
 import { WHEEL_PALETTE, wheelPaletteFor } from './wheel';
 

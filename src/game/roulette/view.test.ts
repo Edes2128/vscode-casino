@@ -1,12 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import { CasinoStore } from '../../casino/store';
-import { MemoryStorage } from '../../casino/testing';
+import { LuckyBreakStore } from '../../state/store';
+import { MemoryStorage } from '../../state/testing';
 import { POCKETS } from './wheel';
 import { RouletteTable } from './table';
 import { IDLE_ROULETTE_VIEW, MAX_RECENT, isPocket, isRouletteView, parseRouletteAction, type RouletteView } from './view';
 
 function realView(): RouletteView {
-  const table = new RouletteTable(new CasinoStore(new MemoryStorage()), { rng: () => 0.5 });
+  const table = new RouletteTable(new LuckyBreakStore(new MemoryStorage()), { rng: () => 0.5 });
   table.perform({ kind: 'spin', selection: { kind: 'color', color: 'red' }, bet: 50 });
   return table.view;
 }

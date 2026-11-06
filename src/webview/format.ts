@@ -1,4 +1,4 @@
-import type { GameOutcome, GameType } from '../casino/types';
+import type { GameOutcome, GameType } from '../state/types';
 
 const chipFormat = new Intl.NumberFormat('en-US');
 

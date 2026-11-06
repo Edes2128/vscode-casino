@@ -1,4 +1,4 @@
-import { MIN_BET } from '../../casino/chips';
+import { MIN_BET } from '../../state/chips';
 import type { RouletteSelection } from '../../game/roulette/types';
 import { BetControls } from './BetControls';
 import { ColorPicker } from './ColorPicker';

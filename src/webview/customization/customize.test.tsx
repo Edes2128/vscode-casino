@@ -1,7 +1,7 @@
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
-import { ALL_SOUND_CATEGORIES_ON, CARD_DESIGN_IDS, ROULETTE_ANIMATION_IDS, SOUND_PACK_IDS, THEME_IDS } from '../../casino/appearance';
-import { DEFAULT_SETTINGS, type Settings } from '../../casino/settings';
+import { ALL_SOUND_CATEGORIES_ON, CARD_DESIGN_IDS, ROULETTE_ANIMATION_IDS, SOUND_PACK_IDS, THEME_IDS } from '../../state/appearance';
+import { DEFAULT_SETTINGS, type Settings } from '../../state/settings';
 import { NAV_ITEMS } from '../navigation';
 import { CUSTOMIZE_TABS, Customize } from '../pages/Customize';
 import { appearanceOf, applyAppearanceTo, clearAppearanceFrom, DEFAULT_APPEARANCE, type AppearanceRoot } from './AppearanceContext';
@@ -50,12 +50,12 @@ describe('ChoiceCard', () => {
 
   it('groups choices as a labelled radio group', () => {
     const html = renderToStaticMarkup(
-      <ChoiceGrid label="Casino theme">
+      <ChoiceGrid label="Theme">
         <span />
       </ChoiceGrid>,
     );
     expect(html).toContain('role="radiogroup"');
-    expect(html).toContain('aria-label="Casino theme"');
+    expect(html).toContain('aria-label="Theme"');
   });
 });
 
@@ -64,14 +64,14 @@ describe('the themes tab', () => {
     const html = renderToStaticMarkup(<ThemesTab settings={settings()} onChange={noop} />);
     expect(count(html, 'role="radio"')).toBe(THEME_IDS.length);
     expect(count(html, 'aria-checked="true"')).toBe(1);
-    for (const name of ['CLASSIC CASINO', 'NEON ARCADE', 'RETRO 8-BIT', 'MIDNIGHT CASINO', 'BLOOD CASINO', 'CYBER CASINO', 'FOREST CASINO', 'ROYAL CASINO']) {
+    for (const name of ['CLASSIC FELT', 'NEON ARCADE', 'RETRO 8-BIT', 'MIDNIGHT FELT', 'CRIMSON FELT', 'CYBER FELT', 'FOREST FELT', 'ROYAL FELT']) {
       expect(html).toContain(name);
     }
   });
 
   it('marks the theme that is chosen', () => {
     const html = renderToStaticMarkup(<ThemesTab settings={settings({ theme: 'royal' })} onChange={noop} />);
-    expect(html).toMatch(/aria-checked="true"[^>]*>(?:(?!<button).)*ROYAL CASINO/s);
+    expect(html).toMatch(/aria-checked="true"[^>]*>(?:(?!<button).)*ROYAL FELT/s);
   });
 
   it('previews each theme in its own colors', () => {
@@ -95,7 +95,7 @@ describe('the scene preview', () => {
     expect(titled).not.toContain('aria-hidden="true" class="scene"');
   });
 
-  it('draws the casino\'s own parts: header, table, two cards, a chip and a button', () => {
+  it('draws Lucky Break\'s own parts: header, table, two cards, a chip and a button', () => {
     const html = renderToStaticMarkup(<ScenePreview resolved={resolveAppearance('classic')} />);
     expect(html).toContain('scene__bar');
     expect(html).toContain('scene__table');
@@ -147,7 +147,7 @@ describe('the colors tab', () => {
   it('shows a preview and names the theme the colors sit on', () => {
     const html = render({ theme: 'midnight' });
     expect(html).toContain('colors-preview');
-    expect(html).toContain('MIDNIGHT CASINO THEME');
+    expect(html).toContain('MIDNIGHT FELT THEME');
   });
 });
 

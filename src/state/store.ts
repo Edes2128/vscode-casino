@@ -9,7 +9,7 @@ import {
 } from './persistence';
 import { EMPTY_GAME_STATS, MAX_DETAIL_LENGTH } from './snapshot';
 import { combineStats, outcomeOf, recordRound } from './statistics';
-import type { CasinoSnapshot, GameStats, GameType, HistoryEntry, OpenRound } from './types';
+import type { LuckyBreakSnapshot, GameStats, GameType, HistoryEntry, OpenRound } from './types';
 import { Wallet, type WalletError } from './wallet';
 import { WriteQueue } from './writeQueue';
 
@@ -44,7 +44,7 @@ export interface StartupReport {
 export interface StoreOptions {
   readonly now?: () => number;
   readonly newId?: () => string;
-  /** Called when saving fails or a change listener throws. The casino keeps running either way. */
+  /** Called when saving fails or a change listener throws. Lucky Break keeps running either way. */
   readonly onError?: (message: string, error: unknown) => void;
 }
 
@@ -58,7 +58,7 @@ type PerGameStats = { readonly blackjack: GameStats; readonly roulette: GameStat
  * `settleRound`, which pays out, updates the statistics and writes the history. The result of a
  * round (win, loss or push) is derived from the net chips, so the money and the record always agree.
  */
-export class CasinoStore {
+export class LuckyBreakStore {
   readonly startup: StartupReport;
 
   readonly #storage: KeyValueStorage;
@@ -67,15 +67,15 @@ export class CasinoStore {
   readonly #onError: (message: string, error: unknown) => void;
   readonly #wallet: Wallet;
   readonly #openRounds = new Map<string, OpenRound>();
-  readonly #listeners = new Set<(snapshot: CasinoSnapshot) => void>();
+  readonly #listeners = new Set<(snapshot: LuckyBreakSnapshot) => void>();
   readonly #queue = new WriteQueue(
     () => saveState(this.#storage, this.#serialise()),
-    (error) => this.#onError('Saving the casino state failed', error),
+    (error) => this.#onError('Saving Lucky Break state failed', error),
   );
 
   #stats: PerGameStats;
   #history: readonly HistoryEntry[];
-  #snapshot: CasinoSnapshot | undefined;
+  #snapshot: LuckyBreakSnapshot | undefined;
 
   constructor(storage: KeyValueStorage, options: StoreOptions = {}) {
     this.#storage = storage;
@@ -97,8 +97,8 @@ export class CasinoStore {
     if (state.openRounds.length > 0 || source === 'corrupt') this.#queue.schedule();
   }
 
-  /** The current casino state. The same object until the next change. */
-  get snapshot(): CasinoSnapshot {
+  /** The current game state. The same object until the next change. */
+  get snapshot(): LuckyBreakSnapshot {
     this.#snapshot ??= {
       balance: this.#wallet.balance,
       stats: {
@@ -117,7 +117,7 @@ export class CasinoStore {
   }
 
   /** Calls `listener` after every change. Returns a function that stops listening. */
-  onDidChange(listener: (snapshot: CasinoSnapshot) => void): () => void {
+  onDidChange(listener: (snapshot: LuckyBreakSnapshot) => void): () => void {
     this.#listeners.add(listener);
     return () => {
       this.#listeners.delete(listener);
@@ -190,7 +190,7 @@ export class CasinoStore {
     return ok(undefined);
   }
 
-  /** A brand-new casino: starting balance, no statistics, no history. */
+  /** A brand-new game: starting balance, no statistics, no history. */
   resetAll(): RoundResult<void> {
     if (this.#openRounds.size > 0) return fail('round-in-progress');
     this.#wallet.reset();
@@ -235,7 +235,7 @@ export class CasinoStore {
       try {
         listener(snapshot);
       } catch (error) {
-        this.#onError('A casino change listener failed', error);
+        this.#onError('A game change listener failed', error);
       }
     }
   }

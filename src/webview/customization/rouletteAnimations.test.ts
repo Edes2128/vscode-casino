@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { ROULETTE_ANIMATION_IDS, isRouletteAnimationId, type RouletteAnimationId } from '../../casino/appearance';
-import { DEFAULT_SETTINGS } from '../../casino/settings';
+import { ROULETTE_ANIMATION_IDS, isRouletteAnimationId, type RouletteAnimationId } from '../../state/appearance';
+import { DEFAULT_SETTINGS } from '../../state/settings';
 import {
   BURST_LIFETIME_MS,
   BURST_MS,

@@ -1,6 +1,6 @@
 /**
- * Helper extension for the restart test (see runRestart.ts). It is loaded next to the casino in a
- * normally launched VS Code, plays or checks some rounds through the casino's real store, writes
+ * Helper extension for the restart test (see runRestart.ts). It is loaded next to Lucky Break in a
+ * normally launched VS Code, plays or checks some rounds through Lucky Break's real store, writes
  * its verdict to a file and then quits VS Code the way a user would, which makes VS Code flush
  * its global state to disk. Without the environment variables set by the runner it does nothing.
  */
@@ -8,14 +8,14 @@ import * as assert from 'node:assert/strict';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import * as vscode from 'vscode';
-import { DEFAULT_SETTINGS } from '../../src/casino/settings';
-import type { CasinoStore } from '../../src/casino/store';
-import type { GameType } from '../../src/casino/types';
-import type { CasinoTestApi } from '../../src/extension/extension';
+import { DEFAULT_SETTINGS } from '../../src/state/settings';
+import type { LuckyBreakStore } from '../../src/state/store';
+import type { GameType } from '../../src/state/types';
+import type { LuckyBreakTestApi } from '../../src/extension/extension';
 
-const CASINO_ID = 'thesulce.vscode-casino';
+const LUCKY_BREAK_ID = 'thesulce.lucky-break';
 
-function playRound(store: CasinoStore, game: GameType, bet: number, payout: number, detail: string): number {
+function playRound(store: LuckyBreakStore, game: GameType, bet: number, payout: number, detail: string): number {
   const begun = store.beginRound(game, bet);
   assert.ok(begun.ok, `beginRound(${game}, ${bet}) was refused`);
   assert.ok(store.settleRound(begun.value.id, payout, detail).ok, 'settleRound was refused');
@@ -37,7 +37,7 @@ const CHOSEN_SETTINGS = {
   colors: { table: '#224466', chip: '#ffcc00' },
 } as const;
 
-async function writePhase({ store, settings }: CasinoTestApi): Promise<void> {
+async function writePhase({ store, settings }: LuckyBreakTestApi): Promise<void> {
   assert.deepEqual(store.startup, { source: 'fresh', forfeitedRounds: 0 }, 'expected a brand-new profile');
   assert.equal(store.snapshot.balance, 1_000);
 
@@ -52,7 +52,7 @@ async function writePhase({ store, settings }: CasinoTestApi): Promise<void> {
   await Promise.all([store.flush(), settings.flush()]);
 }
 
-async function readPhase(api: CasinoTestApi): Promise<void> {
+async function readPhase(api: LuckyBreakTestApi): Promise<void> {
   const { store, settings } = api;
 
   assert.deepEqual(
@@ -60,7 +60,7 @@ async function readPhase(api: CasinoTestApi): Promise<void> {
     { ...DEFAULT_SETTINGS, ...CHOSEN_SETTINGS },
     'the settings, including the theme, card design, wheel animation, sound pack, sound categories and colors, must survive the restart',
   );
-  assert.deepEqual(store.startup, { source: 'saved', forfeitedRounds: 1 }, 'the saved casino was not loaded');
+  assert.deepEqual(store.startup, { source: 'saved', forfeitedRounds: 1 }, 'the saved game was not loaded');
   assert.equal(store.snapshot.balance, 935, 'the balance must survive the restart');
   assert.deepEqual(store.openRounds, []);
 
@@ -82,7 +82,7 @@ async function readPhase(api: CasinoTestApi): Promise<void> {
   );
 
   // And the views are fed the restored state.
-  await vscode.commands.executeCommand('workbench.view.extension.casino');
+  await vscode.commands.executeCommand('workbench.view.extension.luckyBreak');
   const deadline = Date.now() + 30_000;
   for (;;) {
     const shown = api.getDiagnostics('sidebar')?.lastShown;
@@ -93,16 +93,16 @@ async function readPhase(api: CasinoTestApi): Promise<void> {
 }
 
 /**
- * Opens the casino the way a player leaves it, then stays open so `perf:idle` can sample how much CPU
+ * Opens Lucky Break the way a player leaves it, then stays open so `perf:idle` can sample how much CPU
  * VS Code uses. Never quits (the runner stops VS Code). While it stays open it also obeys commands the
  * runner writes to a control file, so one running window can be measured under several settings.
  */
-async function idlePhase(api: CasinoTestApi): Promise<void> {
-  const page = (process.env['CASINO_IDLE_PAGE'] ?? 'home') as Parameters<CasinoTestApi['navigate']>[1];
-  const settings = JSON.parse(process.env['CASINO_IDLE_SETTINGS'] ?? '{}') as Parameters<CasinoTestApi['settings']['update']>[0];
+async function idlePhase(api: LuckyBreakTestApi): Promise<void> {
+  const page = (process.env['LUCKY_BREAK_IDLE_PAGE'] ?? 'home') as Parameters<LuckyBreakTestApi['navigate']>[1];
+  const settings = JSON.parse(process.env['LUCKY_BREAK_IDLE_SETTINGS'] ?? '{}') as Parameters<LuckyBreakTestApi['settings']['update']>[0];
 
   api.settings.update(settings);
-  await vscode.commands.executeCommand('workbench.view.extension.casino');
+  await vscode.commands.executeCommand('workbench.view.extension.luckyBreak');
   const deadline = Date.now() + 60_000;
   while (api.getDiagnostics('sidebar')?.rendered !== true) {
     assert.ok(Date.now() < deadline, 'the sidebar never rendered');
@@ -111,10 +111,10 @@ async function idlePhase(api: CasinoTestApi): Promise<void> {
   api.navigate('sidebar', page);
   await new Promise((resolve) => setTimeout(resolve, 1_000));
 
-  const controlPath = process.env['CASINO_IDLE_CONTROL'];
+  const controlPath = process.env['LUCKY_BREAK_IDLE_CONTROL'];
   if (controlPath === undefined) return;
 
-  // What the casino's own page says about its decorations, for the runner to read. This is how the
+  // What Lucky Break's own page says about its decorations, for the runner to read. This is how the
   // measurement knows they are alive without attaching a debugger to the webview, which changes the CPU.
   setInterval(() => {
     fs.writeFileSync(`${controlPath}.status`, JSON.stringify(api.getDiagnostics('sidebar')?.lastAmbient ?? null));
@@ -122,10 +122,10 @@ async function idlePhase(api: CasinoTestApi): Promise<void> {
 
   interface Command {
     readonly id: string;
-    readonly settings?: Parameters<CasinoTestApi['settings']['update']>[0];
-    readonly page?: Parameters<CasinoTestApi['navigate']>[1];
-    /** `explorer` puts another view in front of the casino (which stays alive); `casino` brings it back. */
-    readonly show?: 'casino' | 'explorer';
+    readonly settings?: Parameters<LuckyBreakTestApi['settings']['update']>[0];
+    readonly page?: Parameters<LuckyBreakTestApi['navigate']>[1];
+    /** `explorer` puts another view in front of Lucky Break (which stays alive); `luckyBreak` brings it back. */
+    readonly show?: 'luckyBreak' | 'explorer';
   }
   let handled = '';
   setInterval(() => {
@@ -141,21 +141,21 @@ async function idlePhase(api: CasinoTestApi): Promise<void> {
       if (command.settings !== undefined) api.settings.update(command.settings);
       if (command.page !== undefined) api.navigate('sidebar', command.page);
       if (command.show === 'explorer') await vscode.commands.executeCommand('workbench.view.explorer');
-      if (command.show === 'casino') await vscode.commands.executeCommand('workbench.view.extension.casino');
+      if (command.show === 'luckyBreak') await vscode.commands.executeCommand('workbench.view.extension.luckyBreak');
       fs.writeFileSync(`${controlPath}.ack`, command.id);
     })();
   }, 250);
 }
 
-/** The casino's own log files under `root`, read whole. Small trees only: this is a throwaway profile's logs. */
+/** Lucky Break's own log files under `root`, read whole. Small trees only: this is a throwaway profile's logs. */
 function readLogs(root: string): string {
   let text = '';
   const visit = (directory: string): void => {
     for (const entry of fs.readdirSync(directory, { withFileTypes: true })) {
       const full = path.join(directory, entry.name);
       if (entry.isDirectory()) visit(full);
-      // Judged by the path INSIDE the logs folder: the project folder itself is called vscode-casino.
-      else if (entry.name.endsWith('.log') && /casino/i.test(path.relative(root, full))) text += `${fs.readFileSync(full, 'utf8')}\n`;
+      // Judged by the path INSIDE the logs folder: the project folder itself is called lucky-break.
+      else if (entry.name.endsWith('.log') && /lucky.?break/i.test(path.relative(root, full))) text += `${fs.readFileSync(full, 'utf8')}\n`;
     }
   };
   try {
@@ -167,22 +167,22 @@ function readLogs(root: string): string {
 }
 
 /**
- * Checks the casino as it was INSTALLED from a VSIX (the runner installs it into the profile this
+ * Checks Lucky Break as it was INSTALLED from a VSIX (the runner installs it into the profile this
  * VS Code uses), not as it runs from source: where it lives, that it does not hand out its test API,
- * that its commands exist, and, from the casino's own log, that both webviews really rendered.
+ * that its commands exist, and, from Lucky Break's own log, that both webviews really rendered.
  */
-async function vsixPhase(casino: vscode.Extension<unknown>, logsRoot: string): Promise<string> {
-  const installedIn = process.env['CASINO_VSIX_EXTENSIONS_DIR'];
-  assert.ok(installedIn !== undefined && casino.extensionPath.startsWith(installedIn), `the casino runs from ${casino.extensionPath}, not from the installed copy`);
+async function vsixPhase(luckyBreak: vscode.Extension<unknown>, logsRoot: string): Promise<string> {
+  const installedIn = process.env['LUCKY_BREAK_VSIX_EXTENSIONS_DIR'];
+  assert.ok(installedIn !== undefined && luckyBreak.extensionPath.startsWith(installedIn), `Lucky Break runs from ${luckyBreak.extensionPath}, not from the installed copy`);
 
-  const api = await casino.activate();
-  assert.equal(api, undefined, 'an installed casino must not hand out its test API');
+  const api = await luckyBreak.activate();
+  assert.equal(api, undefined, 'an installed copy must not hand out its test API');
 
   const commands = await vscode.commands.getCommands(true);
-  for (const command of ['casino.showSidebar', 'casino.openPanel', 'casino.sidebar.focus']) assert.ok(commands.includes(command), `${command} is not registered`);
+  for (const command of ['luckyBreak.showSidebar', 'luckyBreak.openPanel', 'luckyBreak.sidebar.focus']) assert.ok(commands.includes(command), `${command} is not registered`);
 
-  await vscode.commands.executeCommand('workbench.view.extension.casino');
-  await vscode.commands.executeCommand('casino.openPanel');
+  await vscode.commands.executeCommand('workbench.view.extension.luckyBreak');
+  await vscode.commands.executeCommand('luckyBreak.openPanel');
 
   const wanted = [/\[sidebar\] webview rendered \(fonts loaded: true, audio: true, assets: prod\)/, /\[panel\] webview rendered \(fonts loaded: true, audio: true, assets: prod\)/];
   const deadline = Date.now() + 60_000;
@@ -190,34 +190,34 @@ async function vsixPhase(casino: vscode.Extension<unknown>, logsRoot: string): P
   for (;;) {
     logs = readLogs(logsRoot);
     if (wanted.every((pattern) => pattern.test(logs))) break;
-    assert.ok(Date.now() < deadline, `the installed casino's webviews never reported rendering. Log so far:\n${logs.slice(-1500)}`);
+    assert.ok(Date.now() < deadline, `the installed copy's webviews never reported rendering. Log so far:\n${logs.slice(-1500)}`);
     await new Promise((resolve) => setTimeout(resolve, 500));
   }
   await new Promise((resolve) => setTimeout(resolve, 1_500)); // let a late CSP or error report arrive
 
   logs = readLogs(logsRoot);
-  assert.ok(!/CSP violation/.test(logs), `CSP violations in the installed casino:\n${logs.split('\n').filter((line) => /CSP violation/.test(line)).join('\n')}`);
-  assert.ok(!/webview error/.test(logs), `webview errors in the installed casino:\n${logs.split('\n').filter((line) => /webview error/.test(line)).join('\n')}`);
-  assert.ok(!/\[error\]/i.test(logs), `the casino logged an error:\n${logs.split('\n').filter((line) => /\[error\]/i.test(line)).join('\n')}`);
-  const activated = /Casino (\S+) activated in (\d+) ms/.exec(logs);
-  assert.ok(activated, 'the casino never logged that it activated');
+  assert.ok(!/CSP violation/.test(logs), `CSP violations in the installed copy:\n${logs.split('\n').filter((line) => /CSP violation/.test(line)).join('\n')}`);
+  assert.ok(!/webview error/.test(logs), `webview errors in the installed copy:\n${logs.split('\n').filter((line) => /webview error/.test(line)).join('\n')}`);
+  assert.ok(!/\[error\]/i.test(logs), `Lucky Break logged an error:\n${logs.split('\n').filter((line) => /\[error\]/i.test(line)).join('\n')}`);
+  const activated = /Lucky Break (\S+) activated in (\d+) ms/.exec(logs);
+  assert.ok(activated, 'Lucky Break never logged that it activated');
   return `installed version ${activated[1] ?? '?'}, activated in ${activated[2] ?? '?'} ms, both webviews rendered, no test API, no CSP violations`;
 }
 
 async function run(phase: string, resultPath: string, context: vscode.ExtensionContext): Promise<void> {
   let outcome: { readonly ok: boolean; readonly detail: string };
   try {
-    const casino = vscode.extensions.getExtension(CASINO_ID);
-    assert.ok(casino, `extension ${CASINO_ID} is not loaded`);
+    const luckyBreak = vscode.extensions.getExtension(LUCKY_BREAK_ID);
+    assert.ok(luckyBreak, `extension ${LUCKY_BREAK_ID} is not loaded`);
     if (phase === 'vsix') {
       // The extension host's log folder holds a folder per extension; this helper's is one of them.
-      const detail = await vsixPhase(casino, path.resolve(context.logUri.fsPath, '..', '..'));
+      const detail = await vsixPhase(luckyBreak, path.resolve(context.logUri.fsPath, '..', '..'));
       fs.writeFileSync(resultPath, JSON.stringify({ ok: true, detail }));
       await vscode.commands.executeCommand('workbench.action.quit');
       return;
     }
-    const api = (await casino.activate()) as CasinoTestApi | undefined;
-    assert.ok(api, 'the casino did not expose its test API (is CASINO_EXPOSE_TEST_API=1 set?)');
+    const api = (await luckyBreak.activate()) as LuckyBreakTestApi | undefined;
+    assert.ok(api, 'Lucky Break did not expose its test API (is LUCKY_BREAK_EXPOSE_TEST_API=1 set?)');
 
     if (phase === 'idle') {
       await idlePhase(api);
@@ -237,8 +237,8 @@ async function run(phase: string, resultPath: string, context: vscode.ExtensionC
 }
 
 export function activate(context: vscode.ExtensionContext): void {
-  const phase = process.env['CASINO_RESTART_PHASE'];
-  const resultPath = process.env['CASINO_RESTART_RESULT'];
+  const phase = process.env['LUCKY_BREAK_RESTART_PHASE'];
+  const resultPath = process.env['LUCKY_BREAK_RESTART_RESULT'];
   if (phase === undefined || resultPath === undefined) return; // inert unless the runner drives it
   void run(phase, resultPath, context);
 }

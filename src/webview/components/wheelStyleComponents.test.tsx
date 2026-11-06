@@ -1,8 +1,8 @@
 import { isValidElement, type ReactNode } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
-import { ROULETTE_ANIMATION_IDS, type RouletteAnimationId } from '../../casino/appearance';
-import { DEFAULT_SETTINGS, type Settings } from '../../casino/settings';
+import { ROULETTE_ANIMATION_IDS, type RouletteAnimationId } from '../../state/appearance';
+import { DEFAULT_SETTINGS, type Settings } from '../../state/settings';
 import { POCKET_COUNT, WHEEL_ORDER, colorOfNumber } from '../../game/roulette/wheel';
 import { AppearanceProvider, appearanceOf } from '../customization/AppearanceContext';
 import { ChoiceCard } from '../customization/ChoiceCard';

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { CARD_DESIGN_IDS } from '../../casino/appearance';
+import { CARD_DESIGN_IDS } from '../../state/appearance';
 import { SUITS } from '../../game/blackjack/types';
 import { CARD_GLYPH_PALETTE, CARD_GLYPHS, glyphsOf, type SuitRows } from './cardSuits';
 import { spriteRects } from './pixelRuns';

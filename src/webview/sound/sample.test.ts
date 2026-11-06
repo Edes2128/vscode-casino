@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { SOUND_CATEGORIES } from '../../casino/appearance';
+import { SOUND_CATEGORIES } from '../../state/appearance';
 import { CUE_CATEGORY, MAX_CUE_SECONDS } from './cues';
 import { cueTonesFor } from './packs';
 import { CATEGORY_SAMPLES, SAMPLE_STEPS, SAMPLE_TOTAL_MS, startSample, type SampleTimers } from './sample';

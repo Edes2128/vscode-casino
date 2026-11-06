@@ -7,23 +7,23 @@
  */
 import * as assert from 'node:assert/strict';
 import * as vscode from 'vscode';
-import type { Settings } from '../../../src/casino/settings';
-import type { GameType } from '../../../src/casino/types';
-import type { CasinoStore } from '../../../src/casino/store';
-import type { CasinoTestApi } from '../../../src/extension/extension';
+import type { Settings } from '../../../src/state/settings';
+import type { GameType } from '../../../src/state/types';
+import type { LuckyBreakStore } from '../../../src/state/store';
+import type { LuckyBreakTestApi } from '../../../src/extension/extension';
 import type { WebviewDiagnostics } from '../../../src/extension/WebviewHub';
 import type { BlackjackView, TablePhase } from '../../../src/game/blackjack/view';
 import type { RouletteColor } from '../../../src/game/roulette/types';
 import type { ResetScope } from '../../../src/game/resetScope';
 import type { ViewKind } from '../../../src/shared/messages';
 
-const EXTENSION_ID = 'thesulce.vscode-casino';
-const expectedAssetMode = process.env['CASINO_EXPECT_ASSET_MODE'] ?? 'prod';
+const EXTENSION_ID = 'thesulce.lucky-break';
+const expectedAssetMode = process.env['LUCKY_BREAK_EXPECT_ASSET_MODE'] ?? 'prod';
 
-async function getApi(): Promise<CasinoTestApi> {
+async function getApi(): Promise<LuckyBreakTestApi> {
   const extension = vscode.extensions.getExtension(EXTENSION_ID);
   assert.ok(extension, `extension ${EXTENSION_ID} is not installed in the test host`);
-  const api = (await extension.activate()) as CasinoTestApi | undefined;
+  const api = (await extension.activate()) as LuckyBreakTestApi | undefined;
   assert.ok(api, 'activate() must return the test API in test mode');
   return api;
 }
@@ -41,7 +41,7 @@ async function waitFor<T>(description: string, probe: () => T | undefined, timeo
 const sleep = (ms: number): Promise<void> => new Promise((resolve) => setTimeout(resolve, ms));
 
 /** Waits until the webview says it rendered, lets late CSP/error reports arrive, then returns its report. */
-async function waitForRenderedWebview(api: CasinoTestApi, kind: ViewKind): Promise<WebviewDiagnostics> {
+async function waitForRenderedWebview(api: LuckyBreakTestApi, kind: ViewKind): Promise<WebviewDiagnostics> {
   await waitFor(`the ${kind} webview to render`, () => (api.getDiagnostics(kind)?.rendered ? true : undefined));
   await sleep(750);
   const diagnostics = api.getDiagnostics(kind);
@@ -59,23 +59,23 @@ function assertHealthy(diagnostics: WebviewDiagnostics): void {
   assert.equal(diagnostics.assetMode, expectedAssetMode, `${kind}: wrong asset source`);
 }
 
-function countCasinoPanelTabs(): number {
+function countLuckyBreakPanelTabs(): number {
   return vscode.window.tabGroups.all
     .flatMap((group) => group.tabs)
-    .filter((tab) => tab.input instanceof vscode.TabInputWebview && tab.input.viewType.endsWith('casino.panel'))
+    .filter((tab) => tab.input instanceof vscode.TabInputWebview && tab.input.viewType.endsWith('luckyBreak.panel'))
     .length;
 }
 
 /** Makes sure both the sidebar and the editor panel are open and rendered. */
-async function openBothViews(api: CasinoTestApi): Promise<void> {
-  await vscode.commands.executeCommand('workbench.view.extension.casino');
-  await vscode.commands.executeCommand('casino.openPanel');
+async function openBothViews(api: LuckyBreakTestApi): Promise<void> {
+  await vscode.commands.executeCommand('workbench.view.extension.luckyBreak');
+  await vscode.commands.executeCommand('luckyBreak.openPanel');
   await waitForRenderedWebview(api, 'sidebar');
   await waitForRenderedWebview(api, 'panel');
 }
 
 /** Plays one complete round through the real store, as the games will. Returns the net chips. */
-function playRound(store: CasinoStore, game: GameType, bet: number, payout: number, detail: string): number {
+function playRound(store: LuckyBreakStore, game: GameType, bet: number, payout: number, detail: string): number {
   const begun = store.beginRound(game, bet);
   assert.ok(begun.ok, `beginRound(${game}, ${bet}) was refused: ${begun.ok ? '' : begun.error}`);
   const settled = store.settleRound(begun.value.id, payout, detail);
@@ -84,7 +84,7 @@ function playRound(store: CasinoStore, game: GameType, bet: number, payout: numb
 }
 
 /** Waits until the sidebar AND the panel each report having drawn exactly this state. */
-async function expectBothViewsShow(api: CasinoTestApi, balance: number, gamesPlayed: number): Promise<void> {
+async function expectBothViewsShow(api: LuckyBreakTestApi, balance: number, gamesPlayed: number): Promise<void> {
   for (const kind of ['sidebar', 'panel'] as const) {
     await waitFor(`the ${kind} view to show balance ${balance} after ${gamesPlayed} games`, () => {
       const shown = api.getDiagnostics(kind)?.lastShown;
@@ -101,7 +101,7 @@ interface DrawnTable {
 }
 
 /** Waits until the sidebar AND the panel each report having drawn exactly this blackjack table. */
-async function expectBothTablesDrew(api: CasinoTestApi, expected: DrawnTable): Promise<void> {
+async function expectBothTablesDrew(api: LuckyBreakTestApi, expected: DrawnTable): Promise<void> {
   for (const kind of ['sidebar', 'panel'] as const) {
     await waitFor(`the ${kind} table to show ${JSON.stringify(expected)}`, () => {
       const shown = api.getDiagnostics(kind)?.lastBlackjack;
@@ -118,7 +118,7 @@ async function expectBothTablesDrew(api: CasinoTestApi, expected: DrawnTable): P
 
 /** Waits until the sidebar AND the panel each report their wheel in this state. */
 async function expectBothWheels(
-  api: CasinoTestApi,
+  api: LuckyBreakTestApi,
   expected: { readonly spin: number; readonly phase: 'idle' | 'spinning' | 'result'; readonly landedOn: number | null },
   timeoutMs = 45_000,
 ): Promise<void> {
@@ -276,7 +276,7 @@ const blackjackTests: readonly Test[] = [
       api.sendFromWebview('sidebar', { type: 'setBalance', amount: 1_000_000 });
       api.sendFromWebview('sidebar', { type: 'blackjack', action: { kind: 'win', payout: 1_000_000 } });
 
-      assert.equal(api.store.snapshot, snapshot, 'nothing about the casino may change');
+      assert.equal(api.store.snapshot, snapshot, 'nothing about Lucky Break may change');
       assert.equal(api.table.view, table, 'nothing about the table may change');
       assert.equal(api.store.snapshot.balance, balance);
       assert.deepEqual(api.store.openRounds, []);
@@ -405,7 +405,7 @@ const rouletteTests: readonly Test[] = [
       api.sendFromWebview('sidebar', { type: 'roulette', action: { kind: 'spin', selection: { kind: 'color', color: 'red' } } });
       api.sendFromWebview('sidebar', { type: 'roulette', action: { kind: 'payout', amount: 1_000_000 } });
 
-      assert.equal(api.store.snapshot, snapshot, 'nothing about the casino may change');
+      assert.equal(api.store.snapshot, snapshot, 'nothing about Lucky Break may change');
       assert.equal(api.roulette.view, table, 'nothing about the table may change');
       assert.equal(api.store.snapshot.balance, balance);
       assert.deepEqual(api.store.openRounds, []);
@@ -415,7 +415,7 @@ const rouletteTests: readonly Test[] = [
 
 
 /** Waits until the sidebar AND the panel each report having applied exactly these settings. */
-async function expectBothViewsApply(api: CasinoTestApi, expected: Settings): Promise<void> {
+async function expectBothViewsApply(api: LuckyBreakTestApi, expected: Settings): Promise<void> {
   for (const kind of ['sidebar', 'panel'] as const) {
     await waitFor(`the ${kind} view to apply ${JSON.stringify(expected)}`, () => {
       const shown = api.getDiagnostics(kind)?.lastSettings;
@@ -428,7 +428,7 @@ const changeSettings = (patch: unknown) => ({ type: 'settings', patch }) as cons
 const resetRequest = (scope: string) => ({ type: 'reset', scope }) as const;
 
 /** Answers every reset dialog with `answer`, remembering what was asked. */
-function recordResets(api: CasinoTestApi, answer: boolean | (() => Promise<boolean>)): ResetScope[] {
+function recordResets(api: LuckyBreakTestApi, answer: boolean | (() => Promise<boolean>)): ResetScope[] {
   const asked: ResetScope[] = [];
   api.answerResetsWith((scope) => {
     asked.push(scope);
@@ -438,7 +438,7 @@ function recordResets(api: CasinoTestApi, answer: boolean | (() => Promise<boole
 }
 
 /** Deals until a hand is still being played (a natural blackjack settles at once, so it is dealt again). */
-function startOpenHand(api: CasinoTestApi): void {
+function startOpenHand(api: LuckyBreakTestApi): void {
   for (let attempt = 0; attempt < 40; attempt += 1) {
     api.sendFromWebview('sidebar', deal(50));
     if (api.table.view.phase === 'player') return;
@@ -449,7 +449,7 @@ function startOpenHand(api: CasinoTestApi): void {
 
 /** The sidebar and the panel each report their clock; wait for the one in `kind` to match, and return its ticks. */
 async function expectAmbient(
-  api: CasinoTestApi,
+  api: LuckyBreakTestApi,
   kind: ViewKind,
   expected: { readonly running: boolean; readonly resting?: boolean },
   timeoutMs = 20_000,
@@ -467,7 +467,7 @@ async function expectAmbient(
 }
 
 /** Going to another screen is the player doing something, so it wakes resting decorations. */
-async function wakeDecorations(api: CasinoTestApi): Promise<void> {
+async function wakeDecorations(api: LuckyBreakTestApi): Promise<void> {
   for (const kind of ['sidebar', 'panel'] as const) {
     api.navigate(kind, 'settings');
     api.navigate(kind, 'home');
@@ -493,7 +493,7 @@ const settingsTests: readonly Test[] = [
         });
       }
 
-      // Nobody touches the casino: after the rest time the clock stops by itself, and the page stops drawing frames.
+      // Nobody touches Lucky Break: after the rest time the clock stops by itself, and the page stops drawing frames.
       for (const kind of ['sidebar', 'panel'] as const) await expectAmbient(api, kind, { running: false, resting: true }, 40_000);
 
       // The player is back (a new screen counts): the decorations start again.
@@ -649,7 +649,7 @@ const settingsTests: readonly Test[] = [
       await sleep(300);
 
       assert.deepEqual(asked, ['balance', 'statistics', 'all']);
-      assert.equal(api.store.snapshot, before, 'a cancelled reset must not touch the casino');
+      assert.equal(api.store.snapshot, before, 'a cancelled reset must not touch Lucky Break');
     },
   ],
   [
@@ -724,7 +724,7 @@ const settingsTests: readonly Test[] = [
     },
   ],
   [
-    'resetting everything makes a brand-new casino and leaves the settings alone',
+    'resetting everything makes a brand-new game and leaves the settings alone',
     async () => {
       const api = await getApi();
       const settings = api.settings.settings;
@@ -740,7 +740,7 @@ const settingsTests: readonly Test[] = [
       assert.deepEqual(api.store.snapshot.history, []);
       assert.deepEqual(api.roulette.view.recent, []);
       assert.equal(api.table.view.phase, 'betting');
-      assert.deepEqual(api.settings.settings, settings, 'a reset of the casino must never touch the settings');
+      assert.deepEqual(api.settings.settings, settings, 'a reset of Lucky Break must never touch the settings');
       await expectBothViewsShow(api, 1_000, 0);
       await expectBothViewsApply(api, settings);
     },
@@ -826,33 +826,33 @@ const tests: readonly Test[] = [
     async () => {
       await getApi();
       const commands = await vscode.commands.getCommands(true);
-      assert.ok(commands.includes('casino.openPanel'), 'casino.openPanel is not registered');
-      assert.ok(commands.includes('casino.showSidebar'), 'casino.showSidebar is not registered');
-      assert.ok(commands.includes('casino.sidebar.focus'), 'the casino.sidebar view was not contributed');
+      assert.ok(commands.includes('luckyBreak.openPanel'), 'luckyBreak.openPanel is not registered');
+      assert.ok(commands.includes('luckyBreak.showSidebar'), 'luckyBreak.showSidebar is not registered');
+      assert.ok(commands.includes('luckyBreak.sidebar.focus'), 'the luckyBreak.sidebar view was not contributed');
     },
   ],
   [
-    'Casino activity-bar container opens and the sidebar webview renders under the CSP',
+    'Lucky Break activity-bar container opens and the sidebar webview renders under the CSP',
     async () => {
       const api = await getApi();
-      await vscode.commands.executeCommand('workbench.view.extension.casino');
+      await vscode.commands.executeCommand('workbench.view.extension.luckyBreak');
       assertHealthy(await waitForRenderedWebview(api, 'sidebar'));
     },
   ],
   [
-    '"Casino: Open Sidebar" command focuses the sidebar without error',
+    '"Lucky Break: Open Sidebar" command focuses the sidebar without error',
     async () => {
-      await vscode.commands.executeCommand('casino.showSidebar');
+      await vscode.commands.executeCommand('luckyBreak.showSidebar');
     },
   ],
   [
-    '"Casino: Open in Editor" opens a rendered panel, and a second call reuses it',
+    '"Lucky Break: Open in Editor" opens a rendered panel, and a second call reuses it',
     async () => {
       const api = await getApi();
-      await vscode.commands.executeCommand('casino.openPanel');
-      await vscode.commands.executeCommand('casino.openPanel');
+      await vscode.commands.executeCommand('luckyBreak.openPanel');
+      await vscode.commands.executeCommand('luckyBreak.openPanel');
       assertHealthy(await waitForRenderedWebview(api, 'panel'));
-      assert.equal(countCasinoPanelTabs(), 1, 'expected exactly one Casino panel tab');
+      assert.equal(countLuckyBreakPanelTabs(), 1, 'expected exactly one Lucky Break panel tab');
     },
   ],
   [
@@ -908,7 +908,7 @@ const tests: readonly Test[] = [
       assert.deepEqual(api.store.beginRound('blackjack', 5), { ok: false, error: 'below-minimum' });
       assert.deepEqual(api.store.beginRound('blackjack', before.balance + 1), { ok: false, error: 'insufficient-funds' });
       assert.deepEqual(api.store.beginRound('roulette', 12.5), { ok: false, error: 'invalid-amount' });
-      assert.equal(api.store.snapshot, before, 'a refused bet must not change the casino state');
+      assert.equal(api.store.snapshot, before, 'a refused bet must not change Lucky Break state');
 
       await sleep(500);
       await expectBothViewsShow(api, before.balance, before.stats.overall.gamesPlayed);

@@ -2,7 +2,7 @@
   "version": "0.0.1",
   "configurations": [
     {
-      "name": "casino-webview",
+      "name": "lb-webview",
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "dev:webview"],
       "port": 5173

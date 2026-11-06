@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { CHIP_VALUES } from '../../casino/chips';
+import { CHIP_VALUES } from '../../state/chips';
 import { CHIP_PALETTES, CHIP_ROWS_LARGE, CHIP_ROWS_SMALL, chipRows, GOLD_CHIP_PALETTE } from './chip';
 import { spriteRects, type Palette } from './pixelRuns';
 import {

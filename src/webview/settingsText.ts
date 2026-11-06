@@ -1,11 +1,11 @@
-import { STARTING_BALANCE } from '../casino/snapshot';
+import { STARTING_BALANCE } from '../state/snapshot';
 import type { ResetOutcome, ResetScope } from '../game/resetScope';
 import { formatChips } from './format';
 
 const DONE: Readonly<Record<ResetScope, string>> = {
   balance: `BALANCE RESET TO ${formatChips(STARTING_BALANCE)} CHIPS.`,
   statistics: 'STATISTICS AND HISTORY CLEARED.',
-  all: 'THE CASINO WAS RESET.',
+  all: 'LUCKY BREAK WAS RESET.',
 };
 
 /** What the settings screen says after a reset request ended. */
