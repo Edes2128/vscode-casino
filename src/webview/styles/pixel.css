@@ -127,20 +127,6 @@
   --btn-shade: var(--c-red-shade);
 }
 
-/* The Buy Me a Coffee button: quiet, outlined in the theme's gold, filled on hover. */
-.px-button--support {
-  --btn-bg: transparent;
-  --btn-fg: var(--c-gold);
-  --btn-shade: transparent;
-  --btn-light: transparent;
-  box-shadow: inset 0 0 0 var(--px) var(--c-gold);
-}
-
-.px-button--support:hover:not(:disabled) {
-  --btn-bg: var(--c-gold);
-  --btn-fg: var(--c-on-gold);
-}
-
 .px-button--ghost {
   --btn-bg: transparent;
   --btn-fg: var(--c-white);

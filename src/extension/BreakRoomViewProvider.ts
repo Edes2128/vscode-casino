@@ -4,9 +4,9 @@ import type { Logger } from './logger';
 import type { WebviewHub } from './WebviewHub';
 import { getWebviewOptions, renderWebviewHtml } from './webviewHtml';
 
-/** Lucky Break in the activity-bar sidebar. */
-export class LuckyBreakViewProvider implements vscode.WebviewViewProvider {
-  static readonly viewType = 'luckyBreak.sidebar';
+/** Break Room Arcade in the activity-bar sidebar. */
+export class BreakRoomViewProvider implements vscode.WebviewViewProvider {
+  static readonly viewType = 'breakRoom.sidebar';
 
   constructor(
     private readonly context: vscode.ExtensionContext,

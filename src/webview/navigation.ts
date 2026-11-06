@@ -1,7 +1,7 @@
-import type { LuckyBreakPage } from '../shared/messages';
+import type { BreakRoomPage } from '../shared/messages';
 import { CARDS_ICON, CUSTOMIZE_ICON, HOME_ICON, SETTINGS_ICON, STATS_ICON, WHEEL_ICON } from './art/sprites';
 
-export type Page = LuckyBreakPage;
+export type Page = BreakRoomPage;
 
 export interface NavItem {
   readonly page: Page;

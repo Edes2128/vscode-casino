@@ -4,7 +4,7 @@ import type { HostConnection } from '../host';
 
 /**
  * Tells the host which settings this webview has just applied, the same way `useSnapshotReport`
- * does for Lucky Break state: it lets the integration tests prove that the sidebar and the editor
+ * does for Break Room Arcade state: it lets the integration tests prove that the sidebar and the editor
  * panel always run with the same settings.
  */
 export function useSettingsReport(host: HostConnection, settings: Settings | undefined): void {

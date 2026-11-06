@@ -1,8 +1,8 @@
 import * as vscode from 'vscode';
 
-/** Thin wrapper around the "Lucky Break" output channel. */
+/** Thin wrapper around the "Break Room Arcade" output channel. */
 export class Logger implements vscode.Disposable {
-  private readonly channel = vscode.window.createOutputChannel('Lucky Break', { log: true });
+  private readonly channel = vscode.window.createOutputChannel('Break Room Arcade', { log: true });
 
   info(message: string): void {
     this.channel.info(message);

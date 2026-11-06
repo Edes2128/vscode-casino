@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { winPercentage } from '../../state/statistics';
-import type { LuckyBreakSnapshot, GameStats, GameType } from '../../state/types';
+import type { BreakRoomSnapshot, GameStats, GameType } from '../../state/types';
 import { BalanceDisplay } from '../components/BalanceDisplay';
 import { GameHistory } from '../components/GameHistory';
 import { PixelCard } from '../components/PixelCard';
@@ -23,7 +23,7 @@ const SCOPE_TITLES: Readonly<Record<Scope, string>> = {
 };
 
 interface StatisticsProps {
-  readonly snapshot: LuckyBreakSnapshot;
+  readonly snapshot: BreakRoomSnapshot;
 }
 
 interface Row {

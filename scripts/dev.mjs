@@ -1,5 +1,5 @@
 // `npm run dev`: rebuild the extension host on change and serve the webview with Vite HMR.
-// Launch the "Run Extension (Vite HMR)" configuration (or set LUCKY_BREAK_DEV_SERVER_URL) to use it.
+// Launch the "Run Extension (Vite HMR)" configuration (or set BREAK_ROOM_DEV_SERVER_URL) to use it.
 import { spawn } from 'node:child_process';
 
 const children = [

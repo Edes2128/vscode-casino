@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { createInitialSnapshot, isLuckyBreakSnapshot, MAX_HISTORY_ENTRIES, STARTING_BALANCE } from './snapshot';
-import type { LuckyBreakSnapshot, HistoryEntry } from './types';
+import { createInitialSnapshot, isBreakRoomSnapshot, MAX_HISTORY_ENTRIES, STARTING_BALANCE } from './snapshot';
+import type { BreakRoomSnapshot, HistoryEntry } from './types';
 
 const entry: HistoryEntry = {
   id: 'r-1',
@@ -32,38 +32,38 @@ describe('createInitialSnapshot', () => {
   });
 });
 
-describe('isLuckyBreakSnapshot', () => {
+describe('isBreakRoomSnapshot', () => {
   const initial = createInitialSnapshot();
-  const withHistory: LuckyBreakSnapshot = { ...initial, history: [entry] };
+  const withHistory: BreakRoomSnapshot = { ...initial, history: [entry] };
 
   it('accepts a fresh snapshot and one with history', () => {
-    expect(isLuckyBreakSnapshot(initial)).toBe(true);
-    expect(isLuckyBreakSnapshot(withHistory)).toBe(true);
+    expect(isBreakRoomSnapshot(initial)).toBe(true);
+    expect(isBreakRoomSnapshot(withHistory)).toBe(true);
   });
 
   it('accepts negative payouts (losses)', () => {
     const loss = { ...entry, outcome: 'loss', payout: -50 };
-    expect(isLuckyBreakSnapshot({ ...initial, history: [loss] })).toBe(true);
+    expect(isBreakRoomSnapshot({ ...initial, history: [loss] })).toBe(true);
   });
 
   it('rejects a negative, fractional or non-numeric balance', () => {
-    expect(isLuckyBreakSnapshot({ ...initial, balance: -1 })).toBe(false);
-    expect(isLuckyBreakSnapshot({ ...initial, balance: 10.5 })).toBe(false);
-    expect(isLuckyBreakSnapshot({ ...initial, balance: Number.NaN })).toBe(false);
-    expect(isLuckyBreakSnapshot({ ...initial, balance: '1000' })).toBe(false);
+    expect(isBreakRoomSnapshot({ ...initial, balance: -1 })).toBe(false);
+    expect(isBreakRoomSnapshot({ ...initial, balance: 10.5 })).toBe(false);
+    expect(isBreakRoomSnapshot({ ...initial, balance: Number.NaN })).toBe(false);
+    expect(isBreakRoomSnapshot({ ...initial, balance: '1000' })).toBe(false);
   });
 
   it('rejects malformed shapes', () => {
-    expect(isLuckyBreakSnapshot(undefined)).toBe(false);
-    expect(isLuckyBreakSnapshot(null)).toBe(false);
-    expect(isLuckyBreakSnapshot([])).toBe(false);
-    expect(isLuckyBreakSnapshot({ balance: 1_000 })).toBe(false);
-    expect(isLuckyBreakSnapshot({ ...initial, stats: { overall: initial.stats.overall } })).toBe(false);
-    expect(isLuckyBreakSnapshot({ ...initial, history: 'none' })).toBe(false);
+    expect(isBreakRoomSnapshot(undefined)).toBe(false);
+    expect(isBreakRoomSnapshot(null)).toBe(false);
+    expect(isBreakRoomSnapshot([])).toBe(false);
+    expect(isBreakRoomSnapshot({ balance: 1_000 })).toBe(false);
+    expect(isBreakRoomSnapshot({ ...initial, stats: { overall: initial.stats.overall } })).toBe(false);
+    expect(isBreakRoomSnapshot({ ...initial, history: 'none' })).toBe(false);
   });
 
   it('rejects invalid history entries', () => {
-    const bad = (patch: Record<string, unknown>) => isLuckyBreakSnapshot({ ...initial, history: [{ ...entry, ...patch }] });
+    const bad = (patch: Record<string, unknown>) => isBreakRoomSnapshot({ ...initial, history: [{ ...entry, ...patch }] });
     expect(bad({ game: 'poker' })).toBe(false);
     expect(bad({ outcome: 'draw' })).toBe(false);
     expect(bad({ bet: -10 })).toBe(false);
@@ -74,6 +74,6 @@ describe('isLuckyBreakSnapshot', () => {
 
   it('rejects more history than the cap allows', () => {
     const history = Array.from({ length: MAX_HISTORY_ENTRIES + 1 }, (_, i) => ({ ...entry, id: `r-${i}` }));
-    expect(isLuckyBreakSnapshot({ ...initial, history })).toBe(false);
+    expect(isBreakRoomSnapshot({ ...initial, history })).toBe(false);
   });
 });

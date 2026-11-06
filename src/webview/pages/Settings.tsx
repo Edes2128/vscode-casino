@@ -1,10 +1,9 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
-import type { Settings as LuckyBreakSettings, SettingsPatch, TextSize } from '../../state/settings';
+import type { Settings as BreakRoomSettings, SettingsPatch, TextSize } from '../../state/settings';
 import type { ResetOutcome, ResetScope } from '../../game/resetScope';
 import { PixelButton } from '../components/PixelButton';
 import { PixelCard } from '../components/PixelCard';
 import { SegmentedControl } from '../components/SegmentedControl';
-import { SupportButton } from '../components/SupportButton';
 import { Toggle } from '../components/Toggle';
 import { VolumeSlider } from '../components/VolumeSlider';
 import type { MotionLevel } from '../motion';
@@ -18,10 +17,10 @@ export interface ResetResult {
 }
 
 interface SettingsProps {
-  readonly settings: LuckyBreakSettings;
+  readonly settings: BreakRoomSettings;
   /** The extension version, from the host. */
   readonly version: string | undefined;
-  /** What Lucky Break is actually doing, after the system's own motion preference is taken into account. */
+  /** What Break Room Arcade is actually doing, after the system's own motion preference is taken into account. */
   readonly motion: MotionLevel;
   /** The operating system asks for reduced motion. */
   readonly systemReducedMotion: boolean;
@@ -29,7 +28,6 @@ interface SettingsProps {
   readonly onChange: (patch: SettingsPatch) => void;
   /** Asks the host to reset. The host asks the player to confirm. */
   readonly onReset: (scope: ResetScope) => void;
-  readonly onSupport: () => void;
   /** Opens the Customize screen: themes, cards, wheel animations, sound packs and colors. */
   readonly onOpenCustomize?: (() => void) | undefined;
 }
@@ -56,7 +54,6 @@ export function Settings({
   resetResult,
   onChange,
   onReset,
-  onSupport,
   onOpenCustomize,
 }: SettingsProps) {
   // Waiting for the player's answer in VS Code's dialog. The window is blocked while it is open.
@@ -134,7 +131,7 @@ export function Settings({
       )}
 
       <PixelCard title="TEXT SIZE">
-        <SettingRow label="SIZE" hint="Makes every letter in Lucky Break bigger. Try it: the whole screen changes.">
+        <SettingRow label="SIZE" hint="Makes every letter in Break Room Arcade bigger. Try it: the whole screen changes.">
           <SegmentedControl
             label="Text size"
             options={TEXT_SIZE_OPTIONS}
@@ -189,10 +186,9 @@ export function Settings({
       </PixelCard>
 
       <PixelCard title="ABOUT">
-        <p className="about__name">LUCKY BREAK</p>
+        <p className="about__name">BREAK ROOM ARCADE</p>
         <p className="about__version">VERSION {version ?? '?'}</p>
         <p className="setting-note">RETRO PIXEL-ART BLACKJACK AND ROULETTE. VIRTUAL CHIPS ONLY. NO REAL MONEY. EVER.</p>
-        <SupportButton onClick={onSupport} />
       </PixelCard>
     </>
   );

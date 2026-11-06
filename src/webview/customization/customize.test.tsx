@@ -95,7 +95,7 @@ describe('the scene preview', () => {
     expect(titled).not.toContain('aria-hidden="true" class="scene"');
   });
 
-  it('draws Lucky Break\'s own parts: header, table, two cards, a chip and a button', () => {
+  it('draws Break Room Arcade\'s own parts: header, table, two cards, a chip and a button', () => {
     const html = renderToStaticMarkup(<ScenePreview resolved={resolveAppearance('classic')} />);
     expect(html).toContain('scene__bar');
     expect(html).toContain('scene__table');

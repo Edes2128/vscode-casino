@@ -1,22 +1,21 @@
 import * as vscode from 'vscode';
 import { SettingsStore } from '../state/settings';
-import { LuckyBreakStore } from '../state/store';
+import { BreakRoomStore } from '../state/store';
 import { BlackjackTable } from '../game/blackjack/table';
 import { resetPrompt } from '../game/resetPrompt';
 import { ResetCoordinator, type ResetScope } from '../game/resets';
 import { RouletteTable } from '../game/roulette/table';
-import type { LuckyBreakPage, ViewKind } from '../shared/messages';
-import { SUPPORT_URL } from '../shared/support';
-import { LuckyBreakPanel } from './LuckyBreakPanel';
-import { LuckyBreakViewProvider } from './LuckyBreakViewProvider';
+import type { BreakRoomPage, ViewKind } from '../shared/messages';
+import { BreakRoomPanel } from './BreakRoomPanel';
+import { BreakRoomViewProvider } from './BreakRoomViewProvider';
 import { Logger } from './logger';
 import { WebviewHub, type WebviewDiagnostics } from './WebviewHub';
 
-/** Only returned from `activate` in test mode, so integration tests can inspect Lucky Break. */
-export interface LuckyBreakTestApi {
+/** Only returned from `activate` in test mode, so integration tests can inspect Break Room Arcade. */
+export interface BreakRoomTestApi {
   getDiagnostics(kind: ViewKind): WebviewDiagnostics | undefined;
   /** The real store the webviews are fed from. Tests drive it exactly as the games will. */
-  readonly store: LuckyBreakStore;
+  readonly store: BreakRoomStore;
   /** The real blackjack table. */
   readonly table: BlackjackTable;
   /** The real roulette table. */
@@ -31,20 +30,20 @@ export interface LuckyBreakTestApi {
   /** Sends a raw message into the hub as if the latest webview of that kind had posted it. */
   sendFromWebview(kind: ViewKind, message: unknown): void;
   /** Switches the latest webview of that kind to another screen. */
-  navigate(kind: ViewKind, page: LuckyBreakPage): void;
+  navigate(kind: ViewKind, page: BreakRoomPage): void;
 }
 
 /** Everything that saves itself and must be written out before VS Code closes. */
 let activeStores: ReadonlyArray<{ flush(): Promise<void> }> = [];
 
-export function activate(context: vscode.ExtensionContext): LuckyBreakTestApi | undefined {
+export function activate(context: vscode.ExtensionContext): BreakRoomTestApi | undefined {
   const started = performance.now();
   const logger = new Logger();
   const version = readVersion(context);
 
   // The wallet, statistics and history live here, in the extension host, and are saved to
   // globalState. The webviews only ever see read-only snapshots of it.
-  const store = new LuckyBreakStore(context.globalState, {
+  const store = new BreakRoomStore(context.globalState, {
     onError: (message, error) => logger.error(message, error),
   });
   const settings = new SettingsStore(context.globalState, {
@@ -82,14 +81,8 @@ export function activate(context: vscode.ExtensionContext): LuckyBreakTestApi | 
     settings: () => settings.settings,
     updateSettings: (patch) => void settings.update(patch),
     reset: (scope) => resets.reset(scope),
-    openSupport: () => {
-      // VS Code asks the user to confirm before it opens an external website.
-      void vscode.env.openExternal(vscode.Uri.parse(SUPPORT_URL)).then(undefined, (error: unknown) => {
-        logger.error('Could not open the support page', error);
-      });
-    },
   });
-  const sidebar = new LuckyBreakViewProvider(context, hub, logger);
+  const sidebar = new BreakRoomViewProvider(context, hub, logger);
 
   context.subscriptions.push(
     logger,
@@ -98,19 +91,19 @@ export function activate(context: vscode.ExtensionContext): LuckyBreakTestApi | 
     { dispose: table.onDidChange((view) => hub.broadcast({ type: 'blackjack', view })) },
     { dispose: roulette.onDidChange((view) => hub.broadcast({ type: 'roulette', view })) },
     { dispose: settings.onDidChange((payload) => hub.broadcast({ type: 'settings', payload })) },
-    vscode.window.registerWebviewViewProvider(LuckyBreakViewProvider.viewType, sidebar, {
+    vscode.window.registerWebviewViewProvider(BreakRoomViewProvider.viewType, sidebar, {
       // Keep the page alive when the sidebar is hidden so an animation or a round in progress survives.
       webviewOptions: { retainContextWhenHidden: true },
     }),
-    vscode.commands.registerCommand('luckyBreak.showSidebar', () =>
-      vscode.commands.executeCommand(`${LuckyBreakViewProvider.viewType}.focus`),
+    vscode.commands.registerCommand('breakRoom.showSidebar', () =>
+      vscode.commands.executeCommand(`${BreakRoomViewProvider.viewType}.focus`),
     ),
-    vscode.commands.registerCommand('luckyBreak.openPanel', () =>
-      LuckyBreakPanel.createOrShow(context, hub, logger),
+    vscode.commands.registerCommand('breakRoom.openPanel', () =>
+      BreakRoomPanel.createOrShow(context, hub, logger),
     ),
   );
 
-  logger.info(`Lucky Break ${version} activated in ${Math.round(performance.now() - started)} ms`);
+  logger.info(`Break Room Arcade ${version} activated in ${Math.round(performance.now() - started)} ms`);
 
   return __DEV_TOOLS__ && exposesTestApi(context)
     ? {
@@ -131,7 +124,7 @@ export function activate(context: vscode.ExtensionContext): LuckyBreakTestApi | 
 /**
  * The test API hands out the real store, so it must never exist for an installed extension. In the
  * packaged extension this code is not even compiled in (`__DEV_TOOLS__` is false there). In other
- * builds it is only available in test mode, or when running from source with LUCKY_BREAK_EXPOSE_TEST_API=1
+ * builds it is only available in test mode, or when running from source with BREAK_ROOM_EXPOSE_TEST_API=1
  * (used by the restart test, which cannot run in test mode: see test/restart/runRestart.ts).
  */
 function exposesTestApi(context: vscode.ExtensionContext): boolean {
@@ -139,7 +132,7 @@ function exposesTestApi(context: vscode.ExtensionContext): boolean {
     case vscode.ExtensionMode.Test:
       return true;
     case vscode.ExtensionMode.Development:
-      return process.env['LUCKY_BREAK_EXPOSE_TEST_API'] === '1';
+      return process.env['BREAK_ROOM_EXPOSE_TEST_API'] === '1';
     default:
       return false;
   }
@@ -158,12 +151,12 @@ async function askInDialog(scope: ResetScope): Promise<boolean> {
   return answer === confirmLabel;
 }
 
-function logStartup(logger: Logger, store: LuckyBreakStore): void {
+function logStartup(logger: Logger, store: BreakRoomStore): void {
   const { source, forfeitedRounds } = store.startup;
-  logger.info(`Lucky Break data: ${source}, balance ${store.snapshot.balance} chips`);
+  logger.info(`Break Room Arcade data: ${source}, balance ${store.snapshot.balance} chips`);
 
   if (source === 'corrupt') {
-    logger.warn('The saved data could not be read. A fresh game was started; the old data is kept under "luckyBreak.state.backup".');
+    logger.warn('The saved data could not be read. A fresh game was started; the old data is kept under "breakRoom.state.backup".');
   }
   if (forfeitedRounds > 0) {
     logger.warn(`${forfeitedRounds} round(s) were still open when VS Code last closed and were recorded as lost.`);

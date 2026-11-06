@@ -1,12 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import { LuckyBreakStore } from '../../state/store';
+import { BreakRoomStore } from '../../state/store';
 import { MemoryStorage } from '../../state/testing';
 import { BlackjackTable } from './table';
 import { cards } from './testing';
 import { IDLE_VIEW, isBlackjackView, parseBlackjackAction, type BlackjackView } from './view';
 
 function viewsFrom(deckSpec: string, ...actions: Parameters<BlackjackTable['perform']>[0][]): BlackjackView[] {
-  const store = new LuckyBreakStore(new MemoryStorage());
+  const store = new BreakRoomStore(new MemoryStorage());
   const table = new BlackjackTable(store, { deck: () => cards(deckSpec) });
   const views: BlackjackView[] = [table.view];
   for (const action of actions) {

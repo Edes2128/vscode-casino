@@ -1,16 +1,15 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { DEFAULT_SETTINGS, type SettingsPatch } from '../state/settings';
-import type { LuckyBreakSnapshot } from '../state/types';
+import type { BreakRoomSnapshot } from '../state/types';
 import type { BlackjackAction } from '../game/blackjack/view';
 import type { ResetScope } from '../game/resetScope';
 import type { RouletteAction } from '../game/roulette/view';
-import { LuckyBreakHeader } from './components/LuckyBreakHeader';
+import { BreakRoomHeader } from './components/BreakRoomHeader';
 import { AppearanceProvider, useApplyAppearance, useAppearanceValue } from './customization/AppearanceContext';
 import { NavBar } from './components/NavBar';
 import { PixelParticles } from './components/PixelParticles';
-import { SupportButton } from './components/SupportButton';
 import type { HostConnection } from './host';
-import { useLuckyBreakHost } from './hooks/useLuckyBreakHost';
+import { useBreakRoomHost } from './hooks/useBreakRoomHost';
 import { useAmbientClock, type AmbientState } from './hooks/useAmbientClock';
 import { useHostNavigation } from './hooks/useHostNavigation';
 import { useRenderReport } from './hooks/useRenderReport';
@@ -34,11 +33,8 @@ interface AppProps {
 /** The balance is never held on screen for longer than this, whatever happens. */
 const MAX_HOLD_MS = 20_000;
 
-/** The coffee button belongs on the calm screens (the Settings' About card has its own), never next to a game's controls. */
-const SHOWS_SUPPORT: readonly Page[] = ['home'];
-
 export function App({ host }: AppProps) {
-  const { init, snapshot, blackjack, roulette, rejection, settings, resetResult } = useLuckyBreakHost(host);
+  const { init, snapshot, blackjack, roulette, rejection, settings, resetResult } = useBreakRoomHost(host);
   const [page, setPage] = useState<Page>('home');
   const [heldBalance, setHeldBalance] = useState<number>();
 
@@ -75,7 +71,6 @@ export function App({ host }: AppProps) {
   const reportBlackjack = useCallback((shown: BlackjackShown) => host.post({ type: 'blackjackShown', ...shown }), [host]);
   const sendRoulette = useCallback((action: RouletteAction) => host.post({ type: 'roulette', action }), [host]);
   const reportRoulette = useCallback((shown: RouletteShown) => host.post({ type: 'rouletteShown', ...shown }), [host]);
-  const openSupport = useCallback(() => host.post({ type: 'openSupport' }), [host]);
   const changeSettings = useCallback((patch: SettingsPatch) => host.post({ type: 'settings', patch }), [host]);
   const requestReset = useCallback((scope: ResetScope) => host.post({ type: 'reset', scope }), [host]);
   const goHome = useCallback(() => setPage('home'), []);
@@ -84,7 +79,7 @@ export function App({ host }: AppProps) {
 
   const shownBalance = heldBalance ?? snapshot?.balance;
 
-  const renderPage = (current: Page, state: LuckyBreakSnapshot) => {
+  const renderPage = (current: Page, state: BreakRoomSnapshot) => {
     switch (current) {
       case 'home':
         return <Home snapshot={state} onNavigate={setPage} />;
@@ -126,7 +121,6 @@ export function App({ host }: AppProps) {
             resetResult={resetResult}
             onChange={changeSettings}
             onReset={requestReset}
-            onSupport={openSupport}
             onOpenCustomize={openCustomize}
           />
         );
@@ -139,19 +133,18 @@ export function App({ host }: AppProps) {
       <MotionContext.Provider value={motion}>
       <SoundProvider settings={settings}>
       <ButtonSounds />
-      <div ref={appRef} className="lb-app" data-view={init?.viewKind} data-motion={motion} data-text={effectiveSettings.textSize}>
+      <div ref={appRef} className="br-app" data-view={init?.viewKind} data-motion={motion} data-text={effectiveSettings.textSize}>
         {motion === 'full' && <PixelParticles />}
-        <div className="lb-top">
-          <LuckyBreakHeader balance={shownBalance} />
+        <div className="br-top">
+          <BreakRoomHeader balance={shownBalance} />
           <NavBar current={page} onNavigate={setPage} />
         </div>
-        <main className="lb-main">
+        <main className="br-main">
           <div className="page" key={page}>
             {snapshot === undefined ? <Connecting /> : renderPage(page, snapshot)}
           </div>
         </main>
-        <footer className="lb-footer">
-          {SHOWS_SUPPORT.includes(page) && <SupportButton onClick={openSupport} />}
+        <footer className="br-footer">
           <p>VIRTUAL CHIPS ONLY. NO REAL MONEY. EVER.</p>
         </footer>
       </div>

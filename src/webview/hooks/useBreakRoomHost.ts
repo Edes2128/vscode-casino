@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import type { Settings } from '../../state/settings';
-import type { LuckyBreakSnapshot } from '../../state/types';
+import type { BreakRoomSnapshot } from '../../state/types';
 import type { BlackjackView } from '../../game/blackjack/view';
 import type { RouletteView } from '../../game/roulette/view';
 import type { InitPayload } from '../../shared/messages';
@@ -8,11 +8,11 @@ import type { HostConnection } from '../host';
 import type { Rejection } from '../pages/Blackjack';
 import type { ResetResult } from '../pages/Settings';
 
-export interface LuckyBreakHostState {
+export interface BreakRoomHostState {
   /** Facts about this webview; `undefined` until the host answers. */
   readonly init: InitPayload | undefined;
   /** The latest game state from the host; `undefined` until the host answers. */
-  readonly snapshot: LuckyBreakSnapshot | undefined;
+  readonly snapshot: BreakRoomSnapshot | undefined;
   /** The blackjack table as the host last sent it. */
   readonly blackjack: BlackjackView | undefined;
   /** The roulette table as the host last sent it. */
@@ -26,9 +26,9 @@ export interface LuckyBreakHostState {
 }
 
 /** Announces `ready` to the host and tracks everything it sends back. */
-export function useLuckyBreakHost(host: HostConnection): LuckyBreakHostState {
+export function useBreakRoomHost(host: HostConnection): BreakRoomHostState {
   const [init, setInit] = useState<InitPayload>();
-  const [snapshot, setSnapshot] = useState<LuckyBreakSnapshot>();
+  const [snapshot, setSnapshot] = useState<BreakRoomSnapshot>();
   const [blackjack, setBlackjack] = useState<BlackjackView>();
   const [roulette, setRoulette] = useState<RouletteView>();
   const [rejection, setRejection] = useState<Rejection>();

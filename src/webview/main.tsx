@@ -6,7 +6,7 @@ import { connectToHost } from './host';
 import './styles/global.css';
 import './styles/pixel.css';
 import './styles/animations.css';
-import './styles/lucky-break.css';
+import './styles/break-room-arcade.css';
 import './styles/blackjack.css';
 import './styles/cards.css';
 import './styles/roulette.css';
@@ -21,7 +21,7 @@ installDiagnostics(host);
 
 const container = document.getElementById('root');
 if (container === null) {
-  throw new Error('Lucky Break webview: missing #root element');
+  throw new Error('Break Room Arcade webview: missing #root element');
 }
 
 const root = createRoot(container);

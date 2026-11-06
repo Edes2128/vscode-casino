@@ -28,7 +28,7 @@ async function bundle(devTools: boolean): Promise<string> {
 const DEV_ONLY = [
   'node:http',
   'process.env',
-  'LUCKY_BREAK_',
+  'BREAK_ROOM_',
   'localhost',
   '127.0.0.1',
   'unsafe-inline',
@@ -52,15 +52,16 @@ describe('the packaged extension', () => {
     expect(required).toEqual(['node:crypto', 'node:fs', 'vscode']);
   });
 
-  it('knows no website but the optional support page', async () => {
+  it('knows no website at all, and never asks VS Code to open one', async () => {
     const code = await bundle(false);
     const urls = [...new Set([...code.matchAll(/https?:\/\/[A-Za-z0-9./_#?=&%-]+/g)].map((match) => match[0]))];
-    expect(urls).toEqual(['https://buymeacoffee.com/5x2bfo6t5c']);
+    expect(urls).toEqual([]);
+    expect(code).not.toContain('openExternal');
   });
 
   it('really does contain that tooling when it is switched on, so the checks above are not empty', async () => {
     const code = await bundle(true);
-    for (const needle of ['node:http', 'process.env', 'LUCKY_BREAK_DEV_SERVER_URL', 'unsafe-inline', 'sendFromWebview']) {
+    for (const needle of ['node:http', 'process.env', 'BREAK_ROOM_DEV_SERVER_URL', 'unsafe-inline', 'sendFromWebview']) {
       expect(code, needle).toContain(needle);
     }
   });

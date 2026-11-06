@@ -1,5 +1,5 @@
 import { outcomeOf } from '../../state/statistics';
-import type { LuckyBreakStore, RoundTicket } from '../../state/store';
+import type { BreakRoomStore, RoundTicket } from '../../state/store';
 import { cryptoRng, type Rng } from '../rng';
 import { fail, OK, type TableResult } from '../tableResult';
 import { createShuffledDeck } from './deck';
@@ -25,7 +25,7 @@ export interface TableOptions {
  * that leaves out everything they must not know.
  */
 export class BlackjackTable {
-  readonly #store: LuckyBreakStore;
+  readonly #store: BreakRoomStore;
   readonly #deck: () => readonly Card[];
   readonly #onError: (message: string, error: unknown) => void;
   readonly #listeners = new Set<(view: BlackjackView) => void>();
@@ -36,7 +36,7 @@ export class BlackjackTable {
   #result: { readonly balanceBefore: number; readonly detail: string } | undefined;
   #view: BlackjackView = IDLE_VIEW;
 
-  constructor(store: LuckyBreakStore, options: TableOptions = {}) {
+  constructor(store: BreakRoomStore, options: TableOptions = {}) {
     const rng = options.rng ?? cryptoRng;
     this.#store = store;
     this.#deck = options.deck ?? (() => createShuffledDeck(rng));

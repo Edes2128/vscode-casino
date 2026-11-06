@@ -2,7 +2,7 @@ import { ALL_SOUND_CATEGORIES_ON, type SoundCategories, type SoundPackId } from 
 import { categoryOf, masterGain, type Cue, type CueOptions, type Tone } from './cues';
 import { cueTonesFor } from './packs';
 
-// The few parts of the Web Audio API Lucky Break uses. The real AudioContext fits them, and a test can
+// The few parts of the Web Audio API Break Room Arcade uses. The real AudioContext fits them, and a test can
 // stand in with a fake that records what was scheduled.
 
 export interface AudioParamLike {
@@ -148,7 +148,7 @@ export class SoundEngine {
       this.played += 1;
       return true;
     } catch {
-      // No audio device, or the browser refuses: Lucky Break is silent, and carries on.
+      // No audio device, or the browser refuses: Break Room Arcade is silent, and carries on.
       this.#broken = true;
       return false;
     }

@@ -57,11 +57,10 @@ describe('parseWebviewMessage', () => {
   });
 });
 
-describe('support and navigation messages', () => {
-  it('accepts a request to open the support page, and carries no address with it', () => {
-    expect(parseWebviewMessage({ type: 'openSupport' })).toEqual({ type: 'openSupport' });
-    // A webview can ask, but never choose where: any URL it adds is dropped.
-    expect(parseWebviewMessage({ type: 'openSupport', url: 'https://evil.example' })).toEqual({ type: 'openSupport' });
+describe('navigation messages', () => {
+  it('has no way to ask the host to open a website', () => {
+    expect(parseWebviewMessage({ type: 'openSupport' })).toBeUndefined();
+    expect(parseWebviewMessage({ type: 'openUrl', url: 'https://example.com' })).toBeUndefined();
   });
 
   it('accepts navigation to a known screen only', () => {

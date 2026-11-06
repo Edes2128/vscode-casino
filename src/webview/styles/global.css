@@ -53,7 +53,7 @@
   /* One "pixel" of the UI. Every border, gap and shadow is a multiple of it. */
   --px: 4px;
 
-  /* Scales every piece of text. Set to 1.2 or 1.4 by the Text size setting (see lucky-break.css). */
+  /* Scales every piece of text. Set to 1.2 or 1.4 by the Text size setting (see break-room-arcade.css). */
   --text-scale: 1;
 
   --font-title: 'Press Start 2P', ui-monospace, monospace;

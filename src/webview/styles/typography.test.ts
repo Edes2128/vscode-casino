@@ -33,14 +33,14 @@ describe('text size', () => {
   });
 
   it('steps the scale down below 200px, where the narrowest sidebar cannot fit the bigger text', () => {
-    const luckyBreak = read('lucky-break.css');
-    expect(luckyBreak).toMatch(/@media \(max-width: 199px\)\s*\{[^@]*--text-scale:\s*0\.8/);
+    const breakRoom = read('break-room-arcade.css');
+    expect(breakRoom).toMatch(/@media \(max-width: 199px\)\s*\{[^@]*--text-scale:\s*0\.8/);
   });
 
   it('defines the three scales, 1, 1.2 and 1.4', () => {
-    const luckyBreak = read('lucky-break.css');
-    expect(luckyBreak).toMatch(/\[data-text='large'\][^{]*\{[^}]*--text-scale:\s*1\.2/);
-    expect(luckyBreak).toMatch(/\[data-text='xlarge'\][^{]*\{[^}]*--text-scale:\s*1\.4/);
+    const breakRoom = read('break-room-arcade.css');
+    expect(breakRoom).toMatch(/\[data-text='large'\][^{]*\{[^}]*--text-scale:\s*1\.2/);
+    expect(breakRoom).toMatch(/\[data-text='xlarge'\][^{]*\{[^}]*--text-scale:\s*1\.4/);
     expect(read('global.css')).toMatch(/--text-scale:\s*1;/);
   });
 });

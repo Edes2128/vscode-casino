@@ -21,8 +21,8 @@ const REQUIRED = [
   'extension/dist/webview/assets/webview.js',
   'extension/dist/webview/assets/webview.css',
   'extension/media/icon.png',
-  'extension/media/lucky-break.svg',
-  'extension/media/lucky-break-tab.svg',
+  'extension/media/break-room-arcade.svg',
+  'extension/media/break-room-arcade-tab.svg',
   'extension/readme.md',
   'extension/changelog.md',
   'extension/LICENSE.txt',
@@ -98,7 +98,7 @@ async function main(): Promise<void> {
 
   const env: NodeJS.ProcessEnv = { ...process.env };
   delete env['ELECTRON_RUN_AS_NODE'];
-  delete env['LUCKY_BREAK_EXPOSE_TEST_API']; // an installed copy must behave as it does for everyone
+  delete env['BREAK_ROOM_EXPOSE_TEST_API']; // an installed copy must behave as it does for everyone
 
   const installOutput = execFileSync(cli, ['--install-extension', vsixPath, `--user-data-dir=${userData}`, `--extensions-dir=${extensions}`], { env, encoding: 'utf8' });
   if (!/successfully installed/i.test(installOutput)) throw new Error(`VS Code did not report a successful install:\n${installOutput}`);
@@ -119,7 +119,7 @@ async function main(): Promise<void> {
       '--skip-release-notes',
       '--disable-updates',
     ],
-    { env: { ...env, LUCKY_BREAK_RESTART_PHASE: 'vsix', LUCKY_BREAK_RESTART_RESULT: resultPath, LUCKY_BREAK_VSIX_EXTENSIONS_DIR: extensions }, stdio: 'ignore' },
+    { env: { ...env, BREAK_ROOM_RESTART_PHASE: 'vsix', BREAK_ROOM_RESTART_RESULT: resultPath, BREAK_ROOM_VSIX_EXTENSIONS_DIR: extensions }, stdio: 'ignore' },
   );
 
   const exitCode = await new Promise<number | null>((resolve, reject) => {

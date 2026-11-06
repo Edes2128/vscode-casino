@@ -1,6 +1,6 @@
 # Third-party notices
 
-Lucky Break includes the following open-source components. Their licences are reproduced in full below.
+Break Room Arcade includes the following open-source components. Their licences are reproduced in full below.
 The extension has no other runtime dependencies: everything else in it is original.
 
 ## react 19.3.1

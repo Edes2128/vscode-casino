@@ -5,7 +5,7 @@ import { formatChips } from './format';
 const DONE: Readonly<Record<ResetScope, string>> = {
   balance: `BALANCE RESET TO ${formatChips(STARTING_BALANCE)} CHIPS.`,
   statistics: 'STATISTICS AND HISTORY CLEARED.',
-  all: 'LUCKY BREAK WAS RESET.',
+  all: 'BREAK ROOM ARCADE WAS RESET.',
 };
 
 /** What the settings screen says after a reset request ended. */

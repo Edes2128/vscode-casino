@@ -275,7 +275,7 @@ describe('SoundEngine', () => {
     expect(engine.play('click')).toBe(false);
     expect(engine.play('click', { force: true })).toBe(true);
     expect(engine.play('click', { force: false })).toBe(false);
-    // Forcing never makes Lucky Break louder than the volume allows: volume 0 stays silent.
+    // Forcing never makes Break Room Arcade louder than the volume allows: volume 0 stays silent.
     engine.configure(false, 0);
     expect(engine.play('click', { force: true })).toBe(false);
   });

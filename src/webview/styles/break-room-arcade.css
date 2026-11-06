@@ -2,7 +2,7 @@
 
 /* ------------------------------------------------------------------ shell */
 
-.lb-app {
+.br-app {
   position: relative;
   z-index: 1;
   display: flex;
@@ -11,7 +11,7 @@
 }
 
 /* Brand bar and navigation stay put while a screen scrolls. */
-.lb-top {
+.br-top {
   position: sticky;
   top: 0;
   z-index: 20;
@@ -23,7 +23,7 @@
   box-shadow: 0 var(--px) 0 0 var(--c-bg-2);
 }
 
-.lb-main {
+.br-main {
   display: flex;
   flex: 1;
   flex-direction: column;
@@ -37,42 +37,11 @@
   animation: page-in 0.24s steps(4, end);
 }
 
-.lb-footer {
+.br-footer {
   padding: calc(var(--px) * 3) calc(var(--px) * 4) calc(var(--px) * 4);
   color: var(--c-muted);
   font-size: calc(20px * var(--text-scale));
   letter-spacing: 0.04em;
-  text-align: center;
-}
-
-/* ------------------------------------------------------------------ support */
-
-.support {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: calc(var(--px) * 2);
-  margin-bottom: calc(var(--px) * 4);
-}
-
-.support__cup {
-  --sprite-cell: 2px;
-}
-
-.support__text {
-  max-width: 32ch;
-  color: var(--c-white);
-  font-size: calc(22px * var(--text-scale));
-  line-height: 1.1;
-  text-align: center;
-  text-transform: uppercase;
-}
-
-.support__note {
-  max-width: 30ch;
-  color: var(--c-muted);
-  font-size: calc(20px * var(--text-scale));
-  line-height: 1.1;
   text-align: center;
 }
 
@@ -90,7 +59,7 @@
 
 /* ------------------------------------------------------------------ header */
 
-.lb-header {
+.br-header {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -98,17 +67,17 @@
   gap: calc(var(--px) * 2) calc(var(--px) * 3);
 }
 
-.lb-header__brand {
+.br-header__brand {
   display: flex;
   align-items: center;
   gap: calc(var(--px) * 2);
 }
 
-.lb-header__die {
+.br-header__die {
   --sprite-cell: 2px;
 }
 
-.lb-header__name {
+.br-header__name {
   color: var(--c-neon);
   font-family: var(--font-title);
   font-size: calc(12px * var(--text-scale));
@@ -173,7 +142,7 @@
 }
 
 @media (max-width: 575px) {
-  .lb-app[data-text='large'] .nav-bar__label {
+  .br-app[data-text='large'] .nav-bar__label {
     position: absolute;
     width: 1px;
     height: 1px;
@@ -185,7 +154,7 @@
 }
 
 @media (max-width: 719px) {
-  .lb-app[data-text='xlarge'] .nav-bar__label {
+  .br-app[data-text='xlarge'] .nav-bar__label {
     position: absolute;
     width: 1px;
     height: 1px;
@@ -430,16 +399,16 @@
 
 /* The editor panel is wide: keep the content in a comfortable column. */
 @media (min-width: 640px) {
-  .lb-top,
-  .lb-main,
-  .lb-footer {
+  .br-top,
+  .br-main,
+  .br-footer {
     width: 100%;
     max-width: 760px;
     margin-right: auto;
     margin-left: auto;
   }
 
-  .lb-top {
+  .br-top {
     padding-top: calc(var(--px) * 4);
   }
 }
@@ -447,33 +416,33 @@
 /* ------------------------------------------------------------------ text size */
 /* The Text size setting: the whole interface scales, so what is small stays readable. */
 
-.lb-app[data-text='large'] {
+.br-app[data-text='large'] {
   --text-scale: 1.2;
 }
 
-.lb-app[data-text='xlarge'] {
+.br-app[data-text='xlarge'] {
   --text-scale: 1.4;
 }
 
 /* The narrowest sidebar VS Code allows is about 170px. The bigger default text would not fit there, so below 200px the
    scale steps down, and the Text size setting still makes each choice one step bigger than the last. */
 @media (max-width: 199px) {
-  .lb-app {
+  .br-app {
     --text-scale: 0.8;
   }
 
   /* Every pixel counts: the longest word on a button (STATISTICS) has to fit. */
-  .lb-app .px-button {
+  .br-app .px-button {
     padding-right: 4px;
     padding-left: 4px;
     letter-spacing: 0.02em;
   }
 
-  .lb-app[data-text='large'] {
+  .br-app[data-text='large'] {
     --text-scale: 0.95;
   }
 
-  .lb-app[data-text='xlarge'] {
+  .br-app[data-text='xlarge'] {
     --text-scale: 1.1;
   }
 }

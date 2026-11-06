@@ -4,40 +4,40 @@ import type { Logger } from './logger';
 import type { WebviewHub } from './WebviewHub';
 import { getWebviewOptions, renderWebviewHtml } from './webviewHtml';
 
-/** Lucky Break in a larger editor tab. Only one panel exists at a time. */
-export class LuckyBreakPanel {
-  static readonly viewType = 'luckyBreak.panel';
+/** Break Room Arcade in a larger editor tab. Only one panel exists at a time. */
+export class BreakRoomPanel {
+  static readonly viewType = 'breakRoom.panel';
 
-  private static current: LuckyBreakPanel | undefined;
+  private static current: BreakRoomPanel | undefined;
 
   static async createOrShow(
     context: vscode.ExtensionContext,
     hub: WebviewHub,
     logger: Logger,
   ): Promise<void> {
-    if (LuckyBreakPanel.current) {
-      LuckyBreakPanel.current.panel.reveal();
+    if (BreakRoomPanel.current) {
+      BreakRoomPanel.current.panel.reveal();
       return;
     }
 
     const { extensionUri } = context;
     const panel = vscode.window.createWebviewPanel(
-      LuckyBreakPanel.viewType,
-      'Lucky Break',
+      BreakRoomPanel.viewType,
+      'Break Room Arcade',
       vscode.ViewColumn.Active,
       { ...getWebviewOptions(extensionUri), retainContextWhenHidden: true },
     );
-    panel.iconPath = vscode.Uri.joinPath(extensionUri, 'media', 'lucky-break-tab.svg');
+    panel.iconPath = vscode.Uri.joinPath(extensionUri, 'media', 'break-room-arcade-tab.svg');
 
-    const instance = new LuckyBreakPanel(panel);
-    LuckyBreakPanel.current = instance;
+    const instance = new BreakRoomPanel(panel);
+    BreakRoomPanel.current = instance;
     panel.onDidDispose(() => {
       instance.attachment?.dispose();
-      LuckyBreakPanel.current = undefined;
+      BreakRoomPanel.current = undefined;
     });
 
     const source = await resolveAssetSource(context, logger);
-    if (LuckyBreakPanel.current !== instance) return; // closed while the dev server was being probed
+    if (BreakRoomPanel.current !== instance) return; // closed while the dev server was being probed
 
     instance.attachment = hub.attach(panel.webview, 'panel', assetMode(source));
     panel.webview.html = renderWebviewHtml(panel.webview, extensionUri, source);

@@ -55,35 +55,6 @@ export const SPARKLE: Sprite = {
   palette: { '#': WHITE },
 };
 
-// ---------------------------------------------------------------- coffee cup
-
-/** The yellow cup on the "Support me" button. */
-export const COFFEE: Sprite = {
-  rows: [
-    '..s..s....',
-    '...s..s...',
-    '.ooooooo..',
-    '.oYYYYYooo',
-    '.oYYYYYo.o',
-    '.oYYYYYooo',
-    '..oYYYYo..',
-    '...oooo...',
-  ],
-  palette: { o: '#000000', Y: '#ffdd00', s: '#ffffff' },
-};
-
-/** A coffee cup with steam, in one color (the surrounding text's), for the Buy Me a Coffee button. */
-export const COFFEE_ICON: readonly string[] = [
-  '..#..#.....',
-  '...#..#....',
-  '.#######...',
-  '.#######.##',
-  '.#######..#',
-  '.#######.##',
-  '..#####....',
-  '.#########.',
-];
-
 // ---------------------------------------------------------------- coin
 
 export const COIN: Sprite = {

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { STARTING_BALANCE } from '../state/snapshot';
-import { LuckyBreakStore } from '../state/store';
+import { BreakRoomStore } from '../state/store';
 import { MemoryStorage } from '../state/testing';
 import { BlackjackTable } from './blackjack/table';
 import { cards } from './blackjack/testing';
@@ -13,7 +13,7 @@ function setup(answer: boolean | 'throw' | 'wait' = true) {
   const storage = new MemoryStorage();
   let counter = 0;
   const errors: string[] = [];
-  const store = new LuckyBreakStore(storage, { newId: () => `r${(counter += 1)}`, onError: (m) => errors.push(m) });
+  const store = new BreakRoomStore(storage, { newId: () => `r${(counter += 1)}`, onError: (m) => errors.push(m) });
   const landing = [32, 0, 17];
   let next = 0;
   const roulette = new RouletteTable(store, {

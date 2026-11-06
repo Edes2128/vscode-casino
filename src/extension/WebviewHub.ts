@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import type { Settings, SettingsPatch } from '../state/settings';
-import type { LuckyBreakSnapshot } from '../state/types';
+import type { BreakRoomSnapshot } from '../state/types';
 import type { ResetOutcome, ResetScope } from '../game/resetScope';
 import type { TableResult } from '../game/tableResult';
 import type { BlackjackAction, BlackjackView, TablePhase } from '../game/blackjack/view';
@@ -14,9 +14,9 @@ import {
 } from '../shared/messages';
 import type { Logger } from './logger';
 
-/** What the hub needs from the rest of Lucky Break. Everything authoritative stays on the host side. */
+/** What the hub needs from the rest of Break Room Arcade. Everything authoritative stays on the host side. */
 export interface HubServices {
-  snapshot(): LuckyBreakSnapshot;
+  snapshot(): BreakRoomSnapshot;
   blackjackView(): BlackjackView;
   blackjack(action: BlackjackAction): TableResult;
   rouletteView(): RouletteView;
@@ -25,7 +25,6 @@ export interface HubServices {
   updateSettings(patch: SettingsPatch): void;
   /** Asks the player to confirm, then resets. Resolves with how it ended. */
   reset(scope: ResetScope): PromiseLike<ResetOutcome>;
-  openSupport(): void;
 }
 
 /** What a webview has reported about itself. Surfaced to integration tests and the log. */
@@ -37,7 +36,7 @@ export interface WebviewDiagnostics {
   fontsLoaded: boolean | undefined;
   /** The webview has the Web Audio API, so the sound effects can play. */
   audioAvailable: boolean | undefined;
-  /** Lucky Break state the webview most recently reported drawing. */
+  /** Break Room Arcade state the webview most recently reported drawing. */
   lastShown: { readonly balance: number; readonly gamesPlayed: number } | undefined;
   /** The blackjack table the webview most recently reported drawing. */
   lastBlackjack:
@@ -63,7 +62,7 @@ interface Attachment {
 }
 
 /**
- * Central switchboard for every Lucky Break webview (sidebar and editor panel).
+ * Central switchboard for every Break Room Arcade webview (sidebar and editor panel).
  *
  * The extension host owns all state. Webviews only send intents; the hub validates each
  * message, hands game actions to the table, answers and can broadcast host state to every
@@ -161,9 +160,6 @@ export class WebviewHub {
         this.post(attachment, { type: 'blackjack', view: this.services.blackjackView() });
         this.post(attachment, { type: 'roulette', view: this.services.rouletteView() });
         this.post(attachment, { type: 'settings', payload: this.services.settings() });
-        break;
-      case 'openSupport':
-        this.services.openSupport();
         break;
       case 'settings':
         // The change is saved and every view (this one included) is told through the store.

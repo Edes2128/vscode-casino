@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { MIN_BET } from '../../state/chips';
 import { STARTING_BALANCE } from '../../state/snapshot';
-import { LuckyBreakStore } from '../../state/store';
+import { BreakRoomStore } from '../../state/store';
 import { MemoryStorage } from '../../state/testing';
 import type { HistoryEntry } from '../../state/types';
 import { cryptoRng, seededRng, type Rng } from '../rng';
@@ -25,7 +25,7 @@ function ballLandingOn(...numbers: number[]): Rng {
 function setup(rng: Rng, storage = new MemoryStorage()) {
   let counter = 0;
   const errors: string[] = [];
-  const store = new LuckyBreakStore(storage, { newId: () => `r${(counter += 1)}`, onError: (m) => errors.push(m) });
+  const store = new BreakRoomStore(storage, { newId: () => `r${(counter += 1)}`, onError: (m) => errors.push(m) });
   const table = new RouletteTable(store, { rng, onError: (m) => errors.push(m) });
   return { store, table, storage, errors };
 }

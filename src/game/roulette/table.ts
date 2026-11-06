@@ -1,4 +1,4 @@
-import type { LuckyBreakStore } from '../../state/store';
+import type { BreakRoomStore } from '../../state/store';
 import type { HistoryEntry } from '../../state/types';
 import { cryptoRng, type Rng } from '../rng';
 import { fail, OK, type TableResult } from '../tableResult';
@@ -19,7 +19,7 @@ export interface RouletteTableOptions {
  * which colour and how much; where the ball lands is decided here, before any animation starts.
  */
 export class RouletteTable {
-  readonly #store: LuckyBreakStore;
+  readonly #store: BreakRoomStore;
   readonly #rng: Rng;
   readonly #onError: (message: string, error: unknown) => void;
   readonly #listeners = new Set<(view: RouletteView) => void>();
@@ -29,7 +29,7 @@ export class RouletteTable {
   #recent: readonly Pocket[];
   #view: RouletteView = IDLE_ROULETTE_VIEW;
 
-  constructor(store: LuckyBreakStore, options: RouletteTableOptions = {}) {
+  constructor(store: BreakRoomStore, options: RouletteTableOptions = {}) {
     this.#store = store;
     this.#rng = options.rng ?? cryptoRng;
     this.#onError = options.onError ?? (() => undefined);

@@ -11,15 +11,15 @@ import {
 import type { GameStats, HistoryEntry, OpenRound } from './types';
 
 /** Everything lives under one key, so each save is a single atomic write. */
-export const STATE_KEY = 'luckyBreak.state';
+export const STATE_KEY = 'breakRoom.state';
 
 /** Where unreadable saved data is copied before it is replaced, so nothing is destroyed silently. */
-export const BACKUP_KEY = 'luckyBreak.state.backup';
+export const BACKUP_KEY = 'breakRoom.state.backup';
 
 /** Bump when the saved shape changes, and teach `loadState` to migrate the old version. */
 export const STATE_VERSION = 1;
 
-/** The part of VS Code's `Memento` (`globalState`) Lucky Break needs. Tests use an in-memory fake. */
+/** The part of VS Code's `Memento` (`globalState`) Break Room Arcade needs. Tests use an in-memory fake. */
 export interface KeyValueStorage {
   get(key: string): unknown;
   update(key: string, value: unknown): PromiseLike<void>;
@@ -93,7 +93,7 @@ export function loadState(storage: KeyValueStorage): LoadResult {
   if (raw === undefined) return { state: createFreshState(), source: 'fresh' };
   if (isPersistedState(raw)) return { state: raw, source: 'saved' };
 
-  // Best effort: a failed backup must not stop Lucky Break from starting.
+  // Best effort: a failed backup must not stop Break Room Arcade from starting.
   Promise.resolve(storage.update(BACKUP_KEY, raw)).catch(() => undefined);
   return { state: createFreshState(), source: 'corrupt' };
 }

@@ -11,7 +11,6 @@ import { CardFan } from './CardFan';
 import { PixelBurst } from './PixelBurst';
 import { PlayingCard } from './PlayingCard';
 import { ResultBanner, ResultOverlay } from './ResultEffects';
-import { SupportButton } from './SupportButton';
 
 const count = (haystack: string, needle: string): number => haystack.split(needle).length - 1;
 /** Counts whole elements of one class, not the `class__part` elements nested inside them. */
@@ -312,24 +311,3 @@ describe('the Blackjack page', () => {
   });
 });
 
-describe('SupportButton', () => {
-  it('says what the brief says, with a coffee cup button that opens the page', () => {
-    const html = renderToStaticMarkup(<SupportButton onClick={noop} />);
-    expect(html).toContain('Enjoying Lucky Break? Buy me a coffee!');
-    expect(html).toContain('BUY ME A COFFEE');
-    expect(html).toContain('px-button--support');
-    expect(html).toContain('support__cup');
-  });
-
-  it('says it is optional and that everything is free, and that it opens in the browser and gives no chips', () => {
-    const html = renderToStaticMarkup(<SupportButton onClick={noop} />);
-    expect(html).toContain('OPTIONAL. EVERYTHING IN LUCKY BREAK IS FREE.');
-    expect(html).toContain('Opens in your browser');
-    expect(html).toContain('gives no chips and unlocks nothing');
-  });
-
-  it('keeps its visible words inside its accessible name', () => {
-    const html = renderToStaticMarkup(<SupportButton onClick={noop} />);
-    expect(html.toLowerCase()).toContain('aria-label="buy me a coffee');
-  });
-});

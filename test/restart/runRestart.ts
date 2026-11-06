@@ -1,11 +1,11 @@
 /**
- * Proves Lucky Break survives a REAL VS Code restart, including what ends up on disk.
+ * Proves Break Room Arcade survives a REAL VS Code restart, including what ends up on disk.
  *
  *   npm run test:restart
  *
  * Why this is not part of `test:integration`: VS Code deliberately keeps global state in memory
  * whenever it is launched with --extensionTestsPath, so nothing could ever reach disk there.
- * Here VS Code is launched normally (a throwaway profile under .vscode-test/) with Lucky Break and
+ * Here VS Code is launched normally (a throwaway profile under .vscode-test/) with Break Room Arcade and
  * a small helper extension (helper.ts) that does the work and then quits VS Code gracefully:
  *
  *   1. write  fresh profile: play rounds, leave one open, save, quit. The runner then checks the
@@ -51,9 +51,9 @@ async function main(): Promise<void> {
     fs.rmSync(resultPath, { force: true });
     const env: NodeJS.ProcessEnv = {
       ...process.env,
-      LUCKY_BREAK_EXPOSE_TEST_API: '1',
-      LUCKY_BREAK_RESTART_PHASE: phase,
-      LUCKY_BREAK_RESTART_RESULT: resultPath,
+      BREAK_ROOM_EXPOSE_TEST_API: '1',
+      BREAK_ROOM_RESTART_PHASE: phase,
+      BREAK_ROOM_RESTART_RESULT: resultPath,
     };
     // If this process was started from an Electron app, the flag would make VS Code behave like plain Node.
     delete env['ELECTRON_RUN_AS_NODE'];
@@ -98,9 +98,9 @@ async function main(): Promise<void> {
   console.log(`  ${written.ok ? '✔' : '✘'} ${written.detail}`);
   if (!written.ok) throw new Error('The write phase failed.');
 
-  const onDisk = luckyBreakStateIsOnDisk(userData);
-  console.log(`  ${onDisk ? '✔' : '✘'} Lucky Break state is in VS Code's database on disk`);
-  if (!onDisk) throw new Error("VS Code did not write Lucky Break state to its database. A restart would lose it.");
+  const onDisk = breakRoomStateIsOnDisk(userData);
+  console.log(`  ${onDisk ? '✔' : '✘'} Break Room Arcade state is in VS Code's database on disk`);
+  if (!onDisk) throw new Error("VS Code did not write Break Room Arcade state to its database. A restart would lose it.");
 
   console.log('Launch 2 of 2 (read): a new VS Code process on the same profile');
   const read = await launch('read');
@@ -112,15 +112,15 @@ async function main(): Promise<void> {
 
 /**
  * SQLite stores text plainly, so searching the raw bytes (database and write-ahead log) is enough.
- * The needles are the JSON Lucky Break saves, not just the key name: VS Code's own bookkeeping keys
- * (such as the state of our sidebar container) also contain "luckyBreak.state", which would be a false positive.
+ * The needles are the JSON Break Room Arcade saves, not just the key name: VS Code's own bookkeeping keys
+ * (such as the state of our sidebar container) also contain "breakRoom.state", which would be a false positive.
  */
-function luckyBreakStateIsOnDisk(userData: string): boolean {
+function breakRoomStateIsOnDisk(userData: string): boolean {
   const database = path.join(userData, 'User', 'globalStorage', 'state.vscdb');
   const needles = [
-    '"luckyBreak.state":{"version":1',
+    '"breakRoom.state":{"version":1',
     '"balance":935',
-    '"luckyBreak.settings":{"version":2',
+    '"breakRoom.settings":{"version":2',
     '"volume":35',
     '"theme":"royal"',
     '"cardDesign":"medieval"',

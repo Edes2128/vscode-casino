@@ -1,19 +1,19 @@
 {
-  "name": "lucky-break",
-  "displayName": "Lucky Break",
-  "description": "Take a lucky break between builds: retro pixel-art Blackjack and Roulette with virtual chips, right in your editor. No real money, ever.",
-  "version": "0.2.1",
+  "name": "break-room-arcade",
+  "displayName": "Break Room Arcade",
+  "description": "A pixel-art arcade for your coding breaks: retro Blackjack and Roulette with virtual chips, right in your editor. No real money, ever.",
+  "version": "0.2.2",
   "private": true,
   "publisher": "thesulce",
   "license": "SEE LICENSE IN LICENSE",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Edes2128/vscode-lucky-break.git"
+    "url": "https://github.com/Edes2128/vscode-break-room-arcade.git"
   },
   "bugs": {
-    "url": "https://github.com/Edes2128/vscode-lucky-break/issues"
+    "url": "https://github.com/Edes2128/vscode-break-room-arcade/issues"
   },
-  "homepage": "https://github.com/Edes2128/vscode-lucky-break#readme",
+  "homepage": "https://github.com/Edes2128/vscode-break-room-arcade#readme",
   "icon": "media/icon.png",
   "galleryBanner": {
     "color": "#101216",
@@ -47,40 +47,40 @@
     "viewsContainers": {
       "activitybar": [
         {
-          "id": "luckyBreak",
-          "title": "Lucky Break",
-          "icon": "media/lucky-break.svg"
+          "id": "breakRoom",
+          "title": "Break Room Arcade",
+          "icon": "media/break-room-arcade.svg"
         }
       ]
     },
     "views": {
-      "luckyBreak": [
+      "breakRoom": [
         {
           "type": "webview",
-          "id": "luckyBreak.sidebar",
-          "name": "Lucky Break",
-          "icon": "media/lucky-break.svg"
+          "id": "breakRoom.sidebar",
+          "name": "Break Room Arcade",
+          "icon": "media/break-room-arcade.svg"
         }
       ]
     },
     "commands": [
       {
-        "command": "luckyBreak.showSidebar",
+        "command": "breakRoom.showSidebar",
         "title": "Open Sidebar",
-        "category": "Lucky Break"
+        "category": "Break Room Arcade"
       },
       {
-        "command": "luckyBreak.openPanel",
+        "command": "breakRoom.openPanel",
         "title": "Open in Editor",
-        "category": "Lucky Break",
+        "category": "Break Room Arcade",
         "icon": "$(link-external)"
       }
     ],
     "menus": {
       "view/title": [
         {
-          "command": "luckyBreak.openPanel",
-          "when": "view == luckyBreak.sidebar",
+          "command": "breakRoom.openPanel",
+          "when": "view == breakRoom.sidebar",
           "group": "navigation"
         }
       ]

@@ -131,7 +131,7 @@ describe('cards.css', () => {
         if (!selector.includes('.playing-card')) continue;
         const inPreview = selector.startsWith('.card-preview') || selector.startsWith('.card-showcase');
         expect(inPreview || selector.includes("[data-design='"), `card rule without a design: ${selector}`).toBe(true);
-        expect(selector, selector).not.toMatch(/data-cards|data-theme|\.lb-app|:root/);
+        expect(selector, selector).not.toMatch(/data-cards|data-theme|\.br-app|:root/);
       }
     }
   });

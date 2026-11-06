@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import type { LuckyBreakSnapshot } from '../../state/types';
+import type { BreakRoomSnapshot } from '../../state/types';
 import type { HostConnection } from '../host';
 
 /**
@@ -7,7 +7,7 @@ import type { HostConnection } from '../host';
  * every open view has caught up, and the integration tests use it to prove the sidebar and the
  * editor panel always show the same game.
  */
-export function useSnapshotReport(host: HostConnection, snapshot: LuckyBreakSnapshot | undefined): void {
+export function useSnapshotReport(host: HostConnection, snapshot: BreakRoomSnapshot | undefined): void {
   useEffect(() => {
     if (snapshot === undefined) return;
     host.post({

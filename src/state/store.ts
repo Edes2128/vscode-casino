@@ -9,7 +9,7 @@ import {
 } from './persistence';
 import { EMPTY_GAME_STATS, MAX_DETAIL_LENGTH } from './snapshot';
 import { combineStats, outcomeOf, recordRound } from './statistics';
-import type { LuckyBreakSnapshot, GameStats, GameType, HistoryEntry, OpenRound } from './types';
+import type { BreakRoomSnapshot, GameStats, GameType, HistoryEntry, OpenRound } from './types';
 import { Wallet, type WalletError } from './wallet';
 import { WriteQueue } from './writeQueue';
 
@@ -44,7 +44,7 @@ export interface StartupReport {
 export interface StoreOptions {
   readonly now?: () => number;
   readonly newId?: () => string;
-  /** Called when saving fails or a change listener throws. Lucky Break keeps running either way. */
+  /** Called when saving fails or a change listener throws. Break Room Arcade keeps running either way. */
   readonly onError?: (message: string, error: unknown) => void;
 }
 
@@ -58,7 +58,7 @@ type PerGameStats = { readonly blackjack: GameStats; readonly roulette: GameStat
  * `settleRound`, which pays out, updates the statistics and writes the history. The result of a
  * round (win, loss or push) is derived from the net chips, so the money and the record always agree.
  */
-export class LuckyBreakStore {
+export class BreakRoomStore {
   readonly startup: StartupReport;
 
   readonly #storage: KeyValueStorage;
@@ -67,15 +67,15 @@ export class LuckyBreakStore {
   readonly #onError: (message: string, error: unknown) => void;
   readonly #wallet: Wallet;
   readonly #openRounds = new Map<string, OpenRound>();
-  readonly #listeners = new Set<(snapshot: LuckyBreakSnapshot) => void>();
+  readonly #listeners = new Set<(snapshot: BreakRoomSnapshot) => void>();
   readonly #queue = new WriteQueue(
     () => saveState(this.#storage, this.#serialise()),
-    (error) => this.#onError('Saving Lucky Break state failed', error),
+    (error) => this.#onError('Saving Break Room Arcade state failed', error),
   );
 
   #stats: PerGameStats;
   #history: readonly HistoryEntry[];
-  #snapshot: LuckyBreakSnapshot | undefined;
+  #snapshot: BreakRoomSnapshot | undefined;
 
   constructor(storage: KeyValueStorage, options: StoreOptions = {}) {
     this.#storage = storage;
@@ -98,7 +98,7 @@ export class LuckyBreakStore {
   }
 
   /** The current game state. The same object until the next change. */
-  get snapshot(): LuckyBreakSnapshot {
+  get snapshot(): BreakRoomSnapshot {
     this.#snapshot ??= {
       balance: this.#wallet.balance,
       stats: {
@@ -117,7 +117,7 @@ export class LuckyBreakStore {
   }
 
   /** Calls `listener` after every change. Returns a function that stops listening. */
-  onDidChange(listener: (snapshot: LuckyBreakSnapshot) => void): () => void {
+  onDidChange(listener: (snapshot: BreakRoomSnapshot) => void): () => void {
     this.#listeners.add(listener);
     return () => {
       this.#listeners.delete(listener);

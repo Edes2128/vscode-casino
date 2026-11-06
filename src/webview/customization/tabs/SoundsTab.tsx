@@ -13,7 +13,7 @@ import { SOUND_CATEGORY_INFO, SOUND_PACK_CATALOG, soundPackInfo } from '../sound
 import type { CustomizeTabProps } from './types';
 
 /**
- * The shape of each pack's waveform, drawn as a pixel line: pulses that fade for Lucky Break, a square wave for
+ * The shape of each pack's waveform, drawn as a pixel line: pulses that fade for Break Room Arcade, a square wave for
  * the arcade, a triangle wave for the adventure, a saw for the cyber pack and a thin sine for the minimal one.
  * It is a picture of how the pack sounds, not of the exact sound. It never moves.
  */
@@ -118,7 +118,7 @@ export function SoundsTab({ settings, onChange }: CustomizeTabProps) {
   return (
     <>
       <p className="customize__intro">
-        PICK HOW LUCKY BREAK SOUNDS. EVERY SOUND IS MADE RIGHT HERE, SO THERE IS NOTHING TO DOWNLOAD AND IT WORKS OFFLINE.
+        PICK HOW BREAK ROOM ARCADE SOUNDS. EVERY SOUND IS MADE RIGHT HERE, SO THERE IS NOTHING TO DOWNLOAD AND IT WORKS OFFLINE.
       </p>
 
       <PixelCard title="SOUND" tone="neon">

@@ -1,7 +1,7 @@
-import type { LuckyBreakSnapshot } from '../../state/types';
+import type { BreakRoomSnapshot } from '../../state/types';
 import { BalanceDisplay } from '../components/BalanceDisplay';
 import { BlackjackArt } from '../components/BlackjackArt';
-import { LuckyBreakLogo } from '../components/LuckyBreakLogo';
+import { BreakRoomLogo } from '../components/BreakRoomLogo';
 import { GameCard } from '../components/GameCard';
 import { GameHistory } from '../components/GameHistory';
 import { PixelCard } from '../components/PixelCard';
@@ -10,17 +10,17 @@ import { StatTile } from '../components/StatTile';
 import type { Page } from '../navigation';
 
 interface HomeProps {
-  readonly snapshot: LuckyBreakSnapshot;
+  readonly snapshot: BreakRoomSnapshot;
   readonly onNavigate: (page: Page) => void;
 }
 
-/** Lucky Break lobby: logo, chips, the two games and the latest rounds. */
+/** Break Room Arcade lobby: logo, chips, the two games and the latest rounds. */
 export function Home({ snapshot, onNavigate }: HomeProps) {
   const { overall } = snapshot.stats;
 
   return (
     <>
-      <LuckyBreakLogo />
+      <BreakRoomLogo />
 
       <PixelCard title="YOUR CHIPS" tone="gold">
         <BalanceDisplay balance={snapshot.balance} size="lg" />

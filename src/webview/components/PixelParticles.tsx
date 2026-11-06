@@ -10,7 +10,7 @@ const PARTICLES = Array.from({ length: 14 }, (_, index) => ({
   tone: TONES[index % TONES.length],
 }));
 
-/** Pixel embers drifting up behind Lucky Break. Pure CSS; hidden for reduced motion. */
+/** Pixel embers drifting up behind Break Room Arcade. Pure CSS; hidden for reduced motion. */
 export function PixelParticles() {
   return (
     <div className="particles" aria-hidden="true">

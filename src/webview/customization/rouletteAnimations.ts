@@ -6,7 +6,7 @@ import { ROULETTE_ANIMATION_IDS, type RouletteAnimationId } from '../../state/ap
  * top (a glowing trail, a burst of pixels). The wheel's own maths (`art/rouletteWheel.ts`) reads these numbers
  * and nothing else about a style.
  *
- * A style is cosmetic. Where the ball stops is worked out from the pocket Lucky Break drew, never from a style:
+ * A style is cosmetic. Where the ball stops is worked out from the pocket Break Room Arcade drew, never from a style:
  * every style ends with that exact pocket under the pointer.
  */
 

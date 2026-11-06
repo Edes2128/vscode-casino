@@ -1,5 +1,5 @@
 import { createInitialSnapshot } from '../state/snapshot';
-import type { PreviewLuckyBreak } from './dev/previewLuckyBreak';
+import type { PreviewBreakRoom } from './dev/previewBreakRoom';
 import {
   parseHostMessage,
   type HostToWebviewMessage,
@@ -55,7 +55,7 @@ function connectToVsCode(): HostConnection {
  * developed and inspected without launching VS Code. Never used inside VS Code, where
  * `acquireVsCodeApi` always exists. Add `?view=panel` to preview the wide layout.
  *
- * With the dev server it runs the real game (see dev/previewLuckyBreak.ts) so games are playable. In
+ * With the dev server it runs the real game (see dev/previewBreakRoom.ts) so games are playable. In
  * a production build, which has none of that, it only answers with a fresh, static game.
  */
 function createBrowserPreview(): HostConnection {
@@ -67,16 +67,16 @@ function createBrowserPreview(): HostConnection {
     for (const listener of listeners) listener(message);
   };
 
-  let luckyBreak: Promise<PreviewLuckyBreak> | undefined;
+  let breakRoom: Promise<PreviewBreakRoom> | undefined;
 
   return {
     isVsCode: false,
     post: (message) => {
       if (import.meta.env.DEV) {
-        luckyBreak ??= import('./dev/previewLuckyBreak').then(({ createPreviewLuckyBreak }) =>
-          createPreviewLuckyBreak(emit, query, viewKind),
+        breakRoom ??= import('./dev/previewBreakRoom').then(({ createPreviewBreakRoom }) =>
+          createPreviewBreakRoom(emit, query, viewKind),
         );
-        void luckyBreak.then((preview) => preview.handle(message));
+        void breakRoom.then((preview) => preview.handle(message));
         return;
       }
 

@@ -7,16 +7,16 @@
       "request": "launch",
       "args": ["--extensionDevelopmentPath=${workspaceFolder}"],
       "outFiles": ["${workspaceFolder}/dist/**/*.js"],
-      "preLaunchTask": "lucky-break: build"
+      "preLaunchTask": "break-room-arcade: build"
     },
     {
       "name": "Run Extension (Vite HMR)",
       "type": "extensionHost",
       "request": "launch",
       "args": ["--extensionDevelopmentPath=${workspaceFolder}"],
-      "env": { "LUCKY_BREAK_DEV_SERVER_URL": "http://localhost:5173" },
+      "env": { "BREAK_ROOM_DEV_SERVER_URL": "http://localhost:5173" },
       "outFiles": ["${workspaceFolder}/dist/**/*.js"],
-      "preLaunchTask": "lucky-break: dev"
+      "preLaunchTask": "break-room-arcade: dev"
     }
   ]
 }

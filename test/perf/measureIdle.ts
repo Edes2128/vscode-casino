@@ -1,5 +1,5 @@
 /**
- * Measures what Lucky Break costs VS Code while it just sits there.
+ * Measures what Break Room Arcade costs VS Code while it just sits there.
  *
  *   npm run perf:idle
  *
@@ -23,9 +23,9 @@ import { AMBIENT_TICK_MS } from '../../src/webview/ambientTiming';
 
 const INSTALLED_VSCODE_MACOS = '/Applications/Visual Studio Code.app/Contents/MacOS/Code';
 const READY_TIMEOUT_MS = 120_000;
-const STARTUP_SETTLE_SECONDS = Number(process.env['LUCKY_BREAK_IDLE_STARTUP'] ?? 30);
+const STARTUP_SETTLE_SECONDS = Number(process.env['BREAK_ROOM_IDLE_STARTUP'] ?? 30);
 /** Each phase is measured in this many short slices, and the median is reported: VS Code does its own background work in bursts, and one long average would swallow a burst whole. */
-const SLICE_SECONDS = Number(process.env['LUCKY_BREAK_IDLE_SLICE'] ?? 4);
+const SLICE_SECONDS = Number(process.env['BREAK_ROOM_IDLE_SLICE'] ?? 4);
 
 /**
  * Awake samples must end before the decorations rest (15 s), counting the settling time before them and
@@ -51,7 +51,7 @@ const DEBUG_PORT = 9341;
 /**
  * `awake`: the player just did something, so the decorations tick, and the sample must be short enough to
  * finish before they rest. `resting`: wait for them to rest, then measure what an idle game costs.
- * `still`: decorations are switched off or Lucky Break is hidden.
+ * `still`: decorations are switched off or Break Room Arcade is hidden.
  */
 type Kind = 'awake' | 'resting' | 'still';
 
@@ -61,12 +61,12 @@ interface Phase {
   readonly command?: {
     readonly settings?: Record<string, unknown>;
     readonly page?: string;
-    readonly show?: 'luckyBreak' | 'explorer';
+    readonly show?: 'breakRoom' | 'explorer';
   };
 }
 
-const LUCKY_BREAK_PHASES: readonly Phase[] = [
-  { name: 'Home, awake', kind: 'awake', command: { settings: { animations: true, reducedMotion: false }, page: 'home', show: 'luckyBreak' } },
+const BREAK_ROOM_PHASES: readonly Phase[] = [
+  { name: 'Home, awake', kind: 'awake', command: { settings: { animations: true, reducedMotion: false }, page: 'home', show: 'breakRoom' } },
   { name: 'Home, animations off', kind: 'still', command: { settings: { animations: false } } },
   { name: 'Home, awake (again)', kind: 'awake', command: { settings: { animations: true }, page: 'blackjack' } },
   { name: 'Home, reduced motion', kind: 'still', command: { settings: { reducedMotion: true }, page: 'home' } },
@@ -76,9 +76,9 @@ const LUCKY_BREAK_PHASES: readonly Phase[] = [
   { name: 'Home, hidden', kind: 'still', command: { show: 'explorer' } },
 ];
 
-/** `LUCKY_BREAK_IDLE_PHASES=quick`: only what is needed to compare two builds of the decorations. */
+/** `BREAK_ROOM_IDLE_PHASES=quick`: only what is needed to compare two builds of the decorations. */
 const QUICK_PHASES: readonly Phase[] = [
-  { name: 'Home, awake', kind: 'awake', command: { settings: { animations: true, reducedMotion: false }, page: 'home', show: 'luckyBreak' } },
+  { name: 'Home, awake', kind: 'awake', command: { settings: { animations: true, reducedMotion: false }, page: 'home', show: 'breakRoom' } },
   { name: 'Home, animations off', kind: 'still', command: { settings: { animations: false } } },
   { name: 'Home, awake (again)', kind: 'awake', command: { settings: { animations: true }, page: 'blackjack' } },
   { name: 'Home, left alone (resting)', kind: 'resting', command: { page: 'home' } },
@@ -176,7 +176,7 @@ interface Session {
   stop(): Promise<void>;
 }
 
-async function launch(projectRoot: string, executable: string, luckyBreak: boolean): Promise<Session> {
+async function launch(projectRoot: string, executable: string, breakRoom: boolean): Promise<Session> {
   const sandbox = path.join(projectRoot, '.vscode-test');
   const userData = path.join(sandbox, 'pf');
   const extensions = path.join(sandbox, 'px');
@@ -205,15 +205,15 @@ async function launch(projectRoot: string, executable: string, luckyBreak: boole
     '--skip-release-notes',
     '--disable-updates',
   ];
-  if (luckyBreak) {
+  if (breakRoom) {
     args.push(`--extensionDevelopmentPath=${projectRoot}`, `--extensionDevelopmentPath=${path.join(projectRoot, 'out', 'restart-helper')}`);
     Object.assign(env, {
-      LUCKY_BREAK_EXPOSE_TEST_API: '1',
-      LUCKY_BREAK_RESTART_PHASE: 'idle',
-      LUCKY_BREAK_RESTART_RESULT: resultPath,
-      LUCKY_BREAK_IDLE_PAGE: 'home',
-      LUCKY_BREAK_IDLE_SETTINGS: '{}',
-      LUCKY_BREAK_IDLE_CONTROL: control,
+      BREAK_ROOM_EXPOSE_TEST_API: '1',
+      BREAK_ROOM_RESTART_PHASE: 'idle',
+      BREAK_ROOM_RESTART_RESULT: resultPath,
+      BREAK_ROOM_IDLE_PAGE: 'home',
+      BREAK_ROOM_IDLE_SETTINGS: '{}',
+      BREAK_ROOM_IDLE_CONTROL: control,
     });
   }
 
@@ -221,10 +221,10 @@ async function launch(projectRoot: string, executable: string, luckyBreak: boole
   const root = child.pid;
   if (root === undefined) throw new Error('VS Code did not start');
 
-  if (luckyBreak) {
+  if (breakRoom) {
     const deadline = Date.now() + READY_TIMEOUT_MS;
     while (!fs.existsSync(resultPath)) {
-      if (Date.now() > deadline) throw new Error('Lucky Break never got ready');
+      if (Date.now() > deadline) throw new Error('Break Room Arcade never got ready');
       await sleep(250);
     }
     const outcome = JSON.parse(fs.readFileSync(resultPath, 'utf8')) as { ok: boolean; detail: string };
@@ -257,7 +257,7 @@ async function command(session: Session, phase: Phase, id: string): Promise<void
   fs.writeFileSync(session.control, JSON.stringify({ id, ...phase.command }));
   const deadline = Date.now() + 20_000;
   while (!fs.existsSync(`${session.control}.ack`) || fs.readFileSync(`${session.control}.ack`, 'utf8') !== id) {
-    if (Date.now() > deadline) throw new Error(`Lucky Break did not acknowledge "${phase.name}"`);
+    if (Date.now() > deadline) throw new Error(`Break Room Arcade did not acknowledge "${phase.name}"`);
     await sleep(200);
   }
 }
@@ -272,7 +272,7 @@ interface Result {
   readonly name: string;
   /** The slowest and fastest slice, to show how steady the median is. */
   readonly cpuRange: readonly [number, number];
-  /** Lucky Break's own report of its decorations' clock before and after the sample. Ticks moving proves they are alive. */
+  /** Break Room Arcade's own report of its decorations' clock before and after the sample. Ticks moving proves they are alive. */
   readonly clock?: readonly [Ambient | undefined, Ambient | undefined] | undefined;
   readonly cpuPercent: number;
   readonly rssMb: number;
@@ -280,7 +280,7 @@ interface Result {
   readonly fpsAfter: number | undefined;
 }
 
-/** What Lucky Break's page last told the host about its clock, written by the helper extension. No debugger is attached. */
+/** What Break Room Arcade's page last told the host about its clock, written by the helper extension. No debugger is attached. */
 function readClock(session: Session): Ambient | undefined {
   try {
     const value = JSON.parse(fs.readFileSync(`${session.control}.status`, 'utf8')) as Ambient | null;
@@ -362,7 +362,7 @@ async function sampleRendering(session: Session, phase: Phase): Promise<Result> 
   let result = await sample(session, phase.name, slices, sliceSeconds, true);
   for (let attempt = 1; attempt < 7 && !isValid(result, phase); attempt += 1) {
     console.log(`    (${phase.name}: not usable (${isRendering(result) ? 'the clock did not behave as this phase needs' : 'the window was not rendering'}); measuring again)`);
-    // Wake Lucky Break again for an awake phase; a resting phase has to wait for the rest all over again.
+    // Wake Break Room Arcade again for an awake phase; a resting phase has to wait for the rest all over again.
     if (phase.kind !== 'still') await command(session, { ...phase, command: { page: phase.kind === 'awake' ? 'settings' : 'home' } }, `retry-${attempt}-a`);
     if (phase.kind !== 'still') await command(session, { ...phase, command: { page: 'home' } }, `retry-${attempt}-b`);
     await sleep(plan(phase.kind).settle * 1000);
@@ -396,8 +396,8 @@ async function main(): Promise<void> {
     throw new Error('The helper is not built. Run `npm run perf:idle`, not this file directly.');
   }
 
-  // LUCKY_BREAK_IDLE_DIAG=1: watch Lucky Break's clock over time, and through animations off and on again.
-  if (process.env['LUCKY_BREAK_IDLE_DIAG'] === '1') {
+  // BREAK_ROOM_IDLE_DIAG=1: watch Break Room Arcade's clock over time, and through animations off and on again.
+  if (process.env['BREAK_ROOM_IDLE_DIAG'] === '1') {
     const session = await launch(projectRoot, executable, true);
     try {
       const seen: Array<{ at: number; ticks: number; running: boolean }> = [];
@@ -437,7 +437,7 @@ async function main(): Promise<void> {
   console.log(`CPU of the whole VS Code process tree, % of one core, median of ${SLICE_SECONDS}s slices per phase, with the slowest and fastest slice in brackets (throwaway profile)`);
   console.log('Each session is ONE running window; its phases are comparable with each other.\n');
 
-  const baselines = process.env['LUCKY_BREAK_IDLE_BASELINES'] !== '0' && process.env['LUCKY_BREAK_IDLE_PHASES'] !== 'quick';
+  const baselines = process.env['BREAK_ROOM_IDLE_BASELINES'] !== '0' && process.env['BREAK_ROOM_IDLE_PHASES'] !== 'quick';
 
   if (baselines) {
     console.log('Session 1: VS Code alone');
@@ -449,17 +449,17 @@ async function main(): Promise<void> {
     }
   }
 
-  console.log('\nSession 2: Lucky Break, one window, switched between settings');
-  const luckyBreak = await launch(projectRoot, executable, true);
+  console.log('\nSession 2: Break Room Arcade, one window, switched between settings');
+  const breakRoom = await launch(projectRoot, executable, true);
   try {
-    const phases = process.env['LUCKY_BREAK_IDLE_PHASES'] === 'quick' ? QUICK_PHASES : LUCKY_BREAK_PHASES;
+    const phases = process.env['BREAK_ROOM_IDLE_PHASES'] === 'quick' ? QUICK_PHASES : BREAK_ROOM_PHASES;
     for (const [index, phase] of phases.entries()) {
-      await command(luckyBreak, phase, `phase-${index}`);
+      await command(breakRoom, phase, `phase-${index}`);
       await sleep(plan(phase.kind).settle * 1000);
-      show(await sampleRendering(luckyBreak, phase));
+      show(await sampleRendering(breakRoom, phase));
     }
   } finally {
-    await luckyBreak.stop();
+    await breakRoom.stop();
   }
 
   if (baselines) {

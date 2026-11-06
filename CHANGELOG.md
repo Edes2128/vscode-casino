@@ -1,13 +1,14 @@
 # Changelog
 
-## 0.2.1
+## 0.2.2
 
-- **New name: Lucky Break.** The Activity Bar icon, the editor tab, the output channel and the commands
-  (**Lucky Break: Open Sidebar**, **Lucky Break: Open in Editor**) all use the new name. The themes and designs
-  that carried the old name are now Classic Felt, Midnight Felt, Crimson Felt, Cyber Felt, Forest Felt, Royal
-  Felt, Dark Deck and the Classic Lounge sound pack. Nothing else changes: the games, the rules and every
-  option are the same, and everything is still free.
-- The tip button now reads "Enjoying Lucky Break? Buy me a coffee!".
+- **New name: Break Room Arcade.** The Activity Bar icon, the editor tab, the output channel and the commands
+  (**Break Room Arcade: Open Sidebar**, **Break Room Arcade: Open in Editor**) all use the new name. The themes
+  and designs that carried the old name are now Classic Felt, Midnight Felt, Crimson Felt, Cyber Felt, Forest
+  Felt, Royal Felt, Dark Deck and the Classic Lounge sound pack. The games, the rules and every option are the
+  same, and everything is still free.
+- **No web addresses at all:** the optional tip button and its link are gone, so the extension contains no
+  website and never asks VS Code to open one.
 
 ## 0.2.0
 
@@ -20,10 +21,9 @@
 - **Easier to read:** brighter secondary text, larger type, rank and suit printed in the corners of every card
   so overlapping cards stay readable, and a new **Text size** setting (normal, large, extra large).
 - **Customize screen (the Style tab), all free:** 8 themes, 6 playing-card designs, 5 roulette
-  animations (the ball always stops on the number Lucky Break chose), 5 sound packs with a switch for each
+  animations (the ball always stops on the number Break Room Arcade chose), 5 sound packs with a switch for each
   kind of sound, and custom colors with presets, a color picker, a live preview and a reset. Text stays readable
   whatever colors are picked.
-- **Buy me a coffee:** an optional, quiet button on the Home screen and in the About card of Settings.
 - Saved settings from 0.1.0 keep working; every new option falls back to its default if it is missing.
 
 ## 0.1.0

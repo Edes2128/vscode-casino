@@ -1,7 +1,7 @@
 import type { HostConnection } from './host';
 
 /**
- * Forwards CSP violations and uncaught errors to the extension host's "Lucky Break" output
+ * Forwards CSP violations and uncaught errors to the extension host's "Break Room Arcade" output
  * channel. A blocked script or font would otherwise just leave a silent blank webview.
  */
 export function installDiagnostics(host: HostConnection): void {

@@ -245,21 +245,21 @@
 
 /* Calm and off: nothing moves, floats, flickers or flashes. The level comes from the player's settings
    (and the system's own preference), decided in motion.ts and set on the app's root element. */
-.lb-app[data-motion='calm'] *,
-.lb-app[data-motion='calm'] *::before,
-.lb-app[data-motion='calm'] *::after,
-.lb-app[data-motion='off'] *,
-.lb-app[data-motion='off'] *::before,
-.lb-app[data-motion='off'] *::after {
+.br-app[data-motion='calm'] *,
+.br-app[data-motion='calm'] *::before,
+.br-app[data-motion='calm'] *::after,
+.br-app[data-motion='off'] *,
+.br-app[data-motion='off'] *::before,
+.br-app[data-motion='off'] *::after {
   animation: none !important;
   transition: none !important;
 }
 
-.lb-app[data-motion='calm'] .particles,
-.lb-app[data-motion='calm'] .fx-burst,
-.lb-app[data-motion='calm'] .result-fx__flash,
-.lb-app[data-motion='off'] .particles,
-.lb-app[data-motion='off'] .fx-burst,
-.lb-app[data-motion='off'] .result-fx__flash {
+.br-app[data-motion='calm'] .particles,
+.br-app[data-motion='calm'] .fx-burst,
+.br-app[data-motion='calm'] .result-fx__flash,
+.br-app[data-motion='off'] .particles,
+.br-app[data-motion='off'] .fx-burst,
+.br-app[data-motion='off'] .result-fx__flash {
   display: none;
 }

@@ -1,4 +1,4 @@
-import { LuckyBreakStore } from '../../state/store';
+import { BreakRoomStore } from '../../state/store';
 import { MemoryStorage } from '../../state/testing';
 import { POCKET_COUNT, pocketIndexOfNumber } from './wheel';
 import { RouletteTable } from './table';
@@ -17,7 +17,7 @@ export function rouletteView(numbers: readonly number[], ...bets: ReadonlyArray<
     if (number === undefined) throw new Error('Ran out of planned landings');
     return (pocketIndexOfNumber(number) + 0.5) / POCKET_COUNT;
   };
-  const table = new RouletteTable(new LuckyBreakStore(new MemoryStorage()), { rng });
+  const table = new RouletteTable(new BreakRoomStore(new MemoryStorage()), { rng });
   for (const [on, bet] of bets) table.perform({ kind: 'spin', selection: typeof on === 'string' ? { kind: 'color', color: on } : on, bet });
   return table.view;
 }

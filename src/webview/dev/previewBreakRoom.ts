@@ -13,7 +13,7 @@
  */
 import { createFreshState, STATE_KEY, type PersistedState } from '../../state/persistence';
 import { SettingsStore } from '../../state/settings';
-import { LuckyBreakStore } from '../../state/store';
+import { BreakRoomStore } from '../../state/store';
 import { MemoryStorage } from '../../state/testing';
 import { BlackjackTable } from '../../game/blackjack/table';
 import { cards } from '../../game/blackjack/testing';
@@ -24,15 +24,15 @@ import { POCKET_COUNT, pocketIndexOfNumber } from '../../game/roulette/wheel';
 import type { HostToWebviewMessage, ViewKind, WebviewToHostMessage } from '../../shared/messages';
 import { sampleSnapshot } from './sampleSnapshot';
 
-export interface PreviewLuckyBreak {
+export interface PreviewBreakRoom {
   handle(message: WebviewToHostMessage): void;
 }
 
-export function createPreviewLuckyBreak(
+export function createPreviewBreakRoom(
   emit: (message: HostToWebviewMessage) => void,
   query: URLSearchParams,
   viewKind: ViewKind,
-): PreviewLuckyBreak {
+): PreviewBreakRoom {
   const storage = new MemoryStorage();
   if (query.has('demo')) {
     const demo: PersistedState = {
@@ -44,7 +44,7 @@ export function createPreviewLuckyBreak(
     storage.seed(STATE_KEY, demo);
   }
 
-  const store = new LuckyBreakStore(storage);
+  const store = new BreakRoomStore(storage);
   const deck = query.get('deck');
   const table = new BlackjackTable(store, deck === null ? {} : { deck: () => cards(deck) });
 
@@ -110,7 +110,7 @@ export function createPreviewLuckyBreak(
           break;
         }
         default:
-          break; // diagnostics and the support link do nothing in a browser tab
+          break; // diagnostics do nothing in a browser tab
       }
     },
   };

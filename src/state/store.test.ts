@@ -2,9 +2,9 @@ import { describe, expect, it } from 'vitest';
 import { MIN_BET } from './chips';
 import { createFreshState, loadState, saveState, STATE_KEY, BACKUP_KEY, type PersistedState } from './persistence';
 import { MAX_DETAIL_LENGTH, MAX_HISTORY_ENTRIES, STARTING_BALANCE } from './snapshot';
-import { LuckyBreakStore, type RoundTicket } from './store';
+import { BreakRoomStore, type RoundTicket } from './store';
 import { MemoryStorage } from './testing';
-import type { LuckyBreakSnapshot } from './types';
+import type { BreakRoomSnapshot } from './types';
 
 function mulberry32(seed: number): () => number {
   let state = seed;
@@ -21,7 +21,7 @@ function setup(storage = new MemoryStorage()) {
   let clock = 1_760_000_000_000;
   let counter = 0;
   const errors: string[] = [];
-  const store = new LuckyBreakStore(storage, {
+  const store = new BreakRoomStore(storage, {
     now: () => (clock += 1_000),
     newId: () => `r${(counter += 1)}`,
     onError: (message) => errors.push(message),
@@ -32,7 +32,7 @@ function setup(storage = new MemoryStorage()) {
 /** A new session on the same storage, as after restarting VS Code. */
 const restart = (storage: MemoryStorage) => setup(storage);
 
-function begin(store: LuckyBreakStore, game: 'blackjack' | 'roulette', bet: number): RoundTicket {
+function begin(store: BreakRoomStore, game: 'blackjack' | 'roulette', bet: number): RoundTicket {
   const result = store.beginRound(game, bet);
   if (!result.ok) throw new Error(`beginRound failed: ${result.error}`);
   return result.value;
@@ -66,7 +66,7 @@ describe('beginRound (bet deduction)', () => {
 
   it('rejects bets below the minimum, invalid amounts and overdrafts without changing anything', async () => {
     const { store, storage } = setup();
-    const changes: LuckyBreakSnapshot[] = [];
+    const changes: BreakRoomSnapshot[] = [];
     store.onDidChange((snapshot) => changes.push(snapshot));
 
     expect(store.beginRound('blackjack', MIN_BET - 1)).toEqual({ ok: false, error: 'below-minimum' });
@@ -491,8 +491,8 @@ describe('writing to storage', () => {
     storage.failWrites = true;
     begin(store, 'roulette', 100);
     await store.flush();
-    expect(errors).toEqual(['Saving Lucky Break state failed']);
-    expect(store.snapshot.balance).toBe(900); // Lucky Break itself carried on
+    expect(errors).toEqual(['Saving Break Room Arcade state failed']);
+    expect(store.snapshot.balance).toBe(900); // Break Room Arcade itself carried on
 
     storage.failWrites = false;
     store.settleRound(store.openRounds[0]?.id ?? '', 200, 'x');
@@ -506,7 +506,7 @@ describe('writing to storage', () => {
     begin(store, 'roulette', 100);
 
     await store.flush(); // must not hang
-    expect(errors).toEqual(['Saving Lucky Break state failed']);
+    expect(errors).toEqual(['Saving Break Room Arcade state failed']);
     expect(store.snapshot.balance).toBe(900);
 
     storage.throwWrites = false;

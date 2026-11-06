@@ -1,14 +1,14 @@
 import { DIE, DIE_SIX } from '../art/sprites';
 import { PixelSprite } from './PixelSprite';
 
-/** The sign reads "TAKE A / LUCKY / BREAK": the small line above, then one word per row. */
-const WORDS = ['LUCKY', 'BREAK'] as const;
+/** The sign reads "BREAK ROOM / ARCADE": the small line above, then the big neon word. */
+const WORDS = ['ARCADE'] as const;
 
 /** The one tube that flickers, as on every proper neon sign: the third letter of the first word. */
 const FLAKY = { word: 0, letter: 2 } as const;
 
 /** The big lobby logo: two bouncing dice, a neon sign and chasing marquee lights. */
-export function LuckyBreakLogo() {
+export function BreakRoomLogo() {
   return (
     <header className="logo px-frame">
       <div className="marquee" aria-hidden="true" />
@@ -16,9 +16,9 @@ export function LuckyBreakLogo() {
         <PixelSprite rows={DIE.rows} palette={DIE.palette} className="logo__die" />
         <PixelSprite rows={DIE_SIX.rows} palette={DIE_SIX.palette} className="logo__die logo__die--second" />
       </div>
-      <h1 className="logo__heading" aria-label="Lucky Break">
+      <h1 className="logo__heading" aria-label="Break Room Arcade">
         <span className="logo__kicker" aria-hidden="true">
-          TAKE A
+          BREAK ROOM
         </span>
         <span className="logo__title" aria-hidden="true">
           {WORDS.map((word, wordIndex) => (

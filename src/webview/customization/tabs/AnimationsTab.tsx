@@ -6,12 +6,12 @@ import type { CustomizeTabProps } from './types';
 
 /**
  * How the roulette wheel spins: five styles to choose from, and a wheel to try the chosen one on. The style is
- * only how the spin looks. The ball always stops on the number Lucky Break drew, in every style.
+ * only how the spin looks. The ball always stops on the number Break Room Arcade drew, in every style.
  */
 export function AnimationsTab({ settings, onChange }: CustomizeTabProps) {
   return (
     <>
-      <p className="customize__intro">PICK HOW THE WHEEL SPINS. THE BALL ALWAYS STOPS ON THE NUMBER LUCKY BREAK DREW.</p>
+      <p className="customize__intro">PICK HOW THE WHEEL SPINS. THE BALL ALWAYS STOPS ON THE NUMBER BREAK ROOM ARCADE DREW.</p>
 
       <ChoiceGrid label="Roulette animation">
         {ROULETTE_ANIMATIONS.map((style) => (

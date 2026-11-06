@@ -6,14 +6,14 @@ it is free: no tiers, no unlocks, no limits. Buy Me a Coffee is an optional tip 
 
 ## Phase 1: what was inspected (architecture summary)
 
-Lucky Break is **host-authoritative**. Nothing a player can click decides a result.
+Break Room Arcade is **host-authoritative**. Nothing a player can click decides a result.
 
 ```
  webview (React + Vite)                      extension host (Node)
  ┌──────────────────────────┐   messages    ┌─────────────────────────────────────────┐
  │ pages / components / CSS │ ───────────▶  │ WebviewHub: validates every message     │
  │ sound (Web Audio)        │ ◀───────────  │ BlackjackTable / RouletteTable (secrets)│
- └──────────────────────────┘  typed guards │ LuckyBreakStore (wallet, stats, history)    │
+ └──────────────────────────┘  typed guards │ BreakRoomStore (wallet, stats, history)    │
                                             │ SettingsStore (preferences)             │
                                             │ ResetCoordinator (confirmed resets)     │
                                             └─────────────────────────────────────────┘
@@ -23,8 +23,8 @@ Lucky Break is **host-authoritative**. Nothing a player can click decides a resu
 | Layer | Where | Notes |
 | --- | --- | --- |
 | Pure game rules | `src/game/blackjack/engine.ts`, `src/game/roulette/engine.ts` | Injectable RNG, no I/O. Fuzzed against an independent reference (`referenceRules.ts`). |
-| Tables | `src/game/*/table.ts` | Own the deck / the wheel's choice, pay through `LuckyBreakStore` exactly once. |
-| Wallet and records | `src/state/*` | `LuckyBreakStore` (key `luckyBreak.state`) and `SettingsStore` (key `luckyBreak.settings`), both through a coalescing `WriteQueue`. |
+| Tables | `src/game/*/table.ts` | Own the deck / the wheel's choice, pay through `BreakRoomStore` exactly once. |
+| Wallet and records | `src/state/*` | `BreakRoomStore` (key `breakRoom.state`) and `SettingsStore` (key `breakRoom.settings`), both through a coalescing `WriteQueue`. |
 | Protocol | `src/shared/messages.ts` | Every message in both directions has a runtime guard. A bad message is dropped. |
 | Webview shell | `src/webview/App.tsx` | Pages: home, blackjack, roulette, statistics, settings (and customize). One host connection. |
 | Sound | `src/webview/sound/*` | Synthesized Web Audio cues. Nothing plays before the player's first click. |
@@ -95,10 +95,10 @@ Status: `[x]` done and verified, `[~]` in progress, `[ ]` not started.
 - [x] Six presets, a color picker plus a typed hex box per color, a live preview, reset to the theme's colors
 - [x] Readability enforced: text reads at 4.5 to 1 on the page, the panels and the table whatever is picked (tested over thousands of extreme combinations on every theme); a pick that had to be nudged is flagged on screen
 
-### Phase 7: Buy Me a Coffee
+### Phase 7: Buy Me a Coffee (REMOVED in 0.2.2)
 
-- [x] Pixel coffee button with "Enjoying Lucky Break? Buy me a coffee!" on Home and in the About card of Settings (About is a card inside Settings), opening the page in the browser through `vscode.env.openExternal`
-- [x] One constant for the address (`src/shared/support.ts`), quiet and in the theme's gold, never a pop-up, never next to a game's controls (removed from Statistics)
+- [x] Built and verified earlier: a pixel coffee button on Home and in the About card, opening the page through `vscode.env.openExternal`, the address in one constant (`src/shared/support.ts`).
+- [ ] Removed in 0.2.2 to test whether a web address in the package was behind the Marketplace rejection. The extension now contains no website at all (`productionBundle.test.ts` fails if one appears). To bring it back, restore the files from commit 6541251 (`SupportButton.tsx`, `support.ts`, the `openSupport` message, the `.support` and `.px-button--support` styles) after an upload has been accepted.
 
 ### Phase 8: Persistence and testing
 
@@ -115,9 +115,8 @@ Status: `[x]` done and verified, `[~]` in progress, `[ ]` not started.
 
 ## Decisions worth knowing
 
-* **Sounds are synthesized, not audio files.** Lucky Break has always made its sounds with the Web
+* **Sounds are synthesized, not audio files.** Break Room Arcade has always made its sounds with the Web
   Audio API (small tone patches), so packs are more patches. That keeps everything local with no
   files to license and nothing to download, and fits the content security policy.
-* **The coffee address is already real** (`https://buymeacoffee.com/5x2bfo6t5c`, in
-  `src/shared/support.ts`), so it replaces the placeholder in the brief.
+* **The coffee address** (`https://buymeacoffee.com/5x2bfo6t5c`) was real but the button is out of 0.2.2, see Phase 7.
 * **No premium anything.** There is no field, flag or code path that could lock an option.

@@ -423,8 +423,8 @@
 }
 
 /* Calm and off never draw a burst (the wheel does not even render it); this is the belt to those braces. */
-.lb-app[data-motion='calm'] .wheel-burst:not(.wheel-burst--still),
-.lb-app[data-motion='off'] .wheel-burst:not(.wheel-burst--still) {
+.br-app[data-motion='calm'] .wheel-burst:not(.wheel-burst--still),
+.br-app[data-motion='off'] .wheel-burst:not(.wheel-burst--still) {
   display: none;
 }
 

@@ -3,7 +3,7 @@ import type { AssetMode } from '../shared/messages';
 import type { Logger } from './logger';
 
 /** Environment variable that points the webview at a running Vite dev server (HMR). */
-export const DEV_SERVER_ENV = 'LUCKY_BREAK_DEV_SERVER_URL';
+export const DEV_SERVER_ENV = 'BREAK_ROOM_DEV_SERVER_URL';
 
 const PROBE_TIMEOUT_MS = 800;
 const LOOPBACK_HOSTS = new Set(['localhost', '127.0.0.1', '[::1]']);
@@ -19,7 +19,7 @@ export const assetMode = (source: AssetSource): AssetMode => source.kind;
  *
  * Production (an installed extension) always uses the bundled `dist/webview` files. The
  * Vite dev server is only considered when the extension runs from source (development or
- * test mode), `LUCKY_BREAK_DEV_SERVER_URL` is set, it points at the loopback interface and the
+ * test mode), `BREAK_ROOM_DEV_SERVER_URL` is set, it points at the loopback interface and the
  * server actually answers. Otherwise we fall back to the production bundle.
  */
 export async function resolveAssetSource(

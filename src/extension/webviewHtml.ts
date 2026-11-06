@@ -101,7 +101,7 @@ function renderMissingBundleHtml(nonce: string): string {
     csp,
     style,
     [],
-    `<p>Lucky Break webview bundle is missing.</p><p>Run <code>npm run build</code> and reload the window.</p>`,
+    `<p>Break Room Arcade webview bundle is missing.</p><p>Run <code>npm run build</code> and reload the window.</p>`,
   );
 }
 
@@ -112,7 +112,7 @@ function page(csp: string, head: string, scripts: readonly string[], body = '<di
     <meta charset="UTF-8">
     <meta http-equiv="Content-Security-Policy" content="${csp}">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lucky Break</title>
+    <title>Break Room Arcade</title>
     ${head}
   </head>
   <body>

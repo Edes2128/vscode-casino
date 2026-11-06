@@ -6,7 +6,7 @@
  * The melodies are original. What gives a pack its character is the waveform, the register and the
  * rhythm, so each one is built from its own palette:
  *
- * - Classic Lounge: Lucky Break's own sounds, exactly as they have always been (`cues.ts`).
+ * - Classic Lounge: Break Room Arcade's own sounds, exactly as they have always been (`cues.ts`).
  * - Retro Arcade: chiptune. Square and triangle blips, quick arpeggios, pitch slides, no noise.
  * - Pixel Adventure: bright and major. Triangle and sine like a music box or a harp, a fanfare for a win.
  * - Neon Cyber: sawtooth pairs a hair out of tune, long sweeps, zaps and bursts of static.
@@ -122,7 +122,7 @@ const fixed =
   () =>
     tones;
 
-/** Cards landing one after the other, each made by `one(at)`. They keep Lucky Break's own pace: the cards move to it. */
+/** Cards landing one after the other, each made by `one(at)`. They keep Break Room Arcade's own pace: the cards move to it. */
 const dealt =
   (one: (at: number) => readonly Tone[]): CueRecipe =>
   (options) =>
@@ -141,7 +141,7 @@ const rattle =
 
 // ---------------------------------------------------------------- Classic Lounge
 
-/** Lucky Break's own sounds. They are defined in `cues.ts`, and never change. */
+/** Break Room Arcade's own sounds. They are defined in `cues.ts`, and never change. */
 const CLASSIC: SoundPack = {
   click: (options) => cueTones('click', options),
   chip: (options) => cueTones('chip', options),

@@ -409,38 +409,38 @@
 /* One button per row on the very narrowest sidebar, two per row when each has room for its longest label
    (DOUBLE), and four per row on a wide panel. How much room that takes depends on the chosen text size. */
 @media (min-width: 280px) {
-  .lb-app[data-text='normal'] .action-bar {
+  .br-app[data-text='normal'] .action-bar {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
 @media (min-width: 300px) {
-  .lb-app[data-text='large'] .action-bar {
+  .br-app[data-text='large'] .action-bar {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
 @media (min-width: 340px) {
-  .lb-app[data-text='xlarge'] .action-bar {
+  .br-app[data-text='xlarge'] .action-bar {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
 /* Four buttons in a row only when each has room for its longest label (DOUBLE) at the chosen text size. */
 @media (min-width: 500px) {
-  .lb-app[data-text='normal'] .action-bar {
+  .br-app[data-text='normal'] .action-bar {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
 
 @media (min-width: 540px) {
-  .lb-app[data-text='large'] .action-bar {
+  .br-app[data-text='large'] .action-bar {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
 
 @media (min-width: 620px) {
-  .lb-app[data-text='xlarge'] .action-bar {
+  .br-app[data-text='xlarge'] .action-bar {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }

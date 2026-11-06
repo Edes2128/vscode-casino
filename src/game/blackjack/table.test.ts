@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { MIN_BET } from '../../state/chips';
 import { STARTING_BALANCE } from '../../state/snapshot';
-import { LuckyBreakStore } from '../../state/store';
+import { BreakRoomStore } from '../../state/store';
 import { MemoryStorage } from '../../state/testing';
 import { seededRng } from '../rng';
 import { BlackjackTable, type TableResult } from './table';
@@ -12,7 +12,7 @@ function setup(deckSpec: string) {
   const storage = new MemoryStorage();
   let counter = 0;
   const errors: string[] = [];
-  const store = new LuckyBreakStore(storage, { newId: () => `r${(counter += 1)}`, onError: (m) => errors.push(m) });
+  const store = new BreakRoomStore(storage, { newId: () => `r${(counter += 1)}`, onError: (m) => errors.push(m) });
   const table = new BlackjackTable(store, { deck: () => cards(deckSpec), onError: (m) => errors.push(m) });
   return { store, table, storage, errors };
 }
@@ -419,7 +419,7 @@ describe('random play through the whole stack', () => {
     const rng = seededRng(424_242);
     const storage = new MemoryStorage();
     const errors: string[] = [];
-    const store = new LuckyBreakStore(storage, { onError: (message) => errors.push(message) });
+    const store = new BreakRoomStore(storage, { onError: (message) => errors.push(message) });
     const table = new BlackjackTable(store, { rng, onError: (message) => errors.push(message) });
 
     let rounds = 0;

@@ -6,8 +6,8 @@
  * through `parseWebviewMessage` instead of casting.
  */
 
-import { isLuckyBreakSnapshot, isCount } from '../state/snapshot';
-import type { LuckyBreakSnapshot, GameType } from '../state/types';
+import { isBreakRoomSnapshot, isCount } from '../state/snapshot';
+import type { BreakRoomSnapshot, GameType } from '../state/types';
 import { isSettings, parseSettingsPatch, type Settings, type SettingsPatch } from '../state/settings';
 import { isResetOutcome, isResetScope, type ResetOutcome, type ResetScope } from '../game/resetScope';
 import { isRouletteView, parseRouletteAction, type RouletteAction, type RouletteView } from '../game/roulette/view';
@@ -23,8 +23,8 @@ import {
 /** Which VS Code surface a webview is rendered in. */
 export type ViewKind = 'sidebar' | 'panel';
 
-/** The screens of Lucky Break. */
-export type LuckyBreakPage = 'home' | 'blackjack' | 'roulette' | 'statistics' | 'customize' | 'settings';
+/** The screens of Break Room Arcade. */
+export type BreakRoomPage = 'home' | 'blackjack' | 'roulette' | 'statistics' | 'customize' | 'settings';
 
 /** Where the webview bundle was loaded from. */
 export type AssetMode = 'dev' | 'prod';
@@ -48,8 +48,6 @@ export type WebviewToHostMessage =
    * this webview has the Web Audio API the sound effects are made with.
    */
   | { readonly type: 'rendered'; readonly fontsLoaded: boolean; readonly audioAvailable: boolean }
-  /** The player pressed "Support me". The host opens the (fixed) support page in the browser. */
-  | { readonly type: 'openSupport' }
   /** The player changed one or more settings. The host validates, saves and tells every view. */
   | { readonly type: 'settings'; readonly patch: SettingsPatch }
   /**
@@ -59,7 +57,7 @@ export type WebviewToHostMessage =
   | { readonly type: 'reset'; readonly scope: ResetScope }
   /**
    * The decorations' clock: whether it is running (ticking), whether it is resting (stopped because the
-   * player has not touched Lucky Break for a while), and how many times it has ticked. A running clock
+   * player has not touched Break Room Arcade for a while), and how many times it has ticked. A running clock
    * that keeps ticking proves the animations are alive; a stopped one proves they are still. Sent when
    * it starts, stops or rests, and every few seconds while it runs, never more often.
    */
@@ -105,13 +103,13 @@ export type HostToWebviewMessage =
   /** Static facts about this webview, sent once in answer to `ready`. */
   | { readonly type: 'init'; readonly payload: InitPayload }
   /** The current game state. Sent after `init` and again whenever the host's state changes. */
-  | { readonly type: 'state'; readonly payload: LuckyBreakSnapshot }
+  | { readonly type: 'state'; readonly payload: BreakRoomSnapshot }
   /** The player's settings. Sent after `init` and again whenever they change. */
   | { readonly type: 'settings'; readonly payload: Settings }
   /** How a reset request ended. Sent only to the view that asked. */
   | { readonly type: 'resetResult'; readonly scope: ResetScope; readonly outcome: ResetOutcome }
   /** Switch this webview to another screen. */
-  | { readonly type: 'navigate'; readonly page: LuckyBreakPage }
+  | { readonly type: 'navigate'; readonly page: BreakRoomPage }
   /** The roulette table as it is now. */
   | { readonly type: 'roulette'; readonly view: RouletteView }
   /** The blackjack table as it is now. Never contains the hole card or the deck. */
@@ -142,8 +140,6 @@ export function parseWebviewMessage(raw: unknown): WebviewToHostMessage | undefi
       return typeof raw['fontsLoaded'] === 'boolean' && typeof raw['audioAvailable'] === 'boolean'
         ? { type: 'rendered', fontsLoaded: raw['fontsLoaded'], audioAvailable: raw['audioAvailable'] }
         : undefined;
-    case 'openSupport':
-      return { type: 'openSupport' };
     case 'settings': {
       const patch = parseSettingsPatch(raw['patch']);
       return patch === undefined ? undefined : { type: 'settings', patch };
@@ -217,7 +213,7 @@ export function parseHostMessage(raw: unknown): HostToWebviewMessage | undefined
     case 'init':
       return parseInit(payload);
     case 'state':
-      return isLuckyBreakSnapshot(payload) ? { type: 'state', payload } : undefined;
+      return isBreakRoomSnapshot(payload) ? { type: 'state', payload } : undefined;
     case 'blackjack': {
       const view = raw['view'];
       return isBlackjackView(view) ? { type: 'blackjack', view } : undefined;
@@ -229,8 +225,8 @@ export function parseHostMessage(raw: unknown): HostToWebviewMessage | undefined
         ? { type: 'resetResult', scope: raw['scope'], outcome: raw['outcome'] }
         : undefined;
     case 'navigate':
-      return LUCKY_BREAK_PAGES.includes(raw['page'] as LuckyBreakPage)
-        ? { type: 'navigate', page: raw['page'] as LuckyBreakPage }
+      return BREAK_ROOM_PAGES.includes(raw['page'] as BreakRoomPage)
+        ? { type: 'navigate', page: raw['page'] as BreakRoomPage }
         : undefined;
     case 'roulette': {
       const view = raw['view'];
@@ -245,7 +241,7 @@ export function parseHostMessage(raw: unknown): HostToWebviewMessage | undefined
   }
 }
 
-const LUCKY_BREAK_PAGES: readonly LuckyBreakPage[] = ['home', 'blackjack', 'roulette', 'statistics', 'customize', 'settings'];
+const BREAK_ROOM_PAGES: readonly BreakRoomPage[] = ['home', 'blackjack', 'roulette', 'statistics', 'customize', 'settings'];
 
 const TABLE_ERRORS: readonly unknown[] = [
   'invalid-amount',

@@ -78,7 +78,6 @@ const baseProps = {
   resetResult: undefined,
   onChange: noop,
   onReset: noop,
-  onSupport: noop,
 };
 
 describe('the settings screen', () => {
@@ -152,17 +151,17 @@ describe('the settings screen', () => {
     expect(html).toContain('YOUR SYSTEM ASKS FOR REDUCED MOTION');
   });
 
-  it('says in words what Lucky Break is doing with motion', () => {
+  it('says in words what Break Room Arcade is doing with motion', () => {
     expect(renderToStaticMarkup(<Settings {...baseProps} motion="full" />)).toContain('FULL ANIMATION');
     expect(renderToStaticMarkup(<Settings {...baseProps} motion="calm" />)).toContain('CALM: STEP BY STEP, NO MOVEMENT');
     expect(renderToStaticMarkup(<Settings {...baseProps} motion="off" />)).toContain('ANIMATION OFF: RESULTS AT ONCE');
   });
 
-  it('shows the version, the virtual-chips promise and the support button', () => {
+  it('shows the version and the virtual-chips promise', () => {
     const html = renderToStaticMarkup(<Settings {...baseProps} version="1.2.3" />);
     expect(html).toContain('VERSION 1.2.3');
     expect(html).toContain('VIRTUAL CHIPS ONLY. NO REAL MONEY. EVER.');
-    expect(html).toContain('Enjoying Lucky Break? Buy me a coffee!');
+    expect(html).not.toContain('coffee');
     expect(renderToStaticMarkup(<Settings {...baseProps} version={undefined} />)).toContain('VERSION ?');
   });
 });

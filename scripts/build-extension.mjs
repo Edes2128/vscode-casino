@@ -78,10 +78,10 @@ if (withTests) {
     'out/restart-helper/package.json',
     JSON.stringify(
       {
-        name: 'lb-restart-helper',
-        displayName: 'Lucky Break restart-test helper',
+        name: 'br-restart-helper',
+        displayName: 'Break Room Arcade restart-test helper',
         version: '0.0.0',
-        publisher: 'lucky-break-dev',
+        publisher: 'break-room-arcade-dev',
         private: true,
         engines: { vscode: '^1.90.0' },
         main: './index.js',

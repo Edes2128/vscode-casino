@@ -29,7 +29,7 @@ export function resetPrompt(scope: ResetScope): ResetPrompt {
       };
     case 'all':
       return {
-        message: 'Reset everything in Lucky Break?',
+        message: 'Reset everything in Break Room Arcade?',
         detail: `Your balance goes back to ${chips} chips, and your statistics and game history are cleared. Your sound and animation settings are kept. This cannot be undone.`,
         confirmLabel: 'Reset Everything',
       };

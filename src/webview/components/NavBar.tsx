@@ -7,10 +7,10 @@ interface NavBarProps {
   readonly onNavigate: (page: Page) => void;
 }
 
-/** Icon tabs. Labels collapse to tooltips when the sidebar is very narrow (see lucky-break.css). */
+/** Icon tabs. Labels collapse to tooltips when the sidebar is very narrow (see break-room-arcade.css). */
 export function NavBar({ current, onNavigate }: NavBarProps) {
   return (
-    <nav className="nav-bar" aria-label="Lucky Break">
+    <nav className="nav-bar" aria-label="Break Room Arcade">
       {NAV_ITEMS.map((item) => (
         <button
           key={item.page}
